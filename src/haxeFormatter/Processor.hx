@@ -91,12 +91,10 @@ class Processor {
         inline function insertWhitespace()
             trivia.insert(0, mkToken(getSpacePadding(padding, "")));
 
-        if (trivia.length == 0)
+        if (trivia.length == 0 || !isWhitespace(trivia[0].token))
             insertWhitespace();
-        else if (isWhitespace(trivia[0].token))
-            trivia[0] = mkToken(getSpacePadding(padding, trivia[0].token));
         else
-            insertWhitespace();
+            trivia[0] = mkToken(getSpacePadding(padding, trivia[0].token));
 
         return trivia;
     }
