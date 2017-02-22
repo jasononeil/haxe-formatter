@@ -51,7 +51,7 @@ class Processor {
         return Node(name, children.map(process.bind(_, parentNodes.concat([name]))));
     }
 
-    function processToken(token:String, trivia:Trivia<Tree>):TreeKind {
+    function processToken(token:String, trivia:Trivia):TreeKind {
         switch (token) {
             case ":": processColon(token, trivia);
             case _:
@@ -59,7 +59,7 @@ class Processor {
         return Token(token, trivia);
     }
 
-    function processColon(token:String, trivia:Trivia<Tree>) {
+    function processColon(token:String, trivia:Trivia) {
         if (curNode != "type_hint") {
             return;
         }
@@ -84,23 +84,19 @@ class Processor {
         trivia.trailing = applySpacePadding(config.padding.typeHintColon.after, trivia.trailing);
     }
 
-    function applySpacePadding(padding:WhitespacePolicy, trivia:Array<Tree>):Array<Tree> {
+    function applySpacePadding(padding:WhitespacePolicy, trivia:Array<PlacedToken>):Array<PlacedToken> {
         if (trivia == null)
             trivia = [];
 
         inline function insertWhitespace()
-            trivia.insert(0, mkTree(Token(getSpacePadding(padding, ""), {})));
+            trivia.insert(0, mkToken(getSpacePadding(padding, "")));
 
-        if (trivia.length == 0) {
+        if (trivia.length == 0)
             insertWhitespace();
-        } else switch (trivia[0].kind) {
-            case Token(tok, innerTrivia):
-                if (isWhitespace(tok))
-                    trivia[0].kind = Token(getSpacePadding(padding, tok), innerTrivia);
-                else insertWhitespace();
-            case _:
-                unexpected("Node");
-        }
+        else if (isWhitespace(trivia[0].token))
+            trivia[0] = mkToken(getSpacePadding(padding, trivia[0].token));
+        else
+            insertWhitespace();
 
         return trivia;
     }
@@ -109,11 +105,11 @@ class Processor {
         return ~/\s+/.match(s);
     }
 
-    function mkTree(kind:TreeKind):Tree {
+    function mkToken(token:String):PlacedToken {
         return {
             start: 0,
             end: 0,
-            kind: kind
+            token: token
         }
     }
 
@@ -146,7 +142,7 @@ class Processor {
         return importDecls;
     }
 
-    function getImportTrivia(treeKind:TreeKind):Trivia<Tree> {
+    function getImportTrivia(treeKind:TreeKind):Trivia {
         return switch (treeKind) {
             case Node(name, children) if (children.length > 0): switch (children[0].kind) {
                 case Token(token, trivia) if (token == "import" || token == "using"):
