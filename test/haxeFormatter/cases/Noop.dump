@@ -1,0 +1,31 @@
+{
+    "imports": {
+        "sort": false
+    }
+}
+
+---
+
+package;
+
+using StringTools;
+import hxParser.JsonParser;
+import util.Result;
+import hxParser.HxParser;
+
+class C {
+    function new() {}
+}
+
+---
+
+package;
+
+using StringTools;
+import hxParser.JsonParser;
+import util.Result;
+import hxParser.HxParser;
+
+class C {
+    function new() {}
+}

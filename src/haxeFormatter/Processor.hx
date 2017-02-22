@@ -1,7 +1,7 @@
 package haxeFormatter;
 
-import hxParser.JsonParser;
 import haxeFormatter.Printer.print;
+import hxParser.JsonParser;
 
 class Processor {
     var config:Configuration;

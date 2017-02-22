@@ -1,7 +1,7 @@
 package haxeFormatter;
 
-import hxParser.JsonParser;
 import hxParser.HxParser;
+import hxParser.JsonParser;
 import util.Result;
 
 class Formatter {

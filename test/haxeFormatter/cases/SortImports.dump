@@ -1,0 +1,27 @@
+{}
+
+---
+
+package;
+
+using StringTools;
+import hxParser.JsonParser;
+import util.Result;
+import hxParser.HxParser;
+
+class C {
+    function new() {}
+}
+
+---
+
+package;
+
+import hxParser.HxParser;
+import hxParser.JsonParser;
+import util.Result;
+using StringTools;
+
+class C {
+    function new() {}
+}
