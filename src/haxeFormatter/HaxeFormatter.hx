@@ -21,6 +21,34 @@ class HaxeFormatter {
         }
 
         var tree:Tree = JsonParser.parse(data);
+        tree = processTree(tree);
+        return Success(printTree(tree));
+    }
+
+    function processTree(tree:Tree):Tree {
+        return {
+            kind: processTreeKind(tree.kind),
+            start: tree.start,
+            end: tree.end
+        };
+    }
+
+    function processTreeKind(kind:TreeKind) {
+        return switch (kind) {
+            case Node(name, children): processNode(name, children);
+            case Token(token, trivia): processToken(token, trivia);
+        }
+    }
+
+    function processNode(name:String, children:Array<Tree>) {
+        return Node(name, children);
+    }
+
+    function processToken(token:String, trivia:Trivia<Tree>) {
+        return Token(token, trivia);
+    }
+
+    function printTree(tree:Tree) {
         var haxeBuf = new StringBuf();
         function loop(tree:Tree) {
             switch (tree.kind) {
@@ -35,6 +63,6 @@ class HaxeFormatter {
             }
         }
         loop(tree);
-        return Success(haxeBuf.toString());
+        return haxeBuf.toString();
     }
 }
