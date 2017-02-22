@@ -3,6 +3,7 @@ package haxeFormatter;
 import haxeFormatter.Configuration;
 import hxParser.HxParser;
 import hxParser.JsonParser;
+import hxParser.Printer;
 import util.Result;
 
 class Formatter {
