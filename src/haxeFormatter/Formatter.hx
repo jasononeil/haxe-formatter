@@ -25,5 +25,11 @@ class Formatter {
             config.imports = { sort: true };
         else if (config.imports.sort == null)
             config.imports.sort = true;
+
+        var typeHintColonDefault = { before: false, after: false };
+        if (config.padding == null)
+            config.padding = { typeHintColon: typeHintColonDefault };
+        if (config.padding.typeHintColon == null)
+            config.padding.typeHintColon = typeHintColonDefault;
     }
 }

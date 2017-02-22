@@ -1,0 +1,35 @@
+{
+    "padding": {
+        "typeHintColon": {
+            "after": true
+        }
+    }
+}
+
+---
+
+class C {
+    var f :Int;
+    var f :/**/Int;
+
+    function new() {
+        switch (foo) {
+            case 1: // don't mess with non-type-hint colons
+            case 2:
+        }
+    }
+}
+
+---
+
+class C {
+    var f : Int;
+    var f : /**/Int;
+
+    function new() {
+        switch (foo) {
+            case 1: // don't mess with non-type-hint colons
+            case 2:
+        }
+    }
+}

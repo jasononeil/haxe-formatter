@@ -1,11 +1,13 @@
 package haxeFormatter;
 
+import haxeFormatter.Configuration;
 import haxeFormatter.Printer.print;
 import hxParser.JsonParser;
 
 class Processor {
     var config:Configuration;
     var numDecls:Int;
+    var curNode:String;
 
     public function new(config:Configuration) {
         this.config = config;
@@ -22,16 +24,18 @@ class Processor {
 
     function processTreeKind(kind:TreeKind) {
         return switch (kind) {
-            case Node(name, children): processNode(name, children);
-            case Token(token, trivia): processToken(token, trivia);
+            case Node(name, children):
+                curNode = name;
+                processNode(name, children);
+            case Token(token, trivia):
+                processToken(token, trivia);
         }
     }
 
     function processNode(name:String, children:Array<Tree>):TreeKind {
         switch (name) {
             case "decls":
-                var sort = config.imports.sort;
-                if (numDecls == 0 && (sort == null || sort))
+                if (numDecls == 0 && config.imports.sort)
                     children = sortImports(children);
                 numDecls++;
             case _:
@@ -40,7 +44,53 @@ class Processor {
     }
 
     function processToken(token:String, trivia:Trivia<Tree>):TreeKind {
+        switch (token) {
+            case ":" if (curNode == "type_hint"):
+                trivia.trailing = applySpacePadding(config.padding.typeHintColon.after, trivia.trailing);
+            case _:
+        }
         return Token(token, trivia);
+    }
+
+    function applySpacePadding(padding:OptionalBool, trivia:Array<Tree>):Array<Tree> {
+        if (trivia == null)
+            trivia = [];
+
+        inline function insertWhitespace()
+            trivia.insert(0, mkTree(Token(getSpacePadding(padding, ""), {})));
+
+        if (trivia.length == 0) {
+            insertWhitespace();
+        } else switch (trivia[0].kind) {
+            case Token(tok, innerTrivia):
+                if (isWhitespace(tok))
+                    trivia[0].kind = Token(getSpacePadding(padding, tok), innerTrivia);
+                else insertWhitespace();
+            case _:
+                throw "Unexpected Node";
+        }
+
+        return trivia;
+    }
+
+    function isWhitespace(s:String) {
+        return ~/\s+/.match(s);
+    }
+
+    function mkTree(kind:TreeKind):Tree {
+        return {
+            start: 0,
+            end: 0,
+            kind: kind
+        }
+    }
+
+    function getSpacePadding(padding:OptionalBool, whitespace:String):String {
+        return switch (padding) {
+            case true: " ";
+            case false: "";
+            case _: whitespace;
+        }
     }
 
     function sortImports(importDecls:Array<Tree>):Array<Tree> {

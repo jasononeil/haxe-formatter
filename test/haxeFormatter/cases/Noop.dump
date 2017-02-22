@@ -1,6 +1,12 @@
 {
     "imports": {
         "sort": false
+    },
+    "padding": {
+        "typeHintColon": {
+            "before": null,
+            "after": null
+        }
     }
 }
 
@@ -14,7 +20,7 @@ import util.Result;
 import hxParser.HxParser;
 
 class C {
-    function new() {}
+    function new(i:Int, s : String, b :Bool) {}
 }
 
 ---
@@ -27,5 +33,5 @@ import util.Result;
 import hxParser.HxParser;
 
 class C {
-    function new() {}
+    function new(i:Int, s : String, b :Bool) {}
 }
