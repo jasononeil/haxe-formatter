@@ -13,8 +13,17 @@ class Formatter {
             case Failure(reason): Failure(reason);
         }
 
+        applyDefaultSettings(config);
         var tree:Tree = JsonParser.parse(data);
         tree = new Processor(config).process(tree);
         return Success(Printer.print(tree));
+    }
+
+    // TODO: figure out some better way to have default settings...
+    static function applyDefaultSettings(config:Configuration) {
+        if (config.imports == null)
+            config.imports = { sort: true };
+        else if (config.imports.sort == null)
+            config.imports.sort = true;
     }
 }
