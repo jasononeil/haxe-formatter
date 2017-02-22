@@ -1,5 +1,6 @@
 package haxeFormatter;
 
+import haxeFormatter.Configuration;
 import hxParser.HxParser;
 import hxParser.JsonParser;
 import util.Result;
@@ -26,10 +27,12 @@ class Formatter {
         else if (config.imports.sort == null)
             config.imports.sort = true;
 
-        var typeHintColonDefault = { before: false, after: false };
+        var typeHintColonDefault = { before: Remove, after: Remove };
         if (config.padding == null)
             config.padding = { typeHintColon: typeHintColonDefault };
-        if (config.padding.typeHintColon == null)
-            config.padding.typeHintColon = typeHintColonDefault;
+
+        var padding = config.padding;
+        if (padding.typeHintColon == null)
+            padding.typeHintColon = typeHintColonDefault;
     }
 }

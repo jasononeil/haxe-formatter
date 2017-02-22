@@ -14,12 +14,12 @@ typedef PaddingConfiguration = {
 }
 
 typedef SpacePadding = {
-    @:optional var after:OptionalBool;
-    @:optional var before:OptionalBool;
+    @:optional var after:WhitespacePolicy;
+    @:optional var before:WhitespacePolicy;
 }
 
-@:enum abstract OptionalBool(Null<Bool>) to Bool from Bool {
-    var Yes = true;
-    var No = false;
-    var Ignore = null;
+@:enum abstract WhitespacePolicy(String) {
+    var Add = "add";
+    var Remove = "remove";
+    var Keep = "keep";
 }

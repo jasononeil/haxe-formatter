@@ -1,7 +1,7 @@
 {
     "padding": {
         "typeHintColon": {
-            "after": true
+            "after": "add"
         }
     }
 }

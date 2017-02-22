@@ -52,7 +52,7 @@ class Processor {
         return Token(token, trivia);
     }
 
-    function applySpacePadding(padding:OptionalBool, trivia:Array<Tree>):Array<Tree> {
+    function applySpacePadding(padding:WhitespacePolicy, trivia:Array<Tree>):Array<Tree> {
         if (trivia == null)
             trivia = [];
 
@@ -85,11 +85,11 @@ class Processor {
         }
     }
 
-    function getSpacePadding(padding:OptionalBool, whitespace:String):String {
+    function getSpacePadding(padding:WhitespacePolicy, whitespace:String):String {
         return switch (padding) {
-            case true: " ";
-            case false: "";
-            case _: whitespace;
+            case Add: " ";
+            case Remove: "";
+            case Keep | null: whitespace;
         }
     }
 

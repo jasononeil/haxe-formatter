@@ -1,7 +1,7 @@
 {
     "padding": {
         "typeHintColon": {
-            "after": false
+            "after": "remove"
         }
     }
 }
