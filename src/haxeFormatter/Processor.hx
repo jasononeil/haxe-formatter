@@ -88,13 +88,13 @@ class Processor {
         if (trivia == null)
             trivia = [];
 
-        inline function insertWhitespace()
-            trivia.insert(0, mkToken(getSpacePadding(padding, "")));
+        inline function mkToken(token:String):PlacedToken
+            return mkPlacedToken(getSpacePadding(padding, token));
 
         if (trivia.length == 0 || !isWhitespace(trivia[0].token))
-            insertWhitespace();
+            trivia.insert(0, mkToken(""));
         else
-            trivia[0] = mkToken(getSpacePadding(padding, trivia[0].token));
+            trivia[0] = mkToken(trivia[0].token);
 
         return trivia;
     }
@@ -103,7 +103,7 @@ class Processor {
         return ~/\s+/.match(s);
     }
 
-    function mkToken(token:String):PlacedToken {
+    function mkPlacedToken(token:String):PlacedToken {
         return {
             start: 0,
             end: 0,
