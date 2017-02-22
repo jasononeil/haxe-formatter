@@ -1,0 +1,7 @@
+-cp src
+-cp test
+-lib hxnodejs
+-lib compiletime
+-main haxeFormatter.TestMain
+-js ../bin/testFormatter.js
+-cmd node ../bin/testFormatter.js
