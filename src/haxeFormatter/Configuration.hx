@@ -14,8 +14,8 @@ typedef PaddingConfiguration = {
 }
 
 typedef SpacePadding = {
-    @:optional var after:WhitespacePolicy;
     @:optional var before:WhitespacePolicy;
+    @:optional var after:WhitespacePolicy;
 }
 
 @:enum abstract WhitespacePolicy(String) {

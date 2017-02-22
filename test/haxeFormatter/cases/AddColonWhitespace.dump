@@ -1,7 +1,8 @@
 {
     "padding": {
         "typeHintColon": {
-            "after": "remove"
+            "before": "add",
+            "after": "add"
         }
     }
 }
@@ -9,8 +10,8 @@
 ---
 
 class C {
-    var f : Int;
-    var f : /**/Int;
+    var f:Int;
+    var $f:/**/Int;
 
     function new() {
         switch (foo) {
@@ -23,8 +24,8 @@ class C {
 ---
 
 class C {
-    var f :Int;
-    var f :/**/Int;
+    var f : Int;
+    var $f : /**/Int;
 
     function new() {
         switch (foo) {

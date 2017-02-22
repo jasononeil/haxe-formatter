@@ -8,6 +8,8 @@ class Processor {
     var config:Configuration;
     var numDecls:Int;
     var curNode:String;
+    var prevNode:String;
+    var prevToken:TreeKind;
 
     public function new(config:Configuration) {
         this.config = config;
@@ -22,13 +24,17 @@ class Processor {
         };
     }
 
-    function processTreeKind(kind:TreeKind) {
-        return switch (kind) {
+    function processTreeKind(kind:TreeKind):TreeKind {
+        switch (kind) {
             case Node(name, children):
                 curNode = name;
-                processNode(name, children);
+                var result = processNode(name, children);
+                prevNode = name;
+                return result;
             case Token(token, trivia):
-                processToken(token, trivia);
+                var result = processToken(token, trivia);
+                prevToken = kind;
+                return result;
         }
     }
 
@@ -45,11 +51,22 @@ class Processor {
 
     function processToken(token:String, trivia:Trivia<Tree>):TreeKind {
         switch (token) {
-            case ":" if (curNode == "type_hint"):
-                trivia.trailing = applySpacePadding(config.padding.typeHintColon.after, trivia.trailing);
+            case ":": processColon(token, trivia);
             case _:
         }
         return Token(token, trivia);
+    }
+
+    function processColon(token:String, trivia:Trivia<Tree>) {
+        if (curNode == "type_hint")
+            trivia.trailing = applySpacePadding(config.padding.typeHintColon.after, trivia.trailing);
+        if (prevNode.has("dollar_ident"))
+            switch (prevToken) {
+                case Token(_,trivia):
+                    trivia.trailing = applySpacePadding(config.padding.typeHintColon.before, trivia.trailing);
+                case _:
+                    unexpected("Node");
+            }
     }
 
     function applySpacePadding(padding:WhitespacePolicy, trivia:Array<Tree>):Array<Tree> {
@@ -67,7 +84,7 @@ class Processor {
                     trivia[0].kind = Token(getSpacePadding(padding, tok), innerTrivia);
                 else insertWhitespace();
             case _:
-                throw "Unexpected Node";
+                unexpected("Node");
         }
 
         return trivia;
@@ -123,5 +140,9 @@ class Processor {
             }
             case _: null;
         }
+    }
+
+    inline function unexpected(what:String) {
+        throw 'Unexpected $what';
     }
 }
