@@ -2,15 +2,22 @@ package haxeFormatter;
 
 import hxParser.JsonParser;
 import hxParser.HxParser;
+import util.Result;
 using Lambda;
 
 class HaxeFormatter {
-    public static function format(code:String):String {
+    var config:Configuration;
+
+    public function new(config:Configuration) {
+        this.config = config;
+    }
+
+    public function format(code:String):Result<String> {
         var parsed = HxParser.parse(code);
         var data:JNodeBase = null;
         switch (parsed) {
             case Success(d): data = d;
-            case Failure(_): return null;
+            case Failure(reason): Failure(reason);
         }
 
         var tree:Tree = JsonParser.parse(data);
@@ -28,6 +35,6 @@ class HaxeFormatter {
             }
         }
         loop(tree);
-        return haxeBuf.toString();
+        return Success(haxeBuf.toString());
     }
 }

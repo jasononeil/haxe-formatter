@@ -1,14 +1,10 @@
 package hxParser;
 
 import hxParser.JsonParser.JNodeBase;
-
-enum HxParserResult {
-    Failure(reason:String);
-    Success(data:JNodeBase);
-}
+import util.Result;
 
 class HxParser {
-    public static function parse(src:String):HxParserResult {
+    public static function parse(src:String):Result<JNodeBase> {
         return try Success(_parse("<stdin>", src)) catch (e:Any) Failure(Std.string(e));
     }
 
