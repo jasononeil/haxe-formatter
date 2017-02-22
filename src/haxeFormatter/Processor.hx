@@ -91,16 +91,12 @@ class Processor {
         inline function mkToken(token:String):PlacedToken
             return mkPlacedToken(getSpacePadding(padding, token));
 
-        if (trivia.length == 0 || !isWhitespace(trivia[0].token))
-            trivia.insert(0, mkToken(""));
-        else
+        if (trivia.length > 0 && trivia[0].token.isWhitespace())
             trivia[0] = mkToken(trivia[0].token);
+        else
+            trivia.insert(0, mkToken(""));
 
         return trivia;
-    }
-
-    function isWhitespace(s:String) {
-        return ~/\s+/.match(s);
     }
 
     function mkPlacedToken(token:String):PlacedToken {
