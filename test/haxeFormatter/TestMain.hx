@@ -25,14 +25,12 @@ class TestMain {
 
 class FormattingTestCase extends TestCase {
     function testAll() {
-    trace(Sys.getCwd());
         var dir = "test/haxeFormatter/cases";
         for (file in FileSystem.readDirectory(dir)) {
             if (!file.endsWith(".dump"))
                 continue;
 
             var absPath = Path.join([Sys.getCwd(), dir, file]);
-            trace(absPath);
             var content = File.getContent(absPath);
             var nl = "(\r?\n)";
             var reg = new EReg('$nl$nl---$nl$nl', "g");
