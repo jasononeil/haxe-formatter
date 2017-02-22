@@ -16,7 +16,7 @@ class Formatter {
 
         applyDefaultSettings(config);
         var tree:Tree = JsonParser.parse(data);
-        tree = new Processor(config).process(tree);
+        tree = new Processor(config).process(tree, []);
         return Success(Printer.print(tree));
     }
 

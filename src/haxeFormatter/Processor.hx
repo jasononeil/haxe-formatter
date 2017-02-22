@@ -9,13 +9,15 @@ class Processor {
     var numDecls:Int;
     var curNode:String;
     var prevNode:String;
+    var parentNodes:Array<String>;
     var prevToken:TreeKind;
 
     public function new(config:Configuration) {
         this.config = config;
     }
 
-    public function process(tree:Tree):Tree {
+    public function process(tree:Tree, parentNodes:Array<String>):Tree {
+        this.parentNodes = parentNodes;
         numDecls = 0;
         return {
             kind: processTreeKind(tree.kind),
@@ -46,7 +48,7 @@ class Processor {
                 numDecls++;
             case _:
         }
-        return Node(name, children.map(process));
+        return Node(name, children.map(process.bind(_, parentNodes.concat([name]))));
     }
 
     function processToken(token:String, trivia:Trivia<Tree>):TreeKind {
@@ -58,15 +60,28 @@ class Processor {
     }
 
     function processColon(token:String, trivia:Trivia<Tree>) {
-        if (curNode == "type_hint")
-            trivia.trailing = applySpacePadding(config.padding.typeHintColon.after, trivia.trailing);
+        if (curNode != "type_hint") {
+            return;
+        }
+
+        var before = config.padding.typeHintColon.before;
+        var parentNode = parentNodes.idx(-2);
+        if (parentNode.has("class_field") || parentNode.has("function")) {
+            switch (prevToken) {
+                case Token(")",trivia):
+                    trivia.trailing = applySpacePadding(before, trivia.trailing);
+                case _:
+            }
+        }
         if (prevNode.has("dollar_ident"))
             switch (prevToken) {
                 case Token(_,trivia):
-                    trivia.trailing = applySpacePadding(config.padding.typeHintColon.before, trivia.trailing);
+                    trivia.trailing = applySpacePadding(before, trivia.trailing);
                 case _:
                     unexpected("Node");
-            }
+        }
+
+        trivia.trailing = applySpacePadding(config.padding.typeHintColon.after, trivia.trailing);
     }
 
     function applySpacePadding(padding:WhitespacePolicy, trivia:Array<Tree>):Array<Tree> {

@@ -13,6 +13,11 @@ class C {
     var f:Int;
     var $f:/**/Int;
 
+    function f():Void {}
+    function f(i:Int):Void {
+        function f(i:Int):Void {}
+    }
+
     function new() {
         switch (foo) {
             case 1: // don't mess with non-type-hint colons
@@ -26,6 +31,11 @@ class C {
 class C {
     var f : Int;
     var $f : /**/Int;
+
+    function f() : Void {}
+    function f(i : Int) : Void {
+        function f(i : Int) : Void {}
+    }
 
     function new() {
         switch (foo) {
