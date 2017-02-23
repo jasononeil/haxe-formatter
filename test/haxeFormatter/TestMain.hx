@@ -55,7 +55,7 @@ class FormattingTestCase extends TestCase {
     }
 
     function assertFormat(file:String, config:Configuration, sourceCode:String, formattedCode:String, ?c:PosInfos) {
-        switch (Formatter.format(sourceCode, config)) {
+        switch (Formatter.formatSource(sourceCode, config)) {
             case Success(result):
                 if (result != formattedCode)
                    fail('Test case "$file" failed. Expected:\n\n$formattedCode \n\nbut was:\n\n$result');

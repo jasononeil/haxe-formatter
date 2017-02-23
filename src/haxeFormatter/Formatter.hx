@@ -8,18 +8,20 @@ import hxParser.Tree;
 import util.Result;
 
 class Formatter {
-    public static function format(code:String, config:Configuration):Result<String> {
-        var parsed = HxParser.parse(code);
-        var data:JResult = null;
-        switch (parsed) {
-            case Success(d): data = d;
-            case Failure(reason): Failure(reason);
-        }
-
+    public static function formatTree(tree:Tree, config:Configuration):Result<String> {
         applyDefaultSettings(config);
-        var tree:Tree = JsonParser.parse(data);
         tree = new Processor(config).process(tree, []);
         return Success(Printer.print(tree));
+    }
+
+    public static function formatSource(source:String, config:Configuration):Result<String> {
+        var parsed = HxParser.parse(source);
+        return switch (parsed) {
+            case Success(d):
+                var tree = JsonParser.parse(d);
+                return formatTree(tree, config);
+            case Failure(reason): Failure(reason);
+        }
     }
 
     // TODO: figure out some better way to have default settings...
