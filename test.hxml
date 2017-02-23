@@ -3,5 +3,5 @@
 -cp hxparser/src
 -lib hxnodejs
 -main haxeFormatter.TestMain
--js ../bin/testFormatter.js
--cmd node ../bin/testFormatter.js
+-js bin/test.js
+-cmd node bin/test.js

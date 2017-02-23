@@ -4,9 +4,6 @@ haxe:
  - development
 
 install:
- - cd ..
- - mv haxe-formatter formatter
- - cd formatter
  - haxelib install hxnodejs
 
 script:
