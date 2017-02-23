@@ -4,6 +4,7 @@ import haxeFormatter.Configuration;
 import hxParser.HxParser;
 import hxParser.JsonParser;
 import hxParser.Printer;
+import hxParser.Tree;
 import util.Result;
 
 class Formatter {
