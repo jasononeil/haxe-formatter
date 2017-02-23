@@ -23,6 +23,16 @@ class TestMain {
     }
 }
 
+typedef TestConfiguration = {
+    > Configuration,
+    var testConfig:TestFlags;
+}
+
+typedef TestFlags = {
+    /** expected block is omitted, as source == expected **/
+    @:optional var noop:Bool;
+}
+
 class FormattingTestCase extends TestCase {
     function testAll() {
         var dir = "test/haxeFormatter/cases";
@@ -35,14 +45,20 @@ class FormattingTestCase extends TestCase {
             var nl = "(\r?\n)";
             var reg = new EReg('$nl$nl---$nl$nl', "g");
             var segments = reg.split(content);
-            if (segments.length != 3)
-                fail("Three segments needed: config, source and expected");
-
-            var config:Configuration = try Json.parse(segments[0]) catch(e:Any) {
+            var config:TestConfiguration = try Json.parse(segments[0]) catch(e:Any) {
                 fail('Could not parse config: ${segments[0]}\nReason: $e');
                 null;
             }
-            assertFormat(file, config, segments[1], segments[2]);
+            if (config.testConfig == null)
+                config.testConfig = {};
+            var isNoopTest = config.testConfig.noop == true;
+            var requiredSegments = if (isNoopTest) 2 else 3;
+            if (segments.length != requiredSegments)
+                fail('Exactly $requiredSegments segments expected, but found ${segments.length}.');
+
+            var source = segments[1];
+            var expected = if (isNoopTest) source else segments[2];
+            assertFormat(file, config, source, expected);
         }
     }
 

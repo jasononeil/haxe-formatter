@@ -60,9 +60,8 @@ class Processor {
     }
 
     function processColon(token:String, trivia:Trivia) {
-        if (curNode != "type_hint") {
+        if (curNode != "type_hint")
             return;
-        }
 
         var before = config.padding.typeHintColon.before;
         var parentNode = parentNodes.idx(-2);

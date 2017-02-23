@@ -7,20 +7,10 @@
             "before": "keep",
             "after": "keep"
         }
+    },
+    "testConfig": {
+        "noop": true
     }
-}
-
----
-
-package;
-
-using StringTools;
-import hxParser.JsonParser;
-import util.Result;
-import hxParser.HxParser;
-
-class C {
-    function new(i:Int, s : String, b :Bool) {}
 }
 
 ---
