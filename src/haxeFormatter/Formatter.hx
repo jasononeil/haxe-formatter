@@ -7,11 +7,11 @@ import hxParser.Printer;
 import util.Result;
 
 class Formatter {
-    static var parse:String->String->JNodeBase = js.Lib.require("../formatter/hxparser/hxparserjs.js").parse;
+    static var parse:String->String->JResult = js.Lib.require("../formatter/hxparser/hxparserjs.js").parse;
 
     public static function format(code:String, config:Configuration):Result<String> {
         var parsed = HxParser.parse(parse, code);
-        var data:JNodeBase = null;
+        var data:JResult = null;
         switch (parsed) {
             case Success(d): data = d;
             case Failure(reason): Failure(reason);
