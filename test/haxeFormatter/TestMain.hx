@@ -25,14 +25,16 @@ class TestMain {
 
 typedef TestConfiguration = {
     > Configuration,
-    var testConfig:TestFlags;
+    var testType:TestType;
 }
 
-typedef TestFlags = {
+@:enum abstract TestType(String) {
+    /** simple test with config, source and expected outcome **/
+    var Regular = "regular";
     /** expected block is omitted, as source == expected **/
-    @:optional var noop:Bool;
+    var Noop = "noop";
     /** a second test is generated, with a "flipped config" and source and expected swapped **/
-    @:optional var invertible:Bool;
+    var Invertible = "invertible";
 }
 
 class FormattingTestCase extends TestCase {
@@ -51,9 +53,8 @@ class FormattingTestCase extends TestCase {
                 fail('Could not parse config: ${segments[0]}\nReason: $e');
                 null;
             }
-            if (config.testConfig == null)
-                config.testConfig = {};
-            var isNoopTest = config.testConfig.noop == true;
+
+            var isNoopTest = config.testType == Noop;
             var requiredSegments = if (isNoopTest) 2 else 3;
             if (segments.length != requiredSegments)
                 fail('Exactly $requiredSegments segments expected, but found ${segments.length}.');
@@ -63,8 +64,7 @@ class FormattingTestCase extends TestCase {
             var expected = if (isNoopTest) source else segments[2];
             assertFormat(name, config, source, expected);
 
-            var isInvertible = config.testConfig.invertible == true;
-            if (isInvertible) {
+            if (config.testType == Invertible) {
                 // run a second, inverted test
                 assertFormat("Inverted_" + name, invertConfig(config), expected, source);
             }

@@ -8,9 +8,7 @@
             "after": "keep"
         }
     },
-    "testConfig": {
-        "noop": true
-    }
+    "testType": "noop"
 }
 
 ---
