@@ -7,7 +7,7 @@ import hxParser.Printer;
 import util.Result;
 
 class Formatter {
-    static var parse:String->String->JResult = js.Lib.require("../formatter/hxparser/hxparserjs.js").parse;
+    static var parse:String->String->JResult = js.Lib.require("../server/formatter/hxparser/hxparserjs.js").parse; // TODO: fix teh path
 
     public static function format(code:String, config:Configuration):Result<String> {
         var parsed = HxParser.parse(parse, code);
