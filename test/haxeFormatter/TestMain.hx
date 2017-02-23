@@ -31,6 +31,8 @@ typedef TestConfiguration = {
 typedef TestFlags = {
     /** expected block is omitted, as source == expected **/
     @:optional var noop:Bool;
+    /** a second test is generated, with a "flipped config" and source and expected swapped **/
+    @:optional var invertible:Bool;
 }
 
 class FormattingTestCase extends TestCase {
@@ -56,10 +58,37 @@ class FormattingTestCase extends TestCase {
             if (segments.length != requiredSegments)
                 fail('Exactly $requiredSegments segments expected, but found ${segments.length}.');
 
+            var name = Path.withoutExtension(file);
             var source = segments[1];
             var expected = if (isNoopTest) source else segments[2];
-            assertFormat(file, config, source, expected);
+            assertFormat(name, config, source, expected);
+
+            var isInvertible = config.testConfig.invertible == true;
+            if (isInvertible) {
+                // run a second, inverted test
+                assertFormat("Inverted_" + name, invertConfig(config), expected, source);
+            }
         }
+    }
+
+    function invertConfig(config:Configuration):Configuration {
+        config = Reflect.copy(config);
+        // there has to be a smarter way
+        if (config.imports != null && config.imports.sort != null) {
+            config.imports.sort = !config.imports.sort;
+        }
+        function flipWhitespacePolicy(policy) return switch (policy) {
+            case null, Keep: Keep;
+            case Add: Remove;
+            case Remove: Add;
+        }
+
+        if (config.padding != null && config.padding.typeHintColon != null) {
+            var colon = config.padding.typeHintColon;
+            colon.before = flipWhitespacePolicy(colon.before);
+            colon.after = flipWhitespacePolicy(colon.after);
+        }
+        return config;
     }
 
     function fail(msg:String, ?c:PosInfos):Void {
@@ -70,11 +99,11 @@ class FormattingTestCase extends TestCase {
         throw currentTest;
     }
 
-    function assertFormat(file:String, config:Configuration, sourceCode:String, formattedCode:String, ?c:PosInfos) {
+    function assertFormat(name:String, config:Configuration, sourceCode:String, formattedCode:String, ?c:PosInfos) {
         switch (Formatter.formatSource(sourceCode, config)) {
             case Success(result):
                 if (result != formattedCode)
-                   fail('Test case "$file" failed. Expected:\n\n$formattedCode \n\nbut was:\n\n$result');
+                   fail('Test case "$name" failed. Expected:\n\n$formattedCode \n\nbut was:\n\n$result');
             case Failure(reason):
                 fail('Formatting failed with $reason');
         }

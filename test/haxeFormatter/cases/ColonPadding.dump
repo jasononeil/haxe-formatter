@@ -1,21 +1,24 @@
 {
     "padding": {
         "typeHintColon": {
-            "before": "add",
-            "after": "add"
+            "before": "remove",
+            "after": "remove"
         }
+    },
+    "testConfig": {
+        "invertible": true
     }
 }
 
 ---
 
 class C {
-    var f:Int;
-    var $f:/**/Int;
+    var f : Int;
+    var $f : /**/Int;
 
-    function f():Void {}
-    function f(i:Int):Void {
-        function f(i:Int):Void {}
+    function f() : Void {}
+    function f(i : Int) : Void {
+        function f(i : Int) : Void {}
     }
 
     function new() {
@@ -29,12 +32,12 @@ class C {
 ---
 
 class C {
-    var f : Int;
-    var $f : /**/Int;
+    var f:Int;
+    var $f:/**/Int;
 
-    function f() : Void {}
-    function f(i : Int) : Void {
-        function f(i : Int) : Void {}
+    function f():Void {}
+    function f(i:Int):Void {
+        function f(i:Int):Void {}
     }
 
     function new() {
