@@ -7,24 +7,28 @@ import haxe.unit.TestResult;
 import haxe.unit.TestRunner.print;
 import haxe.unit.TestStatus;
 import haxeFormatter.Configuration;
+import hxParser.HxParser.EntryPoint;
 import sys.FileSystem;
 import sys.io.File;
 using StringTools;
 
 typedef TestConfiguration = {
     > Configuration,
-    var testType:TestType;
+    @:optional var testProperties:TestProperties;
 }
 
-@:enum abstract TestType(String) {
+typedef TestProperties = {
+    @:optional var type:TestType;
+    @:optional var entryPoint:EntryPoint;
+}
+
+@:enum abstract TestType(String) to String {
     /** simple test with config, source and expected outcome **/
     var Regular = "regular";
     /** expected block is omitted, as source == expected **/
     var Noop = "noop";
     /** a second test is generated, with a "flipped config" and source and expected swapped **/
     var Invertible = "invertible";
-
-    public function toString() return this;
 }
 
 class TestMain {
@@ -48,7 +52,7 @@ class TestMain {
 
     public function processTestDefinition(dir:String, file:String):Array<TestStatus> {
         var absPath = Path.join([Sys.getCwd(), dir, file]);
-        var content = File.getContent(absPath);
+        var content = sys.io.File.getContent(absPath);
         var nl = "(\r?\n)";
         var reg = new EReg('$nl$nl---$nl$nl', "g");
         var segments = reg.split(content);
@@ -57,7 +61,10 @@ class TestMain {
             null;
         }
 
-        var isNoopTest = config.testType == Noop;
+        if (config.testProperties == null)
+            config.testProperties = {};
+
+        var isNoopTest = config.testProperties.type == Noop;
         var requiredSegments = if (isNoopTest) 2 else 3;
         if (segments.length != requiredSegments)
             throw 'Exactly $requiredSegments segments expected, but found ${segments.length}.';
@@ -72,7 +79,7 @@ class TestMain {
         results.push(runTest(name, config, source, expected));
 
         // run a second, inverted test?
-        if (config.testType == Invertible)
+        if (config.testProperties.type == Invertible)
             results.push(runTest("Inverted_" + name, invertConfig(config), expected, source));
 
         Sys.println("");
@@ -83,9 +90,9 @@ class TestMain {
         var status = new TestStatus();
         status.done = true;
         status.classname = name;
-        status.method = config.testType.toString();
+        status.method = config.testProperties.type;
 
-        switch (Formatter.formatSource(sourceCode, File, config)) {
+        switch (Formatter.formatSource(sourceCode, config.testProperties.entryPoint, config)) {
             case Success(result):
                 if (result != formattedCode) {
                     status.error = 'Test case "$name" failed. Expected:\n\n$formattedCode \n\nbut was:\n\n$result';
@@ -96,7 +103,7 @@ class TestMain {
                     print(".");
                 }
             case Failure(reason):
-                status.error = 'Formatting failed with $reason';
+                status.error = 'Formatting failed with \'$reason\'';
                 status.success = false;
                 print("W");
         }

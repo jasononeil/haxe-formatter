@@ -8,7 +8,9 @@
             "after": "keep"
         }
     },
-    "testType": "noop"
+    "testProperties": {
+        "type": "noop"
+    }
 }
 
 ---

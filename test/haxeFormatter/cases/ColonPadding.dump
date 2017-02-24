@@ -5,7 +5,9 @@
             "after": "remove"
         }
     },
-    "testType": "invertible"
+    "testProperties": {
+        "type": "invertible"
+    }
 }
 
 ---
