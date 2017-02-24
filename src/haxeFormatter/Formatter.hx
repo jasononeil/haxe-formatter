@@ -14,8 +14,8 @@ class Formatter {
         return Success(Printer.print(tree));
     }
 
-    public static function formatSource(source:String, config:Configuration):Result<String> {
-        var parsed = HxParser.parse(source);
+    public static function formatSource(source:String, entryPoint:EntryPoint, config:Configuration):Result<String> {
+        var parsed = HxParser.parse(source, entryPoint);
         return switch (parsed) {
             case Success(d):
                 var tree = JsonParser.parse(d);

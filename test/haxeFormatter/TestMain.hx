@@ -85,7 +85,7 @@ class TestMain {
         status.classname = name;
         status.method = config.testType.toString();
 
-        switch (Formatter.formatSource(sourceCode, config)) {
+        switch (Formatter.formatSource(sourceCode, File, config)) {
             case Success(result):
                 if (result != formattedCode) {
                     status.error = 'Test case "$name" failed. Expected:\n\n$formattedCode \n\nbut was:\n\n$result';
