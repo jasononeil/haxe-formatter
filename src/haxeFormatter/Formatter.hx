@@ -8,13 +8,15 @@ import hxParser.Tree;
 import util.Result;
 
 class Formatter {
-    public static function formatTree(tree:Tree, config:Configuration):Result<String> {
+    public static function formatTree(tree:Tree, ?config:Configuration):Result<String> {
+        if (config == null)
+            config = {};
         applyDefaultSettings(config);
         tree = new Processor(config).process(tree, []);
         return Success(Printer.print(tree));
     }
 
-    public static function formatSource(source:String, entryPoint:EntryPoint, config:Configuration):Result<String> {
+    public static function formatSource(source:String, ?entryPoint:EntryPoint, ?config:Configuration):Result<String> {
         var parsed = HxParser.parse(source, entryPoint);
         return switch (parsed) {
             case Success(d):
@@ -27,8 +29,8 @@ class Formatter {
     // TODO: figure out some better way to have default settings...
     static function applyDefaultSettings(config:Configuration) {
         if (config.imports == null)
-            config.imports = { sort: true };
-        else if (config.imports.sort == null)
+            config.imports = {};
+        if (config.imports.sort == null)
             config.imports.sort = true;
 
         var typeHintColonDefault = { before: Remove, after: Remove };

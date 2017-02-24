@@ -46,7 +46,7 @@ class TestMain {
                 testResult.add(result);
         }
 
-        Sys.println(testResult.toString() + "\n ");
+        Sys.println(testResult.toString());
         Sys.exit(if (testResult.success) 0 else 1);
     }
 
