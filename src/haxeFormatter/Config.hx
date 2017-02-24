@@ -1,15 +1,15 @@
 package haxeFormatter;
 
-typedef Configuration = {
-    @:optional var imports:ImportConfiguration;
-    @:optional var padding:PaddingConfiguration;
+typedef Config = {
+    @:optional var imports:ImportConfig;
+    @:optional var padding:PaddingConfig;
 }
 
-typedef ImportConfiguration = {
+typedef ImportConfig = {
     @:optional var sort:Bool;
 }
 
-typedef PaddingConfiguration = {
+typedef PaddingConfig = {
     @:optional var typeHintColon:SpacePadding;
 }
 

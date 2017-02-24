@@ -1,18 +1,18 @@
 package haxeFormatter;
 
-import haxeFormatter.Configuration;
+import haxeFormatter.Config;
 import hxParser.Printer.print;
 import hxParser.Tree;
 
 class Processor {
-    var config:Configuration;
+    var config:Config;
     var numDecls:Int;
     var curNode:String;
     var prevNode:String;
     var parentNodes:Array<String>;
     var prevToken:TreeKind;
 
-    public function new(config:Configuration) {
+    public function new(config:Config) {
         this.config = config;
     }
 

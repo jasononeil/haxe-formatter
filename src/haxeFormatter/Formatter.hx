@@ -1,6 +1,6 @@
 package haxeFormatter;
 
-import haxeFormatter.Configuration;
+import haxeFormatter.Config;
 import hxParser.HxParser;
 import hxParser.JsonParser;
 import hxParser.Printer;
@@ -8,7 +8,7 @@ import hxParser.Tree;
 import util.Result;
 
 class Formatter {
-    public static function formatTree(tree:Tree, ?config:Configuration):Result<String> {
+    public static function formatTree(tree:Tree, ?config:Config):Result<String> {
         if (config == null)
             config = {};
         applyDefaultSettings(config);
@@ -16,7 +16,7 @@ class Formatter {
         return Success(Printer.print(tree));
     }
 
-    public static function formatSource(source:String, ?entryPoint:EntryPoint, ?config:Configuration):Result<String> {
+    public static function formatSource(source:String, ?entryPoint:EntryPoint, ?config:Config):Result<String> {
         var parsed = HxParser.parse(source, entryPoint);
         return switch (parsed) {
             case Success(d):
@@ -27,7 +27,7 @@ class Formatter {
     }
 
     // TODO: figure out some better way to have default settings...
-    static function applyDefaultSettings(config:Configuration) {
+    static function applyDefaultSettings(config:Config) {
         if (config.imports == null)
             config.imports = {};
         if (config.imports.sort == null)

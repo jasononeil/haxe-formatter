@@ -6,14 +6,14 @@ import haxe.io.Path;
 import haxe.unit.TestResult;
 import haxe.unit.TestRunner.print;
 import haxe.unit.TestStatus;
-import haxeFormatter.Configuration;
+import haxeFormatter.Config;
 import hxParser.HxParser.EntryPoint;
 import sys.FileSystem;
 import sys.io.File;
 using StringTools;
 
-typedef TestConfiguration = {
-    > Configuration,
+typedef TestConfig = {
+    > Config,
     @:optional var testProperties:TestProperties;
 }
 
@@ -56,7 +56,7 @@ class TestMain {
         var nl = "(\r?\n)";
         var reg = new EReg('$nl$nl---$nl$nl', "g");
         var segments = reg.split(content);
-        var config:TestConfiguration = try Json.parse(segments[0]) catch(e:Any) {
+        var config:TestConfig = try Json.parse(segments[0]) catch(e:Any) {
             throw 'Could not parse config: ${segments[0]}\nReason: $e';
             null;
         }
@@ -86,7 +86,7 @@ class TestMain {
         return results;
     }
 
-    function runTest(name:String, config:TestConfiguration, sourceCode:String, formattedCode:String, ?c:PosInfos):TestStatus {
+    function runTest(name:String, config:TestConfig, sourceCode:String, formattedCode:String, ?c:PosInfos):TestStatus {
         var status = new TestStatus();
         status.done = true;
         status.classname = name;
@@ -111,7 +111,7 @@ class TestMain {
         return status;
     }
 
-    function invertConfig(config:TestConfiguration):TestConfiguration {
+    function invertConfig(config:TestConfig):TestConfig {
         config = Reflect.copy(config);
         // there has to be a smarter way
         if (config.imports != null && config.imports.sort != null) {
