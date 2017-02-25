@@ -1,6 +1,5 @@
--cp src
--cp hxparser/src
--lib hxnodejs
+build-each.hxml
+
 -lib hxargs
 -js bin/cli.js
 -main haxeFormatter.Cli

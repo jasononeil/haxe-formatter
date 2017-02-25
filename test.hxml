@@ -1,7 +1,6 @@
--cp src
+build-each.hxml
+
 -cp test
--cp hxparser/src
--lib hxnodejs
 -main haxeFormatter.TestMain
 -js bin/test.js
 -cmd node bin/test.js

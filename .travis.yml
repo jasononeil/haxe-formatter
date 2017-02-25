@@ -4,8 +4,8 @@ haxe:
  - development
 
 install:
- - haxelib install hxnodejs
+ - haxelib git hxnodejs
  - haxelib install hxargs
 
 script:
- - haxe test.hxml
+ - haxe build.hxml
