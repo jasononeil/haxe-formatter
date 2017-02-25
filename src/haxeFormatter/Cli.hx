@@ -27,10 +27,11 @@ class Cli {
 
     function run(paths:Array<String>) {
         for (path in paths) {
-            if (!FileSystem.isDirectory(path))
-                formatFile(path);
-            else
+            if (FileSystem.isDirectory(path))
                 run([for (file in FileSystem.readDirectory(path)) '$path/$file']);
+            else
+                try formatFile(path)
+                catch (e:Any) error(path, e);
         }
     }
 
@@ -43,7 +44,11 @@ class Cli {
                 File.saveContent(file, data);
                 Sys.println('Formatted $file');
             case Failure(reason):
-                Sys.stderr().writeString('Could not format "$file": $reason\n');
+                error(file, reason);
         }
+    }
+
+    function error(file:String, reason:String) {
+        Sys.stderr().writeString('Could not format "$file": $reason\n');
     }
 }
