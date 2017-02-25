@@ -1,9 +1,9 @@
 package haxeFormatter;
 
 import haxeFormatter.Config;
+import hxParser.JResult;
 import hxParser.Printer.print;
 import hxParser.Tree;
-import hxParser.JResult;
 
 class Processor {
     var config:Config;

@@ -5,6 +5,7 @@ haxe:
 
 install:
  - haxelib install hxnodejs
+ - haxelib install hxargs
 
 script:
  - haxe test.hxml
