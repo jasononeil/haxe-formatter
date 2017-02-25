@@ -3,6 +3,7 @@ package haxeFormatter;
 import haxeFormatter.Config;
 import hxParser.Printer.print;
 import hxParser.Tree;
+import hxParser.JResult;
 
 class Processor {
     var config:Config;
@@ -48,7 +49,7 @@ class Processor {
         return Node(name, children.map(process.bind(_, parentNodes.concat([name]))));
     }
 
-    function processToken(token:String, trivia:Trivia):TreeKind {
+    function processToken(token:String, trivia:JTrivia):TreeKind {
         switch (token) {
             case ":": processColon(token, trivia);
             case _:
@@ -56,7 +57,7 @@ class Processor {
         return Token(token, trivia);
     }
 
-    function processColon(token:String, trivia:Trivia) {
+    function processColon(token:String, trivia:JTrivia) {
         if (curNode != "type_hint")
             return;
 
@@ -80,11 +81,11 @@ class Processor {
         trivia.trailing = applySpacePadding(config.padding.typeHintColon.after, trivia.trailing);
     }
 
-    function applySpacePadding(padding:WhitespacePolicy, trivia:Array<PlacedToken>):Array<PlacedToken> {
+    function applySpacePadding(padding:WhitespacePolicy, trivia:Array<JPlacedToken>):Array<JPlacedToken> {
         if (trivia == null)
             trivia = [];
 
-        inline function mkToken(token:String):PlacedToken
+        inline function mkToken(token:String):JPlacedToken
             return mkPlacedToken(getSpacePadding(padding, token));
 
         if (trivia.length > 0 && trivia[0].token.isWhitespace())
@@ -95,7 +96,7 @@ class Processor {
         return trivia;
     }
 
-    function mkPlacedToken(token:String):PlacedToken {
+    function mkPlacedToken(token:String):JPlacedToken {
         return {
             start: 0,
             end: 0,
@@ -144,7 +145,7 @@ class Processor {
         return null;
     }
 
-    function getImportTrivia(treeKind:TreeKind):Trivia {
+    function getImportTrivia(treeKind:TreeKind):JTrivia {
         return switch (treeKind) {
             case Node(name, children) if (children.length > 0): switch (children[0].kind) {
                 case Token(token, trivia) if (token == "import" || token == "using"):
