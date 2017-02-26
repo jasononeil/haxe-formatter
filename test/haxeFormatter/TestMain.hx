@@ -95,7 +95,7 @@ class TestMain {
         switch (Formatter.formatSource(sourceCode, config.testProperties.entryPoint, config)) {
             case Success(result):
                 if (result != formattedCode) {
-                    status.error = 'Test case "$name" failed. Expected:\n\n$formattedCode \n\nbut was:\n\n$result';
+                    status.error = 'Test case "$name" failed. Expected:\n\n$formattedCode\n\nbut was:\n\n$result';
                     status.success = false;
                     print("E");
                 } else {
@@ -117,16 +117,16 @@ class TestMain {
         if (config.imports != null && config.imports.sort != null) {
             config.imports.sort = !config.imports.sort;
         }
-        function flipWhitespacePolicy(policy) return switch (policy) {
-            case null, Keep: Keep;
-            case Add: Remove;
-            case Remove: Add;
+        function invertSpacingPolicy(policy) return switch (policy) {
+            case Ignore: Ignore;
+            case Before: After;
+            case After: Before;
+            case None: Both;
+            case Both: None;
         }
 
-        if (config.padding != null && config.padding.typeHintColon != null) {
-            var colon = config.padding.typeHintColon;
-            colon.before = flipWhitespacePolicy(colon.before);
-            colon.after = flipWhitespacePolicy(colon.after);
+        if (config.padding != null) {
+            config.padding.typeHintColon = invertSpacingPolicy(config.padding.typeHintColon);
         }
         return config;
     }

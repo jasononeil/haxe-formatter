@@ -33,12 +33,11 @@ class Formatter {
         if (config.imports.sort == null)
             config.imports.sort = true;
 
-        var typeHintColonDefault = { before: Remove, after: Remove };
         if (config.padding == null)
-            config.padding = { typeHintColon: typeHintColonDefault };
+            config.padding = {};
 
         var padding = config.padding;
         if (padding.typeHintColon == null)
-            padding.typeHintColon = typeHintColonDefault;
+            padding.typeHintColon = None;
     }
 }

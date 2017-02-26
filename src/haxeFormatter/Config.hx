@@ -10,16 +10,13 @@ typedef ImportConfig = {
 }
 
 typedef PaddingConfig = {
-    @:optional var typeHintColon:SpacePadding;
+    @:optional var typeHintColon:SpacingPolicy;
 }
 
-typedef SpacePadding = {
-    @:optional var before:WhitespacePolicy;
-    @:optional var after:WhitespacePolicy;
-}
-
-@:enum abstract WhitespacePolicy(String) {
-    var Add = "add";
-    var Remove = "remove";
-    var Keep = "keep";
+@:enum abstract SpacingPolicy(String) {
+    var Before = "before";
+    var After = "after";
+    var Both = "both";
+    var None = "none";
+    var Ignore = null;
 }

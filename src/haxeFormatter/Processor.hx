@@ -5,6 +5,11 @@ import hxParser.JResult;
 import hxParser.Printer.print;
 import hxParser.Tree;
 
+enum SpacingLocation {
+    Before;
+    After;
+}
+
 class Processor {
     var config:Config;
     var curNode:String;
@@ -61,32 +66,32 @@ class Processor {
         if (curNode != "type_hint")
             return;
 
-        var before = config.padding.typeHintColon.before;
+        var padding = config.padding.typeHintColon;
         var parentNode = parentNodes.idx(-2);
         if (parentNode.has("class_field") || parentNode.has("function")) {
             switch (prevToken) {
                 case Token(")",trivia):
-                    trivia.trailing = applySpacePadding(before, trivia.trailing);
+                    trivia.trailing = applySpacePadding(padding, Before, trivia.trailing);
                 case _:
             }
         }
         if (prevNode.has("dollar_ident"))
             switch (prevToken) {
                 case Token(_,trivia):
-                    trivia.trailing = applySpacePadding(before, trivia.trailing);
+                    trivia.trailing = applySpacePadding(padding, Before, trivia.trailing);
                 case _:
                     unexpected("Node");
         }
 
-        trivia.trailing = applySpacePadding(config.padding.typeHintColon.after, trivia.trailing);
+        trivia.trailing = applySpacePadding(padding, After, trivia.trailing);
     }
 
-    function applySpacePadding(padding:WhitespacePolicy, trivia:Array<JPlacedToken>):Array<JPlacedToken> {
+    function applySpacePadding(padding:SpacingPolicy, location:SpacingLocation, trivia:Array<JPlacedToken>):Array<JPlacedToken> {
         if (trivia == null)
             trivia = [];
 
         inline function mkToken(token:String):JPlacedToken
-            return mkPlacedToken(getSpacePadding(padding, token));
+            return mkPlacedToken(getSpacePadding(padding, location, token));
 
         if (trivia.length > 0 && trivia[0].token.isWhitespace())
             trivia[0] = mkToken(trivia[0].token);
@@ -104,11 +109,11 @@ class Processor {
         }
     }
 
-    function getSpacePadding(padding:WhitespacePolicy, whitespace:String):String {
-        return switch (padding) {
-            case Add: " ";
-            case Remove: "";
-            case Keep | null: whitespace;
+    function getSpacePadding(padding:SpacingPolicy, location:SpacingLocation, whitespace:String):String {
+        return switch [padding, location] {
+            case [Ignore, _]: whitespace;
+            case [Both, _], [Before, Before], [After, After]: " ";
+            case _: "";
         }
     }
 

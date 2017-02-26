@@ -1,0 +1,16 @@
+{
+    "padding": {
+        "typeHintColon": "after"
+    },
+    "testProperties": {
+        "entryPoint": "class_fields"
+    }
+}
+
+---
+
+var f : Int;
+
+---
+
+var f: Int;
