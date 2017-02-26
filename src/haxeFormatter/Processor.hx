@@ -2,7 +2,7 @@ package haxeFormatter;
 
 import haxeFormatter.Config;
 import hxParser.JResult;
-import hxParser.Printer.print;
+import hxParser.TreePrinter.print;
 import hxParser.Tree;
 
 enum SpacingLocation {

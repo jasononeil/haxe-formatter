@@ -3,8 +3,8 @@ package haxeFormatter;
 import haxeFormatter.Config;
 import hxParser.HxParser;
 import hxParser.JsonParser;
-import hxParser.Printer;
 import hxParser.Tree;
+import hxParser.TreePrinter;
 import util.Result;
 
 class Formatter {
@@ -13,7 +13,7 @@ class Formatter {
             config = {};
         applyDefaultSettings(config);
         tree = new Processor(config).process(tree, []);
-        return Success(Printer.print(tree));
+        return Success(TreePrinter.print(tree));
     }
 
     public static function formatSource(source:String, ?entryPoint:EntryPoint, ?config:Config):Result<String> {
