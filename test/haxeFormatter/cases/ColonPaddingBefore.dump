@@ -10,7 +10,11 @@
 ---
 
 var f : Int;
+var f(default, null) : Int;
+function f() : Int;
 
 ---
 
 var f :Int;
+var f(default, null) :Int;
+function f() :Int;

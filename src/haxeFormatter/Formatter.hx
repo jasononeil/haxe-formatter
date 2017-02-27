@@ -1,27 +1,43 @@
 package haxeFormatter;
 
 import haxeFormatter.Config;
+import hxParser.Converter;
 import hxParser.HxParser;
-import hxParser.JsonParser;
-import hxParser.Tree;
-import hxParser.TreePrinter;
+import hxParser.ParseTree;
+import hxParser.Printer;
 import util.Result;
 
 class Formatter {
-    public static function formatTree(tree:Tree, ?config:Config):Result<String> {
+    public static function formatFile(file:File, ?config:Config):Result<String> {
         if (config == null)
             config = {};
         applyDefaultSettings(config);
-        tree = new Processor(config).process(tree, []);
-        return Success(TreePrinter.print(tree));
+        new Processor(config).walkFile(file, Root);
+        return Success(Printer.print(file));
     }
 
-    public static function formatSource(source:String, ?entryPoint:EntryPoint, ?config:Config):Result<String> {
+    public static function formatClassFields(classFields:Array<ClassField>, ?config:Config):Result<String> {
+        if (config == null)
+            config = {};
+        applyDefaultSettings(config);
+        var processor = new Processor(config);
+        var buf = new StringBuf();
+        for (field in classFields) {
+            processor.walkClassField(field, Root);
+            buf.add(Printer.print(field));
+        }
+        return Success(buf.toString());
+    }
+
+    public static function formatSource(source:String, entryPoint:EntryPoint = File, ?config:Config):Result<String> {
         var parsed = HxParser.parse(source, entryPoint);
         return switch (parsed) {
             case Success(d):
-                var tree = JsonParser.parse(d);
-                return formatTree(tree, config);
+                switch (entryPoint) {
+                    case File: formatFile(Converter.convertResultToFile(d), config);
+                    case ClassFields: formatClassFields(Converter.convertResultToClassFields(d), config);
+                    case ClassDecl: /* TODO */ null;
+                }
             case Failure(reason): Failure(reason);
         }
     }

@@ -7,6 +7,7 @@ package;
 using StringTools;
 import hxParser.JsonParser;
 import util.Result;
+using foo.bar.Extensions;
 import hxParser.HxParser;
 
 class C {
@@ -21,6 +22,7 @@ import hxParser.HxParser;
 import hxParser.JsonParser;
 import util.Result;
 using StringTools;
+using foo.bar.Extensions;
 
 class C {
     function new() {}
