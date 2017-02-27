@@ -13,6 +13,7 @@ enum SpacingLocation {
 
 class Processor extends StackAwareWalker {
     var config:Config;
+    var prevToken:Token;
 
     public function new(config:Config) {
         this.config = config;
@@ -23,9 +24,14 @@ class Processor extends StackAwareWalker {
     }
 
     override function walkFile_decls(elems:Array<Decl>, stack:WalkStack) {
-        super.walkArray(elems, stack, walkDecl);
+        super.walkFile_decls(elems, stack);
         if (config.imports.sort)
             sortImports(elems);
+    }
+
+    override function walkToken(token:Token, stack:WalkStack) {
+        super.walkToken(token, stack);
+        prevToken = token;
     }
 
     function sortImports(decls:Array<Decl>) {
@@ -80,28 +86,8 @@ class Processor extends StackAwareWalker {
 
     override function walkTypeHint(node:TypeHint, stack:WalkStack) {
         var padding = config.padding.typeHintColon;
-
-        inline function adjustTrivia(token:Token, location:SpacingLocation)
-            token.trailingTrivia = applySpacePadding(padding, location, token.trailingTrivia);
-
-        switch (stack) {
-            case Edge("typeHint", Node(node,_)): switch (node) {
-                case ClassField_Function(_,_,_,_,_,_,_,parenClose,_,_):
-                    adjustTrivia(parenClose, Before);
-                case ClassField_Variable(_,_,_,name,_,_,_):
-                    adjustTrivia(name, Before);
-                case ClassField_Property(_,_,_,_,_,_,_,_,parenClose,_,_,_):
-                    adjustTrivia(parenClose, Before);
-                case Function(node):
-                    adjustTrivia(node.parenClose, Before);
-                case FunctionArgument(node):
-                    adjustTrivia(node.name, Before);
-                case _:
-            }
-            case _:
-        }
-
-        adjustTrivia(node.colon, After);
+        prevToken.trailingTrivia = applySpacePadding(padding, Before, prevToken.trailingTrivia);
+        node.colon.trailingTrivia = applySpacePadding(padding, After, node.colon.trailingTrivia);
     }
 
     function applySpacePadding(padding:SpacingPolicy, location:SpacingLocation, trivia:Array<Trivia>):Array<Trivia> {
