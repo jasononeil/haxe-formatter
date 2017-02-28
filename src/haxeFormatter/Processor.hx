@@ -19,10 +19,6 @@ class Processor extends StackAwareWalker {
         this.config = config;
     }
 
-    override public function walkFile(node:File, stack:WalkStack) {
-        super.walkFile(node, stack);
-    }
-
     override function walkFile_decls(elems:Array<Decl>, stack:WalkStack) {
         super.walkFile_decls(elems, stack);
         if (config.imports.sort)
@@ -78,10 +74,6 @@ class Processor extends StackAwareWalker {
             case UsingDecl(_using,_,_): _using;
             case _: expected("using or import");
         }
-    }
-
-    override public function walkClassField(node:ClassField, stack:WalkStack) {
-        super.walkClassField(node, stack);
     }
 
     override function walkTypeHint(node:TypeHint, stack:WalkStack) {
