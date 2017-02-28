@@ -37,20 +37,29 @@ class TestMain {
     }
 
     public function new() {
+        var singleDir = "test/haxeFormatter/single";
+        var testResult = processTestDirectory(
+            if (FileSystem.exists(singleDir) && FileSystem.readDirectory(singleDir).length > 0)
+                singleDir
+            else
+                "test/haxeFormatter/cases");
+
+        Sys.println(testResult.toString());
+        Sys.exit(if (testResult.success) 0 else 1);
+    }
+
+    function processTestDirectory(dir:String):TestResult {
         var testResult = new TestResult();
-        var dir = "test/haxeFormatter/cases";
         for (file in FileSystem.readDirectory(dir)) {
             if (!file.endsWith(".dump"))
                 continue;
             for (result in processTestDefinition(dir, file))
                 testResult.add(result);
         }
-
-        Sys.println(testResult.toString());
-        Sys.exit(if (testResult.success) 0 else 1);
+        return testResult;
     }
 
-    public function processTestDefinition(dir:String, file:String):Array<TestStatus> {
+    function processTestDefinition(dir:String, file:String):Array<TestStatus> {
         var absPath = Path.join([Sys.getCwd(), dir, file]);
         var content = sys.io.File.getContent(absPath);
         var nl = "(\r?\n)";
