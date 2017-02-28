@@ -1,7 +1,6 @@
 {
     "padding": {
-        "functionTypeArrow": "none",
-        "typeHintColon": "ignore"
+        "functionTypeArrow": "none"
     },
     "testProperties": {
         "type": "invertible",

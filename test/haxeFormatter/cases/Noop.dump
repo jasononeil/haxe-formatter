@@ -1,10 +1,4 @@
 {
-    "imports": {
-        "sort": false
-    },
-    "padding": {
-        "typeHintColon": ""
-    },
     "testProperties": {
         "type": "noop"
     }

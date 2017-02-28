@@ -44,18 +44,23 @@ class Formatter {
 
     // TODO: figure out some better way to have default settings...
     static function applyDefaultSettings(config:Config) {
+        if (config.baseConfig == null)
+            config.baseConfig = Default;
+
+        var defaults = config.baseConfig.get();
+
         if (config.imports == null)
-            config.imports = {};
+            config.imports = defaults.imports;
         if (config.imports.sort == null)
-            config.imports.sort = true;
+            config.imports.sort = defaults.imports.sort;
 
         if (config.padding == null)
-            config.padding = {};
+            config.padding = defaults.padding;
 
         var padding = config.padding;
         if (padding.typeHintColon == null)
-            padding.typeHintColon = None;
+            padding.typeHintColon = defaults.padding.typeHintColon;
         if (padding.functionTypeArrow == null)
-            padding.functionTypeArrow = None;
+            padding.functionTypeArrow = defaults.padding.functionTypeArrow;
     }
 }

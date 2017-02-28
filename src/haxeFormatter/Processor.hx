@@ -77,7 +77,6 @@ class Processor extends StackAwareWalker {
     }
 
     override function walkTypeHint(node:TypeHint, stack:WalkStack) {
-        var padding = config.padding.typeHintColon;
         padSpaces(config.padding.typeHintColon, prevToken, node.colon);
         super.walkTypeHint(node, stack);
     }

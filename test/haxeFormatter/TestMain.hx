@@ -70,6 +70,8 @@ class TestMain {
             null;
         }
 
+        if (config.baseConfig == null)
+            config.baseConfig = Noop;
         if (config.testProperties == null)
             config.testProperties = {};
 
