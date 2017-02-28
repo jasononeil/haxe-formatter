@@ -51,7 +51,7 @@ class TestMain {
     function processTestDirectory(dir:String):TestResult {
         var testResult = new TestResult();
         for (file in FileSystem.readDirectory(dir)) {
-            if (!file.endsWith(".dump"))
+            if (!file.endsWith(".hxtest"))
                 continue;
             for (result in processTestDefinition(dir, file))
                 testResult.add(result);
