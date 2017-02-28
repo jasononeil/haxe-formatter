@@ -1,3 +1,4 @@
 -cp src
 -lib hxnodejs
 -lib haxe-hxparser
+-lib jstack
