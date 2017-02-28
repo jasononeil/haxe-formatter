@@ -89,7 +89,7 @@ class Processor extends StackAwareWalker {
         if (trivia.length > 0 && trivia[0].text.isWhitespace())
             trivia[0].text = getSpacePadding(padding, location, trivia[0].text);
         else
-            trivia.insert(0, new Trivia(getSpacePadding(padding, location, ""), 0, 0));
+            trivia.insert(0, new Trivia(getSpacePadding(padding, location, "")));
 
         return trivia;
     }
