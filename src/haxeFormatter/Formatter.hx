@@ -55,5 +55,7 @@ class Formatter {
         var padding = config.padding;
         if (padding.typeHintColon == null)
             padding.typeHintColon = None;
+        if (padding.functionTypeArrow == null)
+            padding.functionTypeArrow = None;
     }
 }

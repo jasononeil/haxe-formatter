@@ -11,6 +11,7 @@ typedef ImportConfig = {
 
 typedef PaddingConfig = {
     @:optional var typeHintColon:SpacingPolicy;
+    @:optional var functionTypeArrow:SpacingPolicy;
 }
 
 @:enum abstract SpacingPolicy(String) {
@@ -18,5 +19,5 @@ typedef PaddingConfig = {
     var After = "after";
     var Both = "both";
     var None = "none";
-    var Ignore = null;
+    var Ignore = "ignore";
 }

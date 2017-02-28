@@ -136,6 +136,7 @@ class TestMain {
 
         if (config.padding != null) {
             config.padding.typeHintColon = invertSpacingPolicy(config.padding.typeHintColon);
+            config.padding.functionTypeArrow = invertSpacingPolicy(config.padding.functionTypeArrow);
         }
         return config;
     }

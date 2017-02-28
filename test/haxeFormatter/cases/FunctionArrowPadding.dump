@@ -1,0 +1,18 @@
+{
+    "padding": {
+        "functionTypeArrow": "none",
+        "typeHintColon": "ignore"
+    },
+    "testProperties": {
+        "type": "invertible",
+        "entryPoint": "class_fields"
+    }
+}
+
+---
+
+var a:String -> Void;
+
+---
+
+var a:String->Void;

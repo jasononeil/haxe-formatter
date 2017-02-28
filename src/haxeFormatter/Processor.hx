@@ -78,23 +78,34 @@ class Processor extends StackAwareWalker {
 
     override function walkTypeHint(node:TypeHint, stack:WalkStack) {
         var padding = config.padding.typeHintColon;
-        prevToken.trailingTrivia = applySpacePadding(padding, Before, prevToken.trailingTrivia);
-        node.colon.trailingTrivia = applySpacePadding(padding, After, node.colon.trailingTrivia);
+        padSpaces(config.padding.typeHintColon, prevToken, node.colon);
+        super.walkTypeHint(node, stack);
     }
 
-    function applySpacePadding(padding:SpacingPolicy, location:SpacingLocation, trivia:Array<Trivia>):Array<Trivia> {
+    override function walkComplexType_Function(typeLeft:ComplexType, arrow:Token, typeRight:ComplexType, stack:WalkStack) {
+        walkComplexType(typeLeft, stack);
+        padSpaces(config.padding.functionTypeArrow, prevToken, arrow);
+        super.walkComplexType_Function(typeLeft, arrow, typeRight, stack);
+    }
+
+    function padSpaces(padding:SpacingPolicy, leftToken:Token, rightToken) {
+        leftToken.trailingTrivia = padSpace(padding, Before, leftToken.trailingTrivia);
+        rightToken.trailingTrivia = padSpace(padding, After, rightToken.trailingTrivia);
+    }
+
+    function padSpace(padding:SpacingPolicy, location:SpacingLocation, trivia:Array<Trivia>):Array<Trivia> {
         if (trivia == null)
             trivia = [];
 
         if (trivia.length > 0 && trivia[0].text.isWhitespace())
-            trivia[0].text = getSpacePadding(padding, location, trivia[0].text);
+            trivia[0].text = getPadding(padding, location, trivia[0].text);
         else
-            trivia.insert(0, new Trivia(getSpacePadding(padding, location, "")));
+            trivia.insert(0, new Trivia(getPadding(padding, location, "")));
 
         return trivia;
     }
 
-    function getSpacePadding(padding:SpacingPolicy, location:SpacingLocation, whitespace:String):String {
+    function getPadding(padding:SpacingPolicy, location:SpacingLocation, whitespace:String):String {
         return switch [padding, location] {
             case [Ignore, _]: whitespace;
             case [Both, _], [Before, Before], [After, After]: " ";
