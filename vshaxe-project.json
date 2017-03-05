@@ -1,0 +1,56 @@
+{
+    "inherit": "vshaxe-node",
+    "haxelibs": [
+        {
+            "name": "haxe-hxparser",
+            "installArgs": ["git", "haxe-hxparser", "https://github.com/vshaxe/haxe-hxparser"]
+        },
+        {
+            "name": "hxargs",
+            "installArgs": ["install", "hxargs"]
+        }
+    ],
+    "targets": [
+        {
+            "name": "formatter",
+            "composite": true,
+            "targetDependencies": [
+                "formatter-cli",
+                "formatter-tests"
+            ]
+        },
+        {
+            "name": "formatter-cli",
+            "args": {
+                "haxelibs": ["haxe-hxparser", "hxargs"],
+                "classPaths": [
+                    "src"
+                ],
+                "output": {
+                    "target": "js",
+                    "path": "bin/cli.js"
+                },
+                "main": "haxeFormatter.Cli"
+            }
+        },
+        {
+            "name": "formatter-tests",
+            "args": {
+                "haxelibs": ["haxe-hxparser"],
+                "classPaths": [
+                    "src",
+                    "test"
+                ],
+                "output": {
+                    "target": "js",
+                    "path": "bin/test.js"
+                },
+                "main": "haxeFormatter.TestMain",
+                "debug": true
+            },
+            "afterBuildCommands": [
+                ["node", "bin/test.js"]
+            ]
+        }
+    ]
+}
