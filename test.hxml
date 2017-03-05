@@ -1,8 +1,0 @@
-build-each.hxml
-
--cp test
--main haxeFormatter.TestMain
--D js_unflatten
--debug
--js bin/test.js
--cmd node bin/test.js

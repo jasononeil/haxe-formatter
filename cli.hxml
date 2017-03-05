@@ -1,5 +1,0 @@
-build-each.hxml
-
--lib hxargs
--js bin/cli.js
--main haxeFormatter.Cli
