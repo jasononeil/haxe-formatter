@@ -1,5 +1,6 @@
 {
     "inherit": "vshaxe-node",
+    "mainTarget": "formatter",
     "haxelibs": [
         {
             "name": "haxe-hxparser",
