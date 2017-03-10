@@ -34,8 +34,8 @@ class Formatter {
         return switch (parsed) {
             case Success(d):
                 switch (entryPoint) {
-                    case File: formatFile(Converter.convertResultToFile(d), config);
-                    case ClassFields: formatClassFields(Converter.convertResultToClassFields(d), config);
+                    case File: formatFile(new Converter(d).convertResultToFile(), config);
+                    case ClassFields: formatClassFields(new Converter(d).convertResultToClassFields(), config);
                     case ClassDecl: /* TODO */ null;
                 }
             case Failure(reason): Failure(reason);
