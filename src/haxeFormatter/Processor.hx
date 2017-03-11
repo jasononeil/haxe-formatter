@@ -40,20 +40,20 @@ class Processor extends StackAwareWalker {
         importToken.leadingTrivia = [];
 
         decls.sort(function(decl1, decl2) return switch[decl1, decl2] {
-            case [ImportDecl(_,path1,_), ImportDecl(_,path2,_)]:
-                Reflect.compare(print(path1), print(path2));
+            case [ImportDecl(i1), ImportDecl(i2)]:
+                Reflect.compare(print(i1.path), print(i2.path));
 
-            case [UsingDecl(_,path1,_), UsingDecl(_,path2,_)]:
-                Reflect.compare(print(path1), print(path2));
+            case [UsingDecl(u1), UsingDecl(u2)]:
+                Reflect.compare(print(u1.path), print(u2.path));
 
-            case [ImportDecl(_,_,_), UsingDecl(_,_,_)]: -1;
-            case [UsingDecl(_,_,_), ImportDecl(_,_,_)]: 1;
+            case [ImportDecl(_), UsingDecl(_)]: -1;
+            case [UsingDecl(_), ImportDecl(_)]: 1;
 
-            case [ImportDecl(_,_,_), _]: -1;
-            case [_, ImportDecl(_,_,_)]: 1;
+            case [ImportDecl(_), _]: -1;
+            case [_, ImportDecl(_)]: 1;
 
-            case [UsingDecl(_,_,_), _]: -1;
-            case [_, UsingDecl(_,_,_)]: 1;
+            case [UsingDecl(_), _]: -1;
+            case [_, UsingDecl(_)]: 1;
             case _: 0;
         });
 
@@ -62,7 +62,7 @@ class Processor extends StackAwareWalker {
 
     function getFirstImportDecl(decls:Array<Decl>):Decl {
         for (decl in decls) {
-            if (decl.match(ImportDecl(_,_,_)) || decl.match(UsingDecl(_,_,_)))
+            if (decl.match(ImportDecl(_)) || decl.match(UsingDecl(_)))
                 return decl;
         }
         return null;
@@ -70,8 +70,8 @@ class Processor extends StackAwareWalker {
 
     function getImportToken(decl:Decl):Token {
         return switch (decl) {
-            case ImportDecl(_import,_,_): _import;
-            case UsingDecl(_using,_,_): _using;
+            case ImportDecl({importKeyword: _import}): _import;
+            case UsingDecl({usingKeyword: _using}): _using;
             case _: expected("using or import");
         }
     }
