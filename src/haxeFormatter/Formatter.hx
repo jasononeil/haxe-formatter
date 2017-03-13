@@ -9,17 +9,13 @@ import util.Result;
 
 class Formatter {
     public static function formatFile(file:File, ?config:Config):Result<String> {
-        if (config == null)
-            config = {};
-        applyDefaultSettings(config);
+        config = applyDefaultSettings(config);
         new Processor(config).walkFile(file, Root);
         return Success(Printer.print(file));
     }
 
     public static function formatClassFields(classFields:Array<ClassField>, ?config:Config):Result<String> {
-        if (config == null)
-            config = {};
-        applyDefaultSettings(config);
+        config = applyDefaultSettings(config);
         var processor = new Processor(config);
         var buf = new StringBuf();
         for (field in classFields) {
@@ -43,7 +39,11 @@ class Formatter {
     }
 
     // TODO: figure out some better way to have default settings...
-    static function applyDefaultSettings(config:Config) {
+    static function applyDefaultSettings(config:Config):Config {
+        config =
+            if (config == null) {};
+            else Reflect.copy(config);
+
         if (config.baseConfig == null)
             config.baseConfig = Default;
 
@@ -62,5 +62,9 @@ class Formatter {
             padding.typeHintColon = defaults.padding.typeHintColon;
         if (padding.functionTypeArrow == null)
             padding.functionTypeArrow = defaults.padding.functionTypeArrow;
+        if (padding.binaryOperator == null)
+            padding.binaryOperator = defaults.padding.binaryOperator;
+
+        return config;
     }
 }

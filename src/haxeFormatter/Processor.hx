@@ -88,7 +88,13 @@ class Processor extends StackAwareWalker {
         super.walkComplexType_Function(typeLeft, arrow, typeRight, stack);
     }
 
-    function padSpaces(padding:SpacingPolicy, leftToken:Token, rightToken) {
+    override function walkExpr_EBinop(exprLeft:Expr, op:Token, exprRight:Expr, stack:WalkStack) {
+        walkExpr(exprLeft, stack);
+        padSpaces(config.padding.binaryOperator, prevToken, op);
+        super.walkExpr_EBinop(exprLeft, op, exprRight, stack);
+    }
+
+    function padSpaces(padding:SpacingPolicy, leftToken:Token, rightToken:Token) {
         leftToken.trailingTrivia = padSpace(padding, Before, leftToken.trailingTrivia);
         rightToken.trailingTrivia = padSpace(padding, After, rightToken.trailingTrivia);
     }
