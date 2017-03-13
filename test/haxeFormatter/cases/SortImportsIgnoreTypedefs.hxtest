@@ -1,0 +1,23 @@
+{
+    "imports": {
+        "sort": true
+    },
+    "testProperties": {
+        "type": "noop"
+    }
+}
+
+---
+
+import A;
+import B;
+import C;
+import D;
+import E;
+
+typedef A = {}
+typedef B = {}
+typedef C = {}
+typedef D = {}
+typedef E = {}
+typedef F = {}

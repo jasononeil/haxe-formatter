@@ -1,5 +1,6 @@
 package haxeFormatter;
 
+import haxe.ds.ArraySort;
 import haxeFormatter.Config;
 import hxParser.ParseTree;
 import hxParser.Printer.print;
@@ -39,7 +40,7 @@ class Processor extends StackAwareWalker {
         var leadingTrivia = importToken.leadingTrivia;
         importToken.leadingTrivia = [];
 
-        decls.sort(function(decl1, decl2) return switch[decl1, decl2] {
+        ArraySort.sort(decls, function(decl1, decl2) return switch[decl1, decl2] {
             case [ImportDecl(i1), ImportDecl(i2)]:
                 Reflect.compare(print(i1.path), print(i2.path));
 
