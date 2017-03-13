@@ -1,0 +1,25 @@
+{
+    "padding": {
+        "binaryOperator": {
+            "defaultPadding": "ignore",
+            "unpadded": ["..."],
+            "padded": ["*"]
+        }
+    },
+    "testProperties": {
+        "type": "invertible",
+        "entryPoint": "class_fields"
+    }
+}
+
+---
+
+var a = 5*3;
+var b = 0 ... 1;
+var c = 5 + 3;
+
+---
+
+var a = 5 * 3;
+var b = 0...1;
+var c = 5 + 3;

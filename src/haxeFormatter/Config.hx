@@ -13,7 +13,13 @@ typedef ImportConfig = {
 typedef PaddingConfig = {
     @:optional var typeHintColon:SpacingPolicy;
     @:optional var functionTypeArrow:SpacingPolicy;
-    @:optional var binaryOperator:SpacingPolicy;
+    @:optional var binaryOperator:BinaryOperatorConfig;
+}
+
+typedef BinaryOperatorConfig = {
+    @:optional var defaultPadding:SpacingPolicy;
+    @:optional var padded:Array<String>;
+    @:optional var unpadded:Array<String>;
 }
 
 @:enum abstract SpacingPolicy(String) {
@@ -33,7 +39,11 @@ typedef PaddingConfig = {
             padding: {
                 typeHintColon: None,
                 functionTypeArrow: None,
-                binaryOperator: Both
+                binaryOperator: {
+                    defaultPadding: Both,
+                    padded: [],
+                    unpadded: ["..."]
+                }
             }
         },
         Noop => {
@@ -43,7 +53,11 @@ typedef PaddingConfig = {
             padding: {
                 typeHintColon: Ignore,
                 functionTypeArrow: Ignore,
-                binaryOperator: Ignore
+                binaryOperator: {
+                    defaultPadding: Ignore,
+                    padded: [],
+                    unpadded: []
+                }
             }
         }
     ];

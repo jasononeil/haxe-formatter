@@ -90,7 +90,13 @@ class Processor extends StackAwareWalker {
 
     override function walkExpr_EBinop(exprLeft:Expr, op:Token, exprRight:Expr, stack:WalkStack) {
         walkExpr(exprLeft, stack);
-        padSpaces(config.padding.binaryOperator, prevToken, op);
+
+        var binopConfig = config.padding.binaryOperator;
+        var spacing = binopConfig.defaultPadding;
+        if (binopConfig.padded.indexOf(op.text) != -1) spacing = Both;
+        if (binopConfig.unpadded.indexOf(op.text) != -1) spacing = None;
+
+        padSpaces(spacing, prevToken, op);
         super.walkExpr_EBinop(exprLeft, op, exprRight, stack);
     }
 

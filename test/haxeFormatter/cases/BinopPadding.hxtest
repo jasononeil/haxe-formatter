@@ -1,6 +1,8 @@
 {
     "padding": {
-        "binaryOperator": "none"
+        "binaryOperator": {
+            "defaultPadding": "none"
+        }
     },
     "testProperties": {
         "type": "invertible",

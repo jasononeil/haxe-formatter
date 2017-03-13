@@ -136,10 +136,18 @@ class TestMain {
             case Both: None;
         }
 
-        if (config.padding != null) {
-            config.padding.typeHintColon = invertSpacingPolicy(config.padding.typeHintColon);
-            config.padding.functionTypeArrow = invertSpacingPolicy(config.padding.functionTypeArrow);
-            config.padding.binaryOperator = invertSpacingPolicy(config.padding.binaryOperator);
+        var padding = config.padding;
+        if (padding != null) {
+            padding.typeHintColon = invertSpacingPolicy(config.padding.typeHintColon);
+            padding.functionTypeArrow = invertSpacingPolicy(config.padding.functionTypeArrow);
+            var binaryOperator = padding.binaryOperator;
+            if (binaryOperator != null) {
+                binaryOperator.defaultPadding = invertSpacingPolicy(binaryOperator.defaultPadding);
+                var padded = binaryOperator.padded;
+                var unpadded = binaryOperator.unpadded;
+                binaryOperator.padded = unpadded;
+                binaryOperator.unpadded = padded;
+            }
         }
         return config;
     }

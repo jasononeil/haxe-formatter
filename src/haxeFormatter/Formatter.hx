@@ -65,6 +65,14 @@ class Formatter {
         if (padding.binaryOperator == null)
             padding.binaryOperator = defaults.padding.binaryOperator;
 
+        var binaryOperator = config.padding.binaryOperator;
+        if (binaryOperator.defaultPadding == null)
+            binaryOperator.defaultPadding = defaults.padding.binaryOperator.defaultPadding;
+        if (binaryOperator.padded == null)
+            binaryOperator.padded = defaults.padding.binaryOperator.padded;
+        if (binaryOperator.unpadded == null)
+            binaryOperator.unpadded = defaults.padding.binaryOperator.unpadded;
+
         return config;
     }
 }
