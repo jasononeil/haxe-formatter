@@ -38,7 +38,6 @@ class Formatter {
         }
     }
 
-    // TODO: figure out some better way to have default settings...
     static function applyDefaultSettings(config:Config):Config {
         config =
             if (config == null) {};
@@ -48,31 +47,7 @@ class Formatter {
             config.baseConfig = Default;
 
         var defaults = config.baseConfig.get();
-
-        if (config.imports == null)
-            config.imports = defaults.imports;
-        if (config.imports.sort == null)
-            config.imports.sort = defaults.imports.sort;
-
-        if (config.padding == null)
-            config.padding = defaults.padding;
-
-        var padding = config.padding;
-        if (padding.typeHintColon == null)
-            padding.typeHintColon = defaults.padding.typeHintColon;
-        if (padding.functionTypeArrow == null)
-            padding.functionTypeArrow = defaults.padding.functionTypeArrow;
-        if (padding.binaryOperator == null)
-            padding.binaryOperator = defaults.padding.binaryOperator;
-
-        var binaryOperator = config.padding.binaryOperator;
-        if (binaryOperator.defaultPadding == null)
-            binaryOperator.defaultPadding = defaults.padding.binaryOperator.defaultPadding;
-        if (binaryOperator.padded == null)
-            binaryOperator.padded = defaults.padding.binaryOperator.padded;
-        if (binaryOperator.unpadded == null)
-            binaryOperator.unpadded = defaults.padding.binaryOperator.unpadded;
-
+        StructDefaultsMacro.applyDefaults(config, defaults);
         return config;
     }
 }
