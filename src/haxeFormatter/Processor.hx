@@ -109,6 +109,9 @@ class Processor extends StackAwareWalker {
         if (trivia == null)
             trivia = [];
 
+        if (trivia.length > 0 && trivia[0].text.isNewline())
+            return trivia;
+
         if (trivia.length > 0 && trivia[0].text.isWhitespace())
             trivia[0].text = getPadding(padding, location, trivia[0].text);
         else

@@ -1,0 +1,23 @@
+{
+    "padding": {
+        "binaryOperator": {
+            "defaultPadding": "both"
+        }
+    },
+    "testProperties": {
+        "type": "noop",
+        "entryPoint": "class_fields"
+    }
+}
+
+---
+
+function f() {
+    var n1 =
+        if (true) 1
+        else 2;
+
+    var n2 =
+          1
+        + 2;
+}
