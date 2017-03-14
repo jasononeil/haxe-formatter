@@ -93,8 +93,8 @@ class Processor extends StackAwareWalker {
 
         var binopConfig = config.padding.binaryOperator;
         var spacing = binopConfig.defaultPadding;
-        if (binopConfig.padded.indexOf(op.text) != -1) spacing = Both;
-        if (binopConfig.unpadded.indexOf(op.text) != -1) spacing = None;
+        if (binopConfig.padded.has(op.text)) spacing = Both;
+        if (binopConfig.unpadded.has(op.text)) spacing = None;
 
         padSpaces(spacing, prevToken, op);
         super.walkExpr_EBinop(exprLeft, op, exprRight, stack);
