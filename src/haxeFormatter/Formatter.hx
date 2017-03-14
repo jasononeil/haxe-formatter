@@ -6,6 +6,7 @@ import hxParser.HxParser;
 import hxParser.ParseTree;
 import hxParser.Printer;
 import util.Result;
+import util.StructDefaultsMacro;
 
 class Formatter {
     public static function formatFile(file:File, ?config:Config):Result<String> {

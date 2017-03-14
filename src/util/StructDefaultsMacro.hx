@@ -1,4 +1,4 @@
-package haxeFormatter;
+package util;
 
 import haxe.macro.Context;
 import haxe.macro.Expr;
@@ -7,7 +7,7 @@ using haxe.macro.TypeTools;
 
 class StructDefaultsMacro {
     /**
-         Assigns the values from `defaults` to `struct` if they are equal to `null`.
+        Assigns the values from `defaults` to `struct` if they are equal to `null`.
 
         `struct` and `defaults` are assumed to be structure types.
         Assignments are generated recursively for fields that themselves have a structure type.
