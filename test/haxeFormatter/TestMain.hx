@@ -9,8 +9,10 @@ import haxe.unit.TestStatus;
 import haxeFormatter.Config;
 import hxParser.HxParser.EntryPoint;
 import sys.FileSystem;
+import json2object.JsonParser;
 import sys.io.File;
 using StringTools;
+using json2object.ErrorUtils;
 
 typedef TestConfig = {
     > Config,
@@ -60,14 +62,17 @@ class TestMain {
     }
 
     function processTestDefinition(dir:String, file:String):Array<TestStatus> {
-        var absPath = Path.join([Sys.getCwd(), dir, file]);
-        var content = sys.io.File.getContent(absPath);
+        var path = Path.join([dir, file]);
+        var content = sys.io.File.getContent(path);
         var nl = "(\r?\n)";
         var reg = new EReg('$nl$nl---$nl$nl', "g");
         var segments = reg.split(content);
-        var config:TestConfig = try Json.parse(segments[0]) catch(e:Any) {
-            throw 'Could not parse config: ${segments[0]}\nReason: $e';
-            null;
+
+        var parser = new JsonParser<TestConfig>();
+        var config = parser.fromJson(segments[0], path);
+        if (parser.warnings.length > 0) {
+            Sys.println(parser.warnings.convertErrorArray());
+            Sys.exit(1);
         }
 
         if (config.baseConfig == null)

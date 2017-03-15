@@ -9,6 +9,10 @@
         {
             "name": "hxargs",
             "installArgs": ["install", "hxargs"]
+        },
+        {
+            "name": "json2object",
+            "installArgs": ["git", "json2object", "https://github.com/elnabo/json2object"]
         }
     ],
     "targets": [
@@ -37,7 +41,7 @@
         {
             "name": "formatter-tests",
             "args": {
-                "haxelibs": ["haxe-hxparser"],
+                "haxelibs": ["haxe-hxparser", "json2object"],
                 "classPaths": [
                     "src",
                     "test"
