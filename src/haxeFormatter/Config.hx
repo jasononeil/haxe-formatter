@@ -14,6 +14,7 @@ typedef PaddingConfig = {
     @:optional var typeHintColon:SpacingPolicy;
     @:optional var functionTypeArrow:SpacingPolicy;
     @:optional var binaryOperator:BinaryOperatorConfig;
+    @:optional var parenInner:InsertOrRemove;
 }
 
 typedef BinaryOperatorConfig = {
@@ -30,6 +31,12 @@ typedef BinaryOperatorConfig = {
     var Ignore = "ignore";
 }
 
+@:enum abstract InsertOrRemove(String) {
+    var Insert = "insert";
+    var Remove = "remove";
+    var Ignore = "ignore";
+}
+
 @:enum abstract BaseConfig(String) to String {
     static var configs:Map<String, Config> = [
         Default => {
@@ -43,7 +50,8 @@ typedef BinaryOperatorConfig = {
                     defaultPadding: Both,
                     padded: [],
                     unpadded: ["..."]
-                }
+                },
+                parenInner: Remove
             }
         },
         Noop => {
@@ -57,7 +65,8 @@ typedef BinaryOperatorConfig = {
                     defaultPadding: Ignore,
                     padded: [],
                     unpadded: []
-                }
+                },
+                parenInner: Ignore
             }
         }
     ];

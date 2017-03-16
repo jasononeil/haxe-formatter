@@ -28,6 +28,20 @@ class Processor extends StackAwareWalker {
 
     override function walkToken(token:Token, stack:WalkStack) {
         super.walkToken(token, stack);
+
+        var parenInner:SpacingPolicy = switch (config.padding.parenInner) {
+            case Ignore: Ignore;
+            case Insert: Both;
+            case Remove: None;
+        }
+        switch (token.text) {
+            case '(':
+                token.trailingTrivia = padSpace(parenInner, After, token.trailingTrivia);
+            case ')':
+                prevToken.trailingTrivia = padSpace(parenInner, Before, prevToken.trailingTrivia);
+            case _:
+        }
+
         prevToken = token;
     }
 

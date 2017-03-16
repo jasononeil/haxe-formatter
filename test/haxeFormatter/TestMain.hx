@@ -133,12 +133,17 @@ class TestMain {
         if (config.imports != null && config.imports.sort != null) {
             config.imports.sort = !config.imports.sort;
         }
-        function invertSpacingPolicy(policy) return switch (policy) {
+        function invertSpacingPolicy(policy):SpacingPolicy return switch (policy) {
             case Ignore: Ignore;
             case Before: After;
             case After: Before;
             case None: Both;
             case Both: None;
+        }
+        function invertInsertOrRemove(policy):InsertOrRemove return switch (policy) {
+            case InsertOrRemove.Ignore: Ignore;
+            case Insert: Remove;
+            case Remove: Insert;
         }
 
         var padding = config.padding;
@@ -153,6 +158,7 @@ class TestMain {
                 binaryOperator.padded = unpadded;
                 binaryOperator.unpadded = padded;
             }
+            padding.parenInner = invertInsertOrRemove(padding.parenInner);
         }
         return config;
     }

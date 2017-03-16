@@ -1,0 +1,17 @@
+{
+    "padding": {
+        "parenInner": "insert"
+    },
+    "testProperties": {
+        "type": "invertible",
+        "entryPoint": "class_fields"
+    }
+}
+
+---
+
+var a = (50);
+
+---
+
+var a = ( 50 );
