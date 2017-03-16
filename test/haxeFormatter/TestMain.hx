@@ -159,6 +159,7 @@ class TestMain {
                 binaryOperator.unpadded = padded;
             }
             padding.parenInner = invertInsertOrRemove(padding.parenInner);
+            padding.beforeParenAfterKeyword = invertInsertOrRemove(padding.beforeParenAfterKeyword);
         }
         return config;
     }

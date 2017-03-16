@@ -29,11 +29,7 @@ class Processor extends StackAwareWalker {
     override function walkToken(token:Token, stack:WalkStack) {
         super.walkToken(token, stack);
 
-        var parenInner:SpacingPolicy = switch (config.padding.parenInner) {
-            case Ignore: Ignore;
-            case Insert: Both;
-            case Remove: None;
-        }
+        var parenInner = config.padding.parenInner.toSpacingPolicy();
         switch (token.text) {
             case '(':
                 token.trailingTrivia = padSpace(parenInner, After, token.trailingTrivia);
@@ -112,6 +108,30 @@ class Processor extends StackAwareWalker {
 
         padSpaces(spacing, prevToken, op);
         super.walkExpr_EBinop(exprLeft, op, exprRight, stack);
+    }
+
+    override function walkExpr_EIf(ifKeyword:Token, parenOpen:Token, exprCond:Expr, parenClose:Token, exprThen:Expr, exprElse:Null<ExprElse>, stack:WalkStack) {
+        super.walkExpr_EIf(ifKeyword, parenOpen, exprCond, parenClose, exprThen, exprElse, stack);
+        padKeywordParen(ifKeyword);
+    }
+
+    override function walkExpr_EFor(forKeyword:Token, parenOpen:Token, exprIter:Expr, parenClose:Token, exprBody:Expr, stack:WalkStack) {
+        super.walkExpr_EFor(forKeyword, parenOpen, exprIter, parenClose, exprBody, stack);
+        padKeywordParen(forKeyword);
+    }
+
+    override function walkExpr_EWhile(whileKeyword:Token, parenOpen:Token, exprCond:Expr, parenClose:Token, exprBody:Expr, stack:WalkStack) {
+        super.walkExpr_EWhile(whileKeyword, parenOpen, exprCond, parenClose, exprBody, stack);
+        padKeywordParen(whileKeyword);
+    }
+
+    override function walkExpr_ESwitch(switchKeyword:Token, expr:Expr, braceOpen:Token, cases:Array<Case>, braceClose:Token, stack:WalkStack) {
+        super.walkExpr_ESwitch(switchKeyword, expr, braceOpen, cases, braceClose, stack);
+        padKeywordParen(switchKeyword);
+    }
+
+    function padKeywordParen(keyword:Token) {
+        keyword.trailingTrivia = padSpace(config.padding.beforeParenAfterKeyword.toSpacingPolicy(), After, keyword.trailingTrivia);
     }
 
     function padSpaces(padding:SpacingPolicy, leftToken:Token, rightToken:Token) {

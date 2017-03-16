@@ -15,6 +15,7 @@ typedef PaddingConfig = {
     @:optional var functionTypeArrow:SpacingPolicy;
     @:optional var binaryOperator:BinaryOperatorConfig;
     @:optional var parenInner:InsertOrRemove;
+    @:optional var beforeParenAfterKeyword:InsertOrRemove;
 }
 
 typedef BinaryOperatorConfig = {
@@ -35,6 +36,13 @@ typedef BinaryOperatorConfig = {
     var Insert = "insert";
     var Remove = "remove";
     var Ignore = "ignore";
+
+    public function toSpacingPolicy():SpacingPolicy return switch (this) {
+        case InsertOrRemove.Ignore: SpacingPolicy.Ignore;
+        case Insert: Both;
+        case Remove: None;
+        case _: null;
+    }
 }
 
 @:enum abstract BaseConfig(String) to String {
@@ -51,7 +59,8 @@ typedef BinaryOperatorConfig = {
                     padded: [],
                     unpadded: ["..."]
                 },
-                parenInner: Remove
+                parenInner: Remove,
+                beforeParenAfterKeyword: Insert
             }
         },
         Noop => {
@@ -66,7 +75,8 @@ typedef BinaryOperatorConfig = {
                     padded: [],
                     unpadded: []
                 },
-                parenInner: Ignore
+                parenInner: Ignore,
+                beforeParenAfterKeyword: Ignore
             }
         }
     ];

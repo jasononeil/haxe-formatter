@@ -1,0 +1,27 @@
+{
+    "padding": {
+        "beforeParenAfterKeyword": "insert"
+    },
+    "testProperties": {
+        "type": "invertible",
+        "entryPoint": "class_fields"
+    }
+}
+
+---
+
+function f() {
+    if(true) {}
+    for(i in 0...10) {}
+    while(true) {}
+    switch(0) { case _: }
+}
+
+---
+
+function f() {
+    if (true) {}
+    for (i in 0...10) {}
+    while (true) {}
+    switch (0) { case _: }
+}
