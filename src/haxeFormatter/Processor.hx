@@ -29,7 +29,7 @@ class Processor extends StackAwareWalker {
     override function walkToken(token:Token, stack:WalkStack) {
         super.walkToken(token, stack);
 
-        var parenInner = config.padding.parenInner.toSpacingPolicy();
+        var parenInner = config.padding.parenInner.toTwoSidedPadding();
         switch (token.text) {
             case '(':
                 token.trailingTrivia = padSpace(parenInner, After, token.trailingTrivia);
@@ -140,15 +140,15 @@ class Processor extends StackAwareWalker {
     }
 
     function padKeywordParen(keyword:Token) {
-        keyword.trailingTrivia = padSpace(config.padding.beforeParenAfterKeyword.toSpacingPolicy(), After, keyword.trailingTrivia);
+        keyword.trailingTrivia = padSpace(config.padding.beforeParenAfterKeyword.toTwoSidedPadding(), After, keyword.trailingTrivia);
     }
 
-    function padSpaces(padding:SpacingPolicy, leftToken:Token, rightToken:Token) {
+    function padSpaces(padding:TwoSidedPadding, leftToken:Token, rightToken:Token) {
         leftToken.trailingTrivia = padSpace(padding, Before, leftToken.trailingTrivia);
         rightToken.trailingTrivia = padSpace(padding, After, rightToken.trailingTrivia);
     }
 
-    function padSpace(padding:SpacingPolicy, location:SpacingLocation, trivia:Array<Trivia>):Array<Trivia> {
+    function padSpace(padding:TwoSidedPadding, location:SpacingLocation, trivia:Array<Trivia>):Array<Trivia> {
         if (trivia == null)
             trivia = [];
 
@@ -163,7 +163,7 @@ class Processor extends StackAwareWalker {
         return trivia;
     }
 
-    function getPadding(padding:SpacingPolicy, location:SpacingLocation, whitespace:String):String {
+    function getPadding(padding:TwoSidedPadding, location:SpacingLocation, whitespace:String):String {
         return switch [padding, location] {
             case [Ignore, _]: whitespace;
             case [Both, _], [Before, Before], [After, After]: " ";

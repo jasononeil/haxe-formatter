@@ -11,26 +11,26 @@ typedef ImportConfig = {
 }
 
 typedef PaddingConfig = {
-    @:optional var typeHintColon:SpacingPolicy;
-    @:optional var functionTypeArrow:SpacingPolicy;
+    @:optional var typeHintColon:TwoSidedPadding;
+    @:optional var functionTypeArrow:TwoSidedPadding;
     @:optional var binaryOperator:BinaryOperatorConfig;
-    @:optional var parenInner:InsertOrRemove;
-    @:optional var beforeParenAfterKeyword:InsertOrRemove;
+    @:optional var parenInner:OneSidedPadding;
+    @:optional var beforeParenAfterKeyword:OneSidedPadding;
     @:optional var comma:CommaPaddingConfig;
 }
 
 typedef BinaryOperatorConfig = {
-    @:optional var defaultPadding:SpacingPolicy;
+    @:optional var defaultPadding:TwoSidedPadding;
     @:optional var padded:Array<String>;
     @:optional var unpadded:Array<String>;
 }
 
 typedef CommaPaddingConfig = {
-    @:optional var defaultPadding:SpacingPolicy;
-    @:optional var propertyAccess:SpacingPolicy;
+    @:optional var defaultPadding:TwoSidedPadding;
+    @:optional var propertyAccess:TwoSidedPadding;
 }
 
-@:enum abstract SpacingPolicy(String) {
+@:enum abstract TwoSidedPadding(String) {
     var Before = "before";
     var After = "after";
     var Both = "both";
@@ -38,13 +38,13 @@ typedef CommaPaddingConfig = {
     var Ignore = "ignore";
 }
 
-@:enum abstract InsertOrRemove(String) {
+@:enum abstract OneSidedPadding(String) {
     var Insert = "insert";
     var Remove = "remove";
     var Ignore = "ignore";
 
-    public function toSpacingPolicy():SpacingPolicy return switch (this) {
-        case InsertOrRemove.Ignore: SpacingPolicy.Ignore;
+    public function toTwoSidedPadding():TwoSidedPadding return switch (this) {
+        case OneSidedPadding.Ignore: TwoSidedPadding.Ignore;
         case Insert: Both;
         case Remove: None;
         case _: null;

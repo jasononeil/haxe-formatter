@@ -133,37 +133,37 @@ class TestMain {
         if (config.imports != null && config.imports.sort != null) {
             config.imports.sort = !config.imports.sort;
         }
-        function invertSpacingPolicy(policy):SpacingPolicy return switch (policy) {
+        function invertTwoSidedPadding(padding):TwoSidedPadding return switch (padding) {
             case Ignore: Ignore;
             case Before: After;
             case After: Before;
             case None: Both;
             case Both: None;
         }
-        function invertInsertOrRemove(policy):InsertOrRemove return switch (policy) {
-            case InsertOrRemove.Ignore: Ignore;
+        function invertOneSidedPadding(padding):OneSidedPadding return switch (padding) {
+            case OneSidedPadding.Ignore: Ignore;
             case Insert: Remove;
             case Remove: Insert;
         }
 
         var padding = config.padding;
         if (padding != null) {
-            padding.typeHintColon = invertSpacingPolicy(config.padding.typeHintColon);
-            padding.functionTypeArrow = invertSpacingPolicy(config.padding.functionTypeArrow);
+            padding.typeHintColon = invertTwoSidedPadding(config.padding.typeHintColon);
+            padding.functionTypeArrow = invertTwoSidedPadding(config.padding.functionTypeArrow);
             var binaryOperator = padding.binaryOperator;
             if (binaryOperator != null) {
-                binaryOperator.defaultPadding = invertSpacingPolicy(binaryOperator.defaultPadding);
+                binaryOperator.defaultPadding = invertTwoSidedPadding(binaryOperator.defaultPadding);
                 var padded = binaryOperator.padded;
                 var unpadded = binaryOperator.unpadded;
                 binaryOperator.padded = unpadded;
                 binaryOperator.unpadded = padded;
             }
-            padding.parenInner = invertInsertOrRemove(padding.parenInner);
-            padding.beforeParenAfterKeyword = invertInsertOrRemove(padding.beforeParenAfterKeyword);
+            padding.parenInner = invertOneSidedPadding(padding.parenInner);
+            padding.beforeParenAfterKeyword = invertOneSidedPadding(padding.beforeParenAfterKeyword);
             var comma = padding.comma;
             if (comma != null) {
-                comma.defaultPadding = invertSpacingPolicy(comma.defaultPadding);
-                comma.propertyAccess = invertSpacingPolicy(comma.propertyAccess);
+                comma.defaultPadding = invertTwoSidedPadding(comma.defaultPadding);
+                comma.propertyAccess = invertTwoSidedPadding(comma.propertyAccess);
             }
         }
         return config;
