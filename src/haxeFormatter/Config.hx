@@ -16,12 +16,18 @@ typedef PaddingConfig = {
     @:optional var binaryOperator:BinaryOperatorConfig;
     @:optional var parenInner:InsertOrRemove;
     @:optional var beforeParenAfterKeyword:InsertOrRemove;
+    @:optional var comma:CommaPaddingConfig;
 }
 
 typedef BinaryOperatorConfig = {
     @:optional var defaultPadding:SpacingPolicy;
     @:optional var padded:Array<String>;
     @:optional var unpadded:Array<String>;
+}
+
+typedef CommaPaddingConfig = {
+    @:optional var defaultPadding:SpacingPolicy;
+    @:optional var propertyAccess:SpacingPolicy;
 }
 
 @:enum abstract SpacingPolicy(String) {
@@ -60,7 +66,11 @@ typedef BinaryOperatorConfig = {
                     unpadded: ["..."]
                 },
                 parenInner: Remove,
-                beforeParenAfterKeyword: Insert
+                beforeParenAfterKeyword: Insert,
+                comma: {
+                    defaultPadding: After,
+                    propertyAccess: None
+                }
             }
         },
         Noop => {
@@ -76,7 +86,11 @@ typedef BinaryOperatorConfig = {
                     unpadded: []
                 },
                 parenInner: Ignore,
-                beforeParenAfterKeyword: Ignore
+                beforeParenAfterKeyword: Ignore,
+                comma: {
+                    defaultPadding: Ignore,
+                    propertyAccess: Ignore
+                }
             }
         }
     ];

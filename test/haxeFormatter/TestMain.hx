@@ -160,6 +160,11 @@ class TestMain {
             }
             padding.parenInner = invertInsertOrRemove(padding.parenInner);
             padding.beforeParenAfterKeyword = invertInsertOrRemove(padding.beforeParenAfterKeyword);
+            var comma = padding.comma;
+            if (comma != null) {
+                comma.defaultPadding = invertSpacingPolicy(comma.defaultPadding);
+                comma.propertyAccess = invertSpacingPolicy(comma.propertyAccess);
+            }
         }
         return config;
     }

@@ -1,0 +1,19 @@
+{
+    "padding": {
+        "comma": {
+            "defaultPadding": "after",
+            "propertyAccess": "none"
+        }
+    },
+    "testProperties": {
+        "entryPoint": "class_fields"
+    }
+}
+
+---
+
+var a(default, null):Int = call(5,2);
+
+---
+
+var a(default,null):Int = call(5, 2);

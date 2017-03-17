@@ -35,6 +35,15 @@ class Processor extends StackAwareWalker {
                 token.trailingTrivia = padSpace(parenInner, After, token.trailingTrivia);
             case ')':
                 prevToken.trailingTrivia = padSpace(parenInner, Before, prevToken.trailingTrivia);
+            case ',':
+                var comma = config.padding.comma;
+                var config = comma.defaultPadding;
+                switch (stack) {
+                    case Edge(_, Node(ClassField_Property(_, _, _, _, _, _, _, _, _, _, _, _), _)):
+                        config = comma.propertyAccess;
+                    case _:
+                }
+                padSpaces(config, prevToken, token);
             case _:
         }
 
@@ -50,7 +59,7 @@ class Processor extends StackAwareWalker {
         var leadingTrivia = importToken.leadingTrivia;
         importToken.leadingTrivia = [];
 
-        ArraySort.sort(decls, function(decl1, decl2) return switch[decl1, decl2] {
+        ArraySort.sort(decls, function(decl1, decl2) return switch [decl1, decl2] {
             case [ImportDecl(i1), ImportDecl(i2)]:
                 Reflect.compare(print(i1.path), print(i2.path));
 
