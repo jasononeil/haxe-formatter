@@ -4,14 +4,14 @@
     },
     "testProperties": {
         "type": "invertible",
-        "entryPoint": "class_fields"
+        "entryPoint": "block_elements"
     }
 }
 
 ---
 
-var a = (50);
+(50);
 
 ---
 
-var a = ( 50 );
+( 50 );

@@ -15,6 +15,17 @@ class Formatter {
         return Success(Printer.print(file));
     }
 
+    public static function formatBlockElements(blockElements:Array<BlockElement>, ?config:Config):Result<String> {
+        config = applyDefaultSettings(config);
+        var processor = new Processor(config);
+        var buf = new StringBuf();
+        for (element in blockElements) {
+            processor.walkBlockElement(element, Root);
+            buf.add(Printer.print(element));
+        }
+        return Success(buf.toString());
+    }
+
     public static function formatClassFields(classFields:Array<ClassField>, ?config:Config):Result<String> {
         config = applyDefaultSettings(config);
         var processor = new Processor(config);
@@ -34,6 +45,7 @@ class Formatter {
                     case File: formatFile(new Converter(d).convertResultToFile(), config);
                     case ClassFields: formatClassFields(new Converter(d).convertResultToClassFields(), config);
                     case ClassDecl: /* TODO */ null;
+                    case BlockElements: formatBlockElements(new Converter(d).convertResultToBlockElements(), config);
                 }
             case Failure(reason): Failure(reason);
         }

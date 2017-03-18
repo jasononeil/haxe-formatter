@@ -6,18 +6,16 @@
     },
     "testProperties": {
         "type": "noop",
-        "entryPoint": "class_fields"
+        "entryPoint": "block_elements"
     }
 }
 
 ---
 
-function f() {
-    var n1 =
-        if (true) 1
-        else 2;
+var n1 =
+    if (true) 1
+    else 2;
 
-    var n2 =
-          1
-        + 2;
-}
+var n2 =
+        1
+      + 2;

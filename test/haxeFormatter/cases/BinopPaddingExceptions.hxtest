@@ -8,18 +8,18 @@
     },
     "testProperties": {
         "type": "invertible",
-        "entryPoint": "class_fields"
+        "entryPoint": "block_elements"
     }
 }
 
 ---
 
-var a = 5*3;
-var b = 0 ... 1;
-var c = 5 + 3;
+5*3;
+0 ... 1;
+5 + 3;
 
 ---
 
-var a = 5 * 3;
-var b = 0...1;
-var c = 5 + 3;
+5 * 3;
+0...1;
+5 + 3;
