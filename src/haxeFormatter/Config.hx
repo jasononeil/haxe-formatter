@@ -4,6 +4,7 @@ typedef Config = {
     @:optional var baseConfig:BaseConfig;
     @:optional var imports:ImportConfig;
     @:optional var padding:PaddingConfig;
+    @:optional var indent:IndentConfig;
 }
 
 typedef ImportConfig = {
@@ -28,6 +29,10 @@ typedef BinaryOperatorConfig = {
 typedef CommaPaddingConfig = {
     @:optional var defaultPadding:TwoSidedPadding;
     @:optional var propertyAccess:TwoSidedPadding;
+}
+
+typedef IndentConfig = {
+    @:optional var whitespace:String;
 }
 
 @:enum abstract TwoSidedPadding(String) {
@@ -71,6 +76,9 @@ typedef CommaPaddingConfig = {
                     defaultPadding: After,
                     propertyAccess: None
                 }
+            },
+            indent: {
+                whitespace: "\t"
             }
         },
         Noop => {
@@ -91,6 +99,9 @@ typedef CommaPaddingConfig = {
                     defaultPadding: Ignore,
                     propertyAccess: Ignore
                 }
+            },
+            indent: {
+                whitespace: null
             }
         }
     ];

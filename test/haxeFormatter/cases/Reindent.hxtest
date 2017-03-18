@@ -1,0 +1,43 @@
+{
+    "indent": {
+        "whitespace": "    "
+    }
+}
+
+---
+
+import foo;
+
+class Main
+{
+function f() {
+if (foo) {
+trace("foo");
+} else {
+trace("bar");
+}
+}
+
+function g()
+{
+}
+}
+
+---
+
+import foo;
+
+class Main
+{
+    function f() {
+        if (foo) {
+            trace("foo");
+        } else {
+            trace("bar");
+        }
+    }
+
+    function g()
+    {
+    }
+}

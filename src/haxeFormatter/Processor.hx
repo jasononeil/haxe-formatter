@@ -15,6 +15,7 @@ enum SpacingLocation {
 class Processor extends StackAwareWalker {
     var config:Config;
     var prevToken:Token;
+    var indentLevel:Int = 0;
 
     public function new(config:Config) {
         this.config = config;
@@ -47,7 +48,36 @@ class Processor extends StackAwareWalker {
             case _:
         }
 
+        if (config.indent.whitespace != null) reindent(token);
+
         prevToken = token;
+    }
+
+    function reindent(token:Token) {
+        switch (token.text) {
+            case '{':
+                reindentToken(token);
+                indentLevel++;
+            case '}':
+                indentLevel--;
+                reindentToken(token);
+            case _:
+                reindentToken(token);
+        }
+    }
+
+    function reindentToken(token:Token) {
+        if (prevToken == null) return;
+
+        var prevLastTrivia = prevToken.trailingTrivia[prevToken.trailingTrivia.length - 1];
+        if (prevLastTrivia == null || !prevLastTrivia.text.isNewline()) return;
+
+        var indent = config.indent.whitespace.times(indentLevel);
+        var lastTrivia = token.leadingTrivia[token.leadingTrivia.length - 1];
+        if (lastTrivia != null && lastTrivia.text.isTabOrSpace())
+            lastTrivia.text = indent;
+        else
+            token.leadingTrivia.push(new Trivia(indent));
     }
 
     function sortImports(decls:Array<Decl>) {

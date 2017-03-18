@@ -12,4 +12,12 @@ class StringTools {
     public static inline function isNewline(s:String) {
         return s == "\n" || s == "\r" || s == "\r\n";
     }
+
+    public static inline function isTabOrSpace(s:String) {
+        return ~/[ \t]+/.match(s);
+    }
+
+    public static inline function times(s:String, amount:Int) {
+        return [for (i in 0...amount) s].join("");
+    }
 }
