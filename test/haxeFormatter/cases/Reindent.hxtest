@@ -39,6 +39,10 @@ call();
 else
 call();
 
+if (foo)
+if (foo)
+call();
+
 for (i in 0...10)
 trace(i);
 
@@ -109,6 +113,10 @@ class Main
             call();
         else
             call();
+
+        if (foo)
+            if (foo)
+                call();
 
         for (i in 0...10)
             trace(i);

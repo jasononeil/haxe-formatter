@@ -6,7 +6,7 @@ import hxParser.WalkStack;
 class Indenter {
     var config:Config;
     var indentLevel:Int = 0;
-    var inNoBlockExpr:Bool = false;
+    var noBlockExpressions:Int = 0;
 
     public function new(config:Config) {
         this.config = config;
@@ -21,15 +21,15 @@ class Indenter {
 
         function indentNoBlockExpr(expr:Expr) {
             if (!expr.match(EBlock(_,_,_))) {
-                inNoBlockExpr = true;
+                noBlockExpressions++;
                 indentLevel++;
             }
         }
 
         function dedentNoBlockExpr() {
-            if (inNoBlockExpr) {
-                inNoBlockExpr = false;
-                indentLevel--;
+            if (noBlockExpressions > 0) {
+                indentLevel -= noBlockExpressions;
+                noBlockExpressions = 0;
             }
         }
 
