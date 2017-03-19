@@ -119,6 +119,9 @@ c
 )
 {}
 
+@:allow("foo")
+function k() {}
+
 // comment before }
 }
 
@@ -235,6 +238,9 @@ class Main
         c
     )
     {}
+
+    @:allow("foo")
+    function k() {}
 
     // comment before }
 }

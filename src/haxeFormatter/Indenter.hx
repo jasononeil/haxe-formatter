@@ -105,7 +105,7 @@ class Indenter {
                 switch (stack) {
                     case Edge("elseKeyword", Node(ExprElse({ elseKeyword:_, expr:expr }), _)):
                         indent();
-                        if (!expr.match(EIf(_,_,_,_,_,_)))
+                        if (!expr.match(EIf(_, _, _, _, _, _)))
                             indentNoBlockExpr(expr);
                     case _:
                         indent();
@@ -156,6 +156,10 @@ class Indenter {
                     case Edge("caseKeyword", Node(Case_Case(_, _, _, _, _), Element(index, _))) |
                         Edge("defaultKeyword", Node(Case_Default(_, _, _), Element(index, _))):
                         if (index > 0) decrementIndentLevel();
+                        indent();
+                        incrementIndentLevel();
+                    case Edge(_, Node(Metadata_WithArgs(_, _, _), _)):
+                        // ( is part of the metadata token, so the previous ( case doesn't trigger
                         indent();
                         incrementIndentLevel();
                     case _:
