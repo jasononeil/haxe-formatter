@@ -3,18 +3,41 @@ package haxeFormatter;
 import hxParser.ParseTree;
 import hxParser.WalkStack;
 
+@:forward(pop, push)
+abstract IndentHierarchy(Array<Int>) from Array<Int> {
+    public function depthFor(line:Int):Int {
+        var depth = 0;
+        var lastLine = -1;
+        for (line in this) {
+            // don't double-indent (e.g. `function() return switch [...]`
+            // indents twice in one line, but we ignore one of them)
+            if (line != lastLine) depth++;
+            lastLine = line;
+        }
+        return depth;
+    }
+}
+
 class Indenter {
     var config:Config;
-    var indentLevel:Int = 0;
+    var indentHierarchy:IndentHierarchy = [];
     var noBlockExpressions:Int = 0;
+    var line:Int = 0;
+    var lastNoBlockExprLine:Int;
 
     public function new(config:Config) {
         this.config = config;
     }
 
+    inline function incrementIndentLevel()
+        indentHierarchy.push(line);
+
+    inline function decrementIndentLevel()
+        indentHierarchy.pop();
+
     public function reindent(prevToken:Token, token:Token, stack:WalkStack) {
         inline function indentTrivia()
-            reindentTrivia(token.leadingTrivia, indentLevel);
+            reindentTrivia(token.leadingTrivia);
 
         inline function indentToken()
             reindentToken(prevToken, token);
@@ -28,28 +51,37 @@ class Indenter {
             return stack.match(Edge(edge, Node(Expr_ESwitch(_, _, _, _, _), _)));
 
         function indentNoBlockExpr(expr:Expr) {
-            if (!expr.match(EBlock(_, _, _))) {
+            if (!expr.match(EBlock(_, _, _)) && lastNoBlockExprLine != line) {
+                lastNoBlockExprLine = line;
                 noBlockExpressions++;
-                indentLevel++;
+                indentHierarchy.push(line);
             }
         }
 
         function dedentNoBlockExpr() {
             if (noBlockExpressions > 0) {
-                indentLevel -= noBlockExpressions;
+                for (i in 0...noBlockExpressions)
+                    indentHierarchy.pop();
                 noBlockExpressions = 0;
             }
         }
 
+        function updateLine(trivias:Array<Trivia>)
+            for (trivia in trivias)
+                if (trivia.text.isNewline())
+                    line++;
+
+        updateLine(token.leadingTrivia);
+
         switch (token.text) {
             case '{' | '[':
                 indent();
-                indentLevel++;
-                if (!config.indent.indentSwitches && isSwitchEdge("braceOpen")) indentLevel--;
+                incrementIndentLevel();
+                if (!config.indent.indentSwitches && isSwitchEdge("braceOpen")) decrementIndentLevel();
             case '}' | ']':
-                if (config.indent.indentSwitches && isSwitchEdge("braceClose")) indentLevel--;
+                if (config.indent.indentSwitches && isSwitchEdge("braceClose")) decrementIndentLevel();
                 indentTrivia();
-                indentLevel--;
+                decrementIndentLevel();
                 indentToken();
             case ')':
                 switch (stack) {
@@ -122,13 +154,15 @@ class Indenter {
             case _:
                 switch (stack) {
                     case Edge("caseKeyword", Node(Case_Case(_, _, _, _, _), Element(index, _))):
-                        if (index > 0) indentLevel--;
+                        if (index > 0) decrementIndentLevel();
                         indent();
-                        indentLevel++;
+                        incrementIndentLevel();
                     case _:
                         indent();
                 }
         }
+
+        updateLine(token.trailingTrivia);
     }
 
     function reindentToken(prevToken:Token, token:Token) {
@@ -137,7 +171,7 @@ class Indenter {
         var prevLastTrivia = prevToken.trailingTrivia[prevToken.trailingTrivia.length - 1];
         if (prevLastTrivia == null || !prevLastTrivia.text.isNewline()) return;
 
-        var indent = config.indent.whitespace.times(indentLevel);
+        var indent = config.indent.whitespace.times(indentHierarchy.depthFor(line));
         var lastTrivia = token.leadingTrivia[token.leadingTrivia.length - 1];
         if (lastTrivia != null && lastTrivia.text.isTabOrSpace())
             lastTrivia.text = indent;
@@ -145,8 +179,8 @@ class Indenter {
             token.leadingTrivia.push(new Trivia(indent));
     }
 
-    function reindentTrivia(leadingTrivia:Array<Trivia>, indentLevel:Int) {
-        var indent = config.indent.whitespace.times(indentLevel);
+    function reindentTrivia(leadingTrivia:Array<Trivia>) {
+        var indent = config.indent.whitespace.times(indentHierarchy.depthFor(line));
         var prevTrivia:Trivia = null;
         var afterNewline = true;
         var i = 0;
