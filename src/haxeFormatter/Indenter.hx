@@ -171,6 +171,16 @@ class Indenter {
         var prevLastTrivia = prevToken.trailingTrivia[prevToken.trailingTrivia.length - 1];
         if (prevLastTrivia == null || !prevLastTrivia.text.isNewline()) return;
 
+        // has non-whitespace leading trivia in same line?
+        var i = token.leadingTrivia.length;
+        while (i-- > 0) {
+            var trivia = token.leadingTrivia[i];
+            if (trivia.text.isNewline())
+                break;
+            else if (!trivia.text.isWhitespace())
+                return;
+        }
+
         var indent = config.indent.whitespace.times(indentHierarchy.depthFor(line));
         var lastTrivia = token.leadingTrivia[token.leadingTrivia.length - 1];
         if (lastTrivia != null && lastTrivia.text.isTabOrSpace())
