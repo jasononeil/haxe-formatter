@@ -14,7 +14,7 @@ class Indenter {
 
     public function reindent(prevToken:Token, token:Token, stack:WalkStack) {
         inline function indentToken()
-            reindentToken(prevToken, token);
+            reindentToken(prevToken, token, indentLevel);
 
         inline function isSwitchEdge(edge:String):Bool
             return stack.match(Edge(edge, Node(Expr_ESwitch(_,_,_,_,_), _)));
@@ -41,7 +41,7 @@ class Indenter {
             case '}' | ']':
                 if (config.indent.indentSwitches && isSwitchEdge("braceClose")) indentLevel--;
                 indentLevel--;
-                indentToken();
+                reindentToken(prevToken, token, indentLevel + 1);
             case ')':
                 switch (stack) {
                     case Edge("parenClose", Node(kind, _)):
@@ -122,11 +122,27 @@ class Indenter {
         }
     }
 
-    function reindentToken(prevToken:Token, token:Token) {
+    function reindentToken(prevToken:Token, token:Token, triviaIndent:Int) {
         if (prevToken == null) return;
 
         var prevLastTrivia = prevToken.trailingTrivia[prevToken.trailingTrivia.length - 1];
         if (prevLastTrivia == null || !prevLastTrivia.text.isNewline()) return;
+
+        var triviaIndent = config.indent.whitespace.times(triviaIndent);
+        var prevTrivia:Trivia = null;
+        var i = 0;
+        while (i < token.leadingTrivia.length) {
+            var trivia = token.leadingTrivia[i];
+            if (trivia.text.startsWith("//") || trivia.text.startsWith("/*"))
+                if (prevTrivia != null && prevTrivia.text.isTabOrSpace())
+                    prevTrivia.text = triviaIndent;
+                else {
+                    token.leadingTrivia.insert(i, new Trivia(triviaIndent));
+                    i++;
+                }
+            prevTrivia = trivia;
+            i++;
+        }
 
         var indent = config.indent.whitespace.times(indentLevel);
         var lastTrivia = token.leadingTrivia[token.leadingTrivia.length - 1];

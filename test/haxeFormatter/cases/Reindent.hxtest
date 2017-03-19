@@ -25,7 +25,9 @@ switch (foo)
 {
 case true:
 call();
+// comment
 case _:
+// comment
 call();
 }
 }
@@ -62,11 +64,16 @@ trace("");
 function i()
 trace("i");
 
+ // comment
+// comment
+/** comment **/
 var a = [
 1,
 2,
 3
 ];
+
+// comment before }
 }
 
 ---
@@ -89,7 +96,9 @@ class Main
         {
             case true:
                 call();
+            // comment
             case _:
+                // comment
                 call();
         }
     }
@@ -126,9 +135,14 @@ class Main
     function i()
         trace("i");
 
+    // comment
+    // comment
+    /** comment **/
     var a = [
         1,
         2,
         3
     ];
+
+    // comment before }
 }
