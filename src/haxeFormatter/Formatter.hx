@@ -5,22 +5,26 @@ import hxParser.Converter;
 import hxParser.HxParser;
 import hxParser.ParseTree;
 import hxParser.Printer;
+import hxParser.StackAwareWalker;
 import util.Result;
 import util.StructDefaultsMacro;
 
 class Formatter {
     public static function formatFile(file:File, ?config:Config):Result<String> {
         config = applyDefaultSettings(config);
-        new Processor(config).walkFile(file, Root);
+        var walkers = createWalkers(config);
+        for (walker in walkers)
+            walker.walkFile(file, Root);
         return Success(Printer.print(file));
     }
 
     public static function formatBlockElements(blockElements:Array<BlockElement>, ?config:Config):Result<String> {
         config = applyDefaultSettings(config);
-        var processor = new Processor(config);
         var buf = new StringBuf();
+        var walkers = createWalkers(config);
         for (element in blockElements) {
-            processor.walkBlockElement(element, Root);
+            for (walker in walkers)
+                walker.walkBlockElement(element, Root);
             buf.add(Printer.print(element));
         }
         return Success(buf.toString());
@@ -28,13 +32,18 @@ class Formatter {
 
     public static function formatClassFields(classFields:Array<ClassField>, ?config:Config):Result<String> {
         config = applyDefaultSettings(config);
-        var processor = new Processor(config);
         var buf = new StringBuf();
+        var walkers = createWalkers(config);
         for (field in classFields) {
-            processor.walkClassField(field, Root);
+            for (walker in walkers)
+                walker.walkClassField(field, Root);
             buf.add(Printer.print(field));
         }
         return Success(buf.toString());
+    }
+
+    private static function createWalkers(config):Array<StackAwareWalker> {
+        return [new Processor(config), new Indenter(config)];
     }
 
     public static function formatSource(source:String, entryPoint:EntryPoint = File, ?config:Config):Result<String> {
@@ -53,8 +62,8 @@ class Formatter {
 
     static function applyDefaultSettings(config:Config):Config {
         config =
-            if (config == null) {};
-            else Reflect.copy(config);
+        if (config == null) {};
+        else Reflect.copy(config);
 
         if (config.baseConfig == null)
             config.baseConfig = Default;

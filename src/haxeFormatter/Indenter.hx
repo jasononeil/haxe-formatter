@@ -1,6 +1,7 @@
 package haxeFormatter;
 
 import hxParser.ParseTree;
+import hxParser.StackAwareWalker;
 import hxParser.WalkStack;
 
 @:forward(pop, push)
@@ -18,8 +19,9 @@ abstract IndentHierarchy(Array<Int>) from Array<Int> {
     }
 }
 
-class Indenter {
+class Indenter extends StackAwareWalker {
     var config:Config;
+    var prevToken:Token;
     var indentHierarchy:IndentHierarchy = [];
     var noBlockExpressions:Int = 0;
     var line:Int = 0;
@@ -29,13 +31,22 @@ class Indenter {
         this.config = config;
     }
 
+    override function walkToken(token:Token, stack:WalkStack) {
+        super.walkToken(token, stack);
+
+        if (config.indent.whitespace != null)
+            reindent(token, stack);
+
+        prevToken = token;
+    }
+
     inline function incrementIndentLevel()
         indentHierarchy.push(line);
 
     inline function decrementIndentLevel()
         indentHierarchy.pop();
 
-    public function reindent(prevToken:Token, token:Token, stack:WalkStack) {
+    public function reindent(token:Token, stack:WalkStack) {
         inline function indentTrivia()
             reindentTrivia(prevToken, token.leadingTrivia);
 

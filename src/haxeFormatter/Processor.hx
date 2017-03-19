@@ -15,11 +15,9 @@ enum SpacingLocation {
 class Processor extends StackAwareWalker {
     var config:Config;
     var prevToken:Token;
-    var indenter:Indenter;
 
     public function new(config:Config) {
         this.config = config;
-        indenter = new Indenter(config);
     }
 
     override function walkFile_decls(elems:Array<Decl>, stack:WalkStack) {
@@ -48,9 +46,6 @@ class Processor extends StackAwareWalker {
                 padSpaces(config, prevToken, token);
             case _:
         }
-
-        if (config.indent.whitespace != null)
-            indenter.reindent(prevToken, token, stack);
 
         prevToken = token;
     }
