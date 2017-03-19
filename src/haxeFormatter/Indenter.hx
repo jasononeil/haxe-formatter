@@ -13,14 +13,22 @@ class Indenter {
     }
 
     public function reindent(prevToken:Token, token:Token, stack:WalkStack) {
+        inline function indentTrivia()
+            reindentTrivia(token.leadingTrivia, indentLevel);
+
         inline function indentToken()
-            reindentToken(prevToken, token, indentLevel);
+            reindentToken(prevToken, token);
+
+        inline function indent() {
+            indentTrivia();
+            indentToken();
+        }
 
         inline function isSwitchEdge(edge:String):Bool
-            return stack.match(Edge(edge, Node(Expr_ESwitch(_,_,_,_,_), _)));
+            return stack.match(Edge(edge, Node(Expr_ESwitch(_, _, _, _, _), _)));
 
         function indentNoBlockExpr(expr:Expr) {
-            if (!expr.match(EBlock(_,_,_))) {
+            if (!expr.match(EBlock(_, _, _))) {
                 noBlockExpressions++;
                 indentLevel++;
             }
@@ -35,20 +43,21 @@ class Indenter {
 
         switch (token.text) {
             case '{' | '[':
-                indentToken();
+                indent();
                 indentLevel++;
                 if (!config.indent.indentSwitches && isSwitchEdge("braceOpen")) indentLevel--;
             case '}' | ']':
                 if (config.indent.indentSwitches && isSwitchEdge("braceClose")) indentLevel--;
+                indentTrivia();
                 indentLevel--;
-                reindentToken(prevToken, token, indentLevel + 1);
+                indentToken();
             case ')':
                 switch (stack) {
                     case Edge("parenClose", Node(kind, _)):
                         switch (kind) {
-                            case Expr_EIf(_,_,_,_,exprBody,_),
-                                Expr_EFor(_,_,_,_,exprBody),
-                                Expr_EWhile(_,_,_,_,exprBody):
+                            case Expr_EIf(_, _, _, _, exprBody, _),
+                                Expr_EFor(_, _, _, _, exprBody),
+                                Expr_EWhile(_, _, _, _, exprBody):
                                 indentNoBlockExpr(exprBody);
                             case Catch(node):
                                 indentNoBlockExpr(node.expr);
@@ -56,97 +65,73 @@ class Indenter {
                         }
                     case _:
                 }
-                indentToken();
+                indent();
             case ';':
                 dedentNoBlockExpr();
-                indentToken();
+                indent();
             case 'else':
                 dedentNoBlockExpr();
                 switch (stack) {
                     case Edge("elseKeyword", Node(ExprElse({ elseKeyword:_, expr:expr }), _)):
-                        indentToken();
+                        indent();
                         indentNoBlockExpr(expr);
                     case _:
-                        indentToken();
+                        indent();
                 }
             case 'try':
                 switch (stack) {
-                    case Edge("tryKeyword", Node(Expr_ETry(_,exprBody,_), _)):
-                        indentToken();
+                    case Edge("tryKeyword", Node(Expr_ETry(_, exprBody, _), _)):
+                        indent();
                         indentNoBlockExpr(exprBody);
                     case _:
-                        indentToken();
+                        indent();
                 }
             case 'catch' | 'while':
                 dedentNoBlockExpr();
-                indentToken();
+                indent();
             case 'do':
                 switch (stack) {
-                    case Edge("doKeyword", Node(Expr_EDo(_,exprBody,_), _)):
-                        indentToken();
+                    case Edge("doKeyword", Node(Expr_EDo(_, exprBody, _), _)):
+                        indent();
                         indentNoBlockExpr(exprBody);
                     case _:
-                        indentToken();
+                        indent();
                 }
             case 'function':
                 switch (stack) {
                     case Edge("functionKeyword", Node(kind, _)):
                         switch (kind) {
-                            case ClassField_Function(_,_,_,_,_,_,_,_,_,expr):
-                                indentToken();
+                            case ClassField_Function(_, _, _, _, _, _, _, _, _, expr):
+                                indent();
                                 switch (expr) {
                                     case Expr(expr, _):
-                                        indentToken();
+                                        indent();
                                         indentNoBlockExpr(expr);
                                     case _:
-                                        indentToken();
+                                        indent();
                                 }
-                            case Expr_EFunction(_,fun) | BlockElement_InlineFunction(_,_,fun,_):
-                                indentToken();
+                            case Expr_EFunction(_, fun) | BlockElement_InlineFunction(_, _, fun, _):
+                                indent();
                                 indentNoBlockExpr(fun.expr);
                             case _:
-                                indentToken();
+                                indent();
                         }
                     case _:
-                        indentToken();
+                        indent();
                 }
             case _:
                 switch (stack) {
-                    case Edge("caseKeyword", Node(Case_Case(_,_,_,_,_), Element(index, _))):
+                    case Edge("caseKeyword", Node(Case_Case(_, _, _, _, _), Element(index, _))):
                         if (index > 0) indentLevel--;
-                        indentToken();
+                        indent();
                         indentLevel++;
                     case _:
-                        indentToken();
+                        indent();
                 }
         }
     }
 
-    function reindentToken(prevToken:Token, token:Token, triviaIndent:Int) {
-        var triviaIndent = config.indent.whitespace.times(triviaIndent);
-        var prevTrivia:Trivia = null;
-        var afterNewline = true;
-        var i = 0;
-        while (i < token.leadingTrivia.length) {
-            var trivia = token.leadingTrivia[i];
-
-            var isWhitespace = trivia.text.isWhitespace();
-            if (trivia.text.isNewline()) afterNewline = true;
-
-            if (afterNewline && !isWhitespace)
-                if (prevTrivia != null && prevTrivia.text.isTabOrSpace())
-                    prevTrivia.text = triviaIndent;
-                else {
-                    token.leadingTrivia.insert(i, new Trivia(triviaIndent));
-                    i++;
-                }
-
-            if (!isWhitespace) afterNewline = false;
-
-            prevTrivia = trivia;
-            i++;
-        }
-
+    function reindentToken(prevToken:Token, token:Token) {
         if (prevToken == null) return;
 
         var prevLastTrivia = prevToken.trailingTrivia[prevToken.trailingTrivia.length - 1];
@@ -158,5 +143,32 @@ class Indenter {
             lastTrivia.text = indent;
         else
             token.leadingTrivia.push(new Trivia(indent));
+    }
+
+    function reindentTrivia(leadingTrivia:Array<Trivia>, indentLevel:Int) {
+        var indent = config.indent.whitespace.times(indentLevel);
+        var prevTrivia:Trivia = null;
+        var afterNewline = true;
+        var i = 0;
+        while (i < leadingTrivia.length) {
+            var trivia = leadingTrivia[i];
+            if (trivia.text.isNewline())
+                afterNewline = true;
+
+            if (!trivia.text.isWhitespace()) {
+                if (afterNewline) {
+                    if (prevTrivia != null && prevTrivia.text.isTabOrSpace())
+                        prevTrivia.text = indent;
+                    else {
+                        leadingTrivia.insert(i, new Trivia(indent));
+                        i++;
+                    }
+                }
+                afterNewline = false;
+            }
+
+            prevTrivia = trivia;
+            i++;
+        }
     }
 }
