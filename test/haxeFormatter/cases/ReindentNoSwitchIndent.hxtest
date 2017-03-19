@@ -1,0 +1,37 @@
+{
+    "indent": {
+        "whitespace": "    ",
+        "indentSwitches": false
+    },
+    "testProperties": {
+        "entryPoint": "block_elements"
+    }
+}
+
+---
+
+switch (foo) {
+    case true:
+        call();
+    case _:
+        switch (foo) {
+            case true:
+                call();
+            case _:
+                call();
+        }
+}
+
+---
+
+switch (foo) {
+case true:
+    call();
+case _:
+    switch (foo) {
+    case true:
+        call();
+    case _:
+        call();
+    }
+}

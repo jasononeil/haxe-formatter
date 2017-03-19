@@ -54,12 +54,16 @@ class Processor extends StackAwareWalker {
     }
 
     function reindent(token:Token, stack:WalkStack) {
+        inline function isSwitchEdge(edge:String):Bool
+            return stack.match(Edge(edge, Node(Expr_ESwitch(_,_,_,_,_), _)));
+
         switch (token.text) {
             case '{':
                 reindentToken(token);
                 indentLevel++;
+                if (!config.indent.indentSwitches && isSwitchEdge("braceOpen")) indentLevel--;
             case '}':
-                if (stack.match(Edge("braceClose", Node(Expr_ESwitch(_,_,_,_,_), _))))
+                if (config.indent.indentSwitches && isSwitchEdge("braceClose"))
                     indentLevel--;
                 indentLevel--;
                 reindentToken(token);

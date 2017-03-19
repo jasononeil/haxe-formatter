@@ -1,6 +1,7 @@
 {
     "indent": {
-        "whitespace": "    "
+        "whitespace": "    ",
+        "indentSwitches": true
     }
 }
 
