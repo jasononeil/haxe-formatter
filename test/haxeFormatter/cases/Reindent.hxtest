@@ -63,6 +63,12 @@ trace("");
 
 inline function i()
 trace("");
+
+#if true #end
+
+#if true
+call();
+#end
 }
 
 function i()
@@ -138,6 +144,12 @@ class Main
 
         inline function i()
             trace("");
+
+        #if true #end
+
+        #if true
+        call();
+        #end
     }
 
     function i()

@@ -123,26 +123,34 @@ class Indenter {
     }
 
     function reindentToken(prevToken:Token, token:Token, triviaIndent:Int) {
-        if (prevToken == null) return;
-
-        var prevLastTrivia = prevToken.trailingTrivia[prevToken.trailingTrivia.length - 1];
-        if (prevLastTrivia == null || !prevLastTrivia.text.isNewline()) return;
-
         var triviaIndent = config.indent.whitespace.times(triviaIndent);
         var prevTrivia:Trivia = null;
+        var afterNewline = true;
         var i = 0;
         while (i < token.leadingTrivia.length) {
             var trivia = token.leadingTrivia[i];
-            if (trivia.text.startsWith("//") || trivia.text.startsWith("/*"))
+
+            var isWhitespace = trivia.text.isWhitespace();
+            if (trivia.text.isNewline()) afterNewline = true;
+
+            if (afterNewline && !isWhitespace)
                 if (prevTrivia != null && prevTrivia.text.isTabOrSpace())
                     prevTrivia.text = triviaIndent;
                 else {
                     token.leadingTrivia.insert(i, new Trivia(triviaIndent));
                     i++;
                 }
+
+            if (!isWhitespace) afterNewline = false;
+
             prevTrivia = trivia;
             i++;
         }
+
+        if (prevToken == null) return;
+
+        var prevLastTrivia = prevToken.trailingTrivia[prevToken.trailingTrivia.length - 1];
+        if (prevLastTrivia == null || !prevLastTrivia.text.isNewline()) return;
 
         var indent = config.indent.whitespace.times(indentLevel);
         var lastTrivia = token.leadingTrivia[token.leadingTrivia.length - 1];

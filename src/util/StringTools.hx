@@ -6,7 +6,7 @@ class StringTools {
     }
 
     public static inline function isWhitespace(s:String) {
-        return ~/\s+/.match(s);
+        return ~/^\s+$/.match(s);
     }
 
     public static inline function isNewline(s:String) {
@@ -14,7 +14,7 @@ class StringTools {
     }
 
     public static inline function isTabOrSpace(s:String) {
-        return ~/[ \t]+/.match(s);
+        return ~/^[ \t]+$/.match(s);
     }
 
     public static inline function times(s:String, amount:Int) {
