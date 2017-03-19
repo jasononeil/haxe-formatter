@@ -16,6 +16,7 @@ class Processor extends StackAwareWalker {
     var config:Config;
     var prevToken:Token;
     var indentLevel:Int = 0;
+    var inNoBlockExpr:Bool = false;
 
     public function new(config:Config) {
         this.config = config;
@@ -57,16 +58,52 @@ class Processor extends StackAwareWalker {
         inline function isSwitchEdge(edge:String):Bool
             return stack.match(Edge(edge, Node(Expr_ESwitch(_,_,_,_,_), _)));
 
+        function indentNoBlockExpr(expr:Expr) {
+            if (!expr.match(EBlock(_,_,_))) {
+                inNoBlockExpr = true;
+                indentLevel++;
+            }
+        }
+
+        function dedentNoBlockExpr() {
+            if (inNoBlockExpr) {
+                inNoBlockExpr = false;
+                indentLevel--;
+            }
+        }
+
         switch (token.text) {
             case '{':
                 reindentToken(token);
                 indentLevel++;
                 if (!config.indent.indentSwitches && isSwitchEdge("braceOpen")) indentLevel--;
             case '}':
-                if (config.indent.indentSwitches && isSwitchEdge("braceClose"))
-                    indentLevel--;
+                if (config.indent.indentSwitches && isSwitchEdge("braceClose")) indentLevel--;
                 indentLevel--;
                 reindentToken(token);
+            case ')':
+                switch (stack) {
+                    case Edge("parenClose", Node(kind, _)):
+                        switch (kind) {
+                            case Expr_EIf(_,_,_,_,exprThen,_):
+                                indentNoBlockExpr(exprThen);
+                            case _:
+                        }
+                    case _:
+                }
+                reindentToken(token);
+            case ';':
+                dedentNoBlockExpr();
+                reindentToken(token);
+            case 'else':
+                dedentNoBlockExpr();
+                switch (stack) {
+                    case Edge("elseKeyword", Node(ExprElse({ elseKeyword:_, expr:expr }), _)):
+                        reindentToken(token);
+                        indentNoBlockExpr(expr);
+                    case _:
+                        reindentToken(token);
+                }
             case _:
                 switch (stack) {
                     case Edge("caseKeyword", Node(Case_Case(_,_,_,_,_), Element(index, _))):

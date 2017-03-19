@@ -29,6 +29,14 @@ case _:
 call();
 }
 }
+
+function h()
+{
+if (foo)
+call();
+else
+call();
+}
 }
 
 ---
@@ -54,5 +62,13 @@ class Main
             case _:
                 call();
         }
+    }
+
+    function h()
+    {
+        if (foo)
+            call();
+        else
+            call();
     }
 }
