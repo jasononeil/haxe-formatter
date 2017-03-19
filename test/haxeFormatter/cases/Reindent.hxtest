@@ -36,7 +36,28 @@ if (foo)
 call();
 else
 call();
+
+for (i in 0...10)
+trace(i);
+
+while (true)
+trace(0);
+
+do
+trace("")
+while (true);
+
+try
+access.field()
+catch (e:Any)
+trace("kaputt");
+
+function i()
+trace("");
 }
+
+function i()
+trace("i");
 }
 
 ---
@@ -70,5 +91,26 @@ class Main
             call();
         else
             call();
+
+        for (i in 0...10)
+            trace(i);
+
+        while (true)
+            trace(0);
+
+        do
+            trace("")
+        while (true);
+
+        try
+            access.field()
+        catch (e:Any)
+            trace("kaputt");
+
+        function i()
+            trace("");
     }
+
+    function i()
+        trace("i");
 }

@@ -85,8 +85,12 @@ class Processor extends StackAwareWalker {
                 switch (stack) {
                     case Edge("parenClose", Node(kind, _)):
                         switch (kind) {
-                            case Expr_EIf(_,_,_,_,exprThen,_):
-                                indentNoBlockExpr(exprThen);
+                            case Expr_EIf(_,_,_,_,exprBody,_),
+                                Expr_EFor(_,_,_,_,exprBody),
+                                Expr_EWhile(_,_,_,_,exprBody):
+                                indentNoBlockExpr(exprBody);
+                            case Catch(node):
+                                indentNoBlockExpr(node.expr);
                             case _:
                         }
                     case _:
@@ -101,6 +105,47 @@ class Processor extends StackAwareWalker {
                     case Edge("elseKeyword", Node(ExprElse({ elseKeyword:_, expr:expr }), _)):
                         reindentToken(token);
                         indentNoBlockExpr(expr);
+                    case _:
+                        reindentToken(token);
+                }
+            case 'try':
+                switch (stack) {
+                    case Edge("tryKeyword", Node(Expr_ETry(_,exprBody,_), _)):
+                        reindentToken(token);
+                        indentNoBlockExpr(exprBody);
+                    case _:
+                        reindentToken(token);
+                }
+            case 'catch' | 'while':
+                dedentNoBlockExpr();
+                reindentToken(token);
+            case 'do':
+                switch (stack) {
+                    case Edge("doKeyword", Node(Expr_EDo(_,exprBody,_), _)):
+                        reindentToken(token);
+                        indentNoBlockExpr(exprBody);
+                    case _:
+                        reindentToken(token);
+                }
+            case 'function':
+                switch (stack) {
+                    case Edge("functionKeyword", Node(kind, _)):
+                        switch (kind) {
+                            case ClassField_Function(_,_,_,_,_,_,_,_,_,expr):
+                                reindentToken(token);
+                                switch (expr) {
+                                    case Expr(expr, _):
+                                        reindentToken(token);
+                                        indentNoBlockExpr(expr);
+                                    case _:
+                                        reindentToken(token);
+                                }
+                            case Expr_EFunction(_,fun):
+                                reindentToken(token);
+                                indentNoBlockExpr(fun.expr);
+                            case _:
+                                reindentToken(token);
+                        }
                     case _:
                         reindentToken(token);
                 }
