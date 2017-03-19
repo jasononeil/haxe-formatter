@@ -26,8 +26,10 @@ switch (foo)
 case true:
 call();
 // comment
-case _:
+case false:
 // comment
+call();
+default:
 call();
 }
 }
@@ -119,8 +121,10 @@ class Main
             case true:
                 call();
             // comment
-            case _:
+            case false:
                 // comment
+                call();
+            default:
                 call();
         }
     }

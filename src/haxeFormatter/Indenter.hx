@@ -153,7 +153,8 @@ class Indenter {
                 }
             case _:
                 switch (stack) {
-                    case Edge("caseKeyword", Node(Case_Case(_, _, _, _, _), Element(index, _))):
+                    case Edge("caseKeyword", Node(Case_Case(_, _, _, _, _), Element(index, _))) |
+                        Edge("defaultKeyword", Node(Case_Default(_, _, _), Element(index, _))):
                         if (index > 0) decrementIndentLevel();
                         indent();
                         incrementIndentLevel();
