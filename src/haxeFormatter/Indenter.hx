@@ -101,7 +101,7 @@ class Indenter {
                                     case _:
                                         indentToken();
                                 }
-                            case Expr_EFunction(_,fun):
+                            case Expr_EFunction(_,fun) | BlockElement_InlineFunction(_,_,fun,_):
                                 indentToken();
                                 indentNoBlockExpr(fun.expr);
                             case _:

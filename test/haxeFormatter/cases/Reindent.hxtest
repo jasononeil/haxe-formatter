@@ -54,6 +54,9 @@ trace("kaputt");
 
 function i()
 trace("");
+
+inline function i()
+trace("");
 }
 
 function i()
@@ -108,6 +111,9 @@ class Main
             trace("kaputt");
 
         function i()
+            trace("");
+
+        inline function i()
             trace("");
     }
 
