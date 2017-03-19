@@ -20,6 +20,13 @@ trace("bar");
 
 function g()
 {
+switch (foo)
+{
+case true:
+call();
+case _:
+call();
+}
 }
 }
 
@@ -39,5 +46,12 @@ class Main
 
     function g()
     {
+        switch (foo)
+        {
+            case true:
+                call();
+            case _:
+                call();
+        }
     }
 }

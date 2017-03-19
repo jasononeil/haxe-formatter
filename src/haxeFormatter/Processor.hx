@@ -48,21 +48,30 @@ class Processor extends StackAwareWalker {
             case _:
         }
 
-        if (config.indent.whitespace != null) reindent(token);
+        if (config.indent.whitespace != null) reindent(token, stack);
 
         prevToken = token;
     }
 
-    function reindent(token:Token) {
+    function reindent(token:Token, stack:WalkStack) {
         switch (token.text) {
             case '{':
                 reindentToken(token);
                 indentLevel++;
             case '}':
+                if (stack.match(Edge("braceClose", Node(Expr_ESwitch(_,_,_,_,_), _))))
+                    indentLevel--;
                 indentLevel--;
                 reindentToken(token);
             case _:
-                reindentToken(token);
+                switch (stack) {
+                    case Edge("caseKeyword", Node(Case_Case(_,_,_,_,_), Element(index, _))):
+                        if (index > 0) indentLevel--;
+                        reindentToken(token);
+                        indentLevel++;
+                    case _:
+                        reindentToken(token);
+                }
         }
     }
 
