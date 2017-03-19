@@ -15,11 +15,11 @@ enum SpacingLocation {
 class Processor extends StackAwareWalker {
     var config:Config;
     var prevToken:Token;
-    var indentLevel:Int = 0;
-    var inNoBlockExpr:Bool = false;
+    var indenter:Indenter;
 
     public function new(config:Config) {
         this.config = config;
+        indenter = new Indenter(config);
     }
 
     override function walkFile_decls(elems:Array<Decl>, stack:WalkStack) {
@@ -49,130 +49,10 @@ class Processor extends StackAwareWalker {
             case _:
         }
 
-        if (config.indent.whitespace != null) reindent(token, stack);
+        if (config.indent.whitespace != null)
+            indenter.reindent(prevToken, token, stack);
 
         prevToken = token;
-    }
-
-    function reindent(token:Token, stack:WalkStack) {
-        inline function isSwitchEdge(edge:String):Bool
-            return stack.match(Edge(edge, Node(Expr_ESwitch(_,_,_,_,_), _)));
-
-        function indentNoBlockExpr(expr:Expr) {
-            if (!expr.match(EBlock(_,_,_))) {
-                inNoBlockExpr = true;
-                indentLevel++;
-            }
-        }
-
-        function dedentNoBlockExpr() {
-            if (inNoBlockExpr) {
-                inNoBlockExpr = false;
-                indentLevel--;
-            }
-        }
-
-        switch (token.text) {
-            case '{':
-                reindentToken(token);
-                indentLevel++;
-                if (!config.indent.indentSwitches && isSwitchEdge("braceOpen")) indentLevel--;
-            case '}':
-                if (config.indent.indentSwitches && isSwitchEdge("braceClose")) indentLevel--;
-                indentLevel--;
-                reindentToken(token);
-            case ')':
-                switch (stack) {
-                    case Edge("parenClose", Node(kind, _)):
-                        switch (kind) {
-                            case Expr_EIf(_,_,_,_,exprBody,_),
-                                Expr_EFor(_,_,_,_,exprBody),
-                                Expr_EWhile(_,_,_,_,exprBody):
-                                indentNoBlockExpr(exprBody);
-                            case Catch(node):
-                                indentNoBlockExpr(node.expr);
-                            case _:
-                        }
-                    case _:
-                }
-                reindentToken(token);
-            case ';':
-                dedentNoBlockExpr();
-                reindentToken(token);
-            case 'else':
-                dedentNoBlockExpr();
-                switch (stack) {
-                    case Edge("elseKeyword", Node(ExprElse({ elseKeyword:_, expr:expr }), _)):
-                        reindentToken(token);
-                        indentNoBlockExpr(expr);
-                    case _:
-                        reindentToken(token);
-                }
-            case 'try':
-                switch (stack) {
-                    case Edge("tryKeyword", Node(Expr_ETry(_,exprBody,_), _)):
-                        reindentToken(token);
-                        indentNoBlockExpr(exprBody);
-                    case _:
-                        reindentToken(token);
-                }
-            case 'catch' | 'while':
-                dedentNoBlockExpr();
-                reindentToken(token);
-            case 'do':
-                switch (stack) {
-                    case Edge("doKeyword", Node(Expr_EDo(_,exprBody,_), _)):
-                        reindentToken(token);
-                        indentNoBlockExpr(exprBody);
-                    case _:
-                        reindentToken(token);
-                }
-            case 'function':
-                switch (stack) {
-                    case Edge("functionKeyword", Node(kind, _)):
-                        switch (kind) {
-                            case ClassField_Function(_,_,_,_,_,_,_,_,_,expr):
-                                reindentToken(token);
-                                switch (expr) {
-                                    case Expr(expr, _):
-                                        reindentToken(token);
-                                        indentNoBlockExpr(expr);
-                                    case _:
-                                        reindentToken(token);
-                                }
-                            case Expr_EFunction(_,fun):
-                                reindentToken(token);
-                                indentNoBlockExpr(fun.expr);
-                            case _:
-                                reindentToken(token);
-                        }
-                    case _:
-                        reindentToken(token);
-                }
-            case _:
-                switch (stack) {
-                    case Edge("caseKeyword", Node(Case_Case(_,_,_,_,_), Element(index, _))):
-                        if (index > 0) indentLevel--;
-                        reindentToken(token);
-                        indentLevel++;
-                    case _:
-                        reindentToken(token);
-                }
-        }
-    }
-
-    function reindentToken(token:Token) {
-        if (prevToken == null) return;
-
-        var prevLastTrivia = prevToken.trailingTrivia[prevToken.trailingTrivia.length - 1];
-        if (prevLastTrivia == null || !prevLastTrivia.text.isNewline()) return;
-
-        var indent = config.indent.whitespace.times(indentLevel);
-        var lastTrivia = token.leadingTrivia[token.leadingTrivia.length - 1];
-        if (lastTrivia != null && lastTrivia.text.isTabOrSpace())
-            lastTrivia.text = indent;
-        else
-            token.leadingTrivia.push(new Trivia(indent));
     }
 
     function sortImports(decls:Array<Decl>) {
