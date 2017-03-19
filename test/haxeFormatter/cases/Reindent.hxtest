@@ -67,7 +67,9 @@ trace("");
 #if true #end
 
 #if true
-call();
+        call();
+#else
+        call();
 #end
 }
 
@@ -148,6 +150,8 @@ class Main
         #if true #end
 
         #if true
+        call();
+        #else
         call();
         #end
     }

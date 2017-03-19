@@ -155,15 +155,16 @@ class Indenter {
             if (trivia.text.isNewline())
                 afterNewline = true;
 
-            if (!trivia.text.isWhitespace()) {
-                if (afterNewline) {
-                    if (prevTrivia != null && prevTrivia.text.isTabOrSpace())
-                        prevTrivia.text = indent;
-                    else {
-                        leadingTrivia.insert(i, new Trivia(indent));
-                        i++;
-                    }
+            if (afterNewline && (trivia.text.startsWith("//") || trivia.text.startsWith("/*") || trivia.text.startsWith("#"))) {
+                if (prevTrivia != null && prevTrivia.text.isTabOrSpace())
+                    prevTrivia.text = indent;
+                else {
+                    leadingTrivia.insert(i, new Trivia(indent));
+                    i++;
                 }
+            }
+
+            if (!trivia.text.isWhitespace()) {
                 afterNewline = false;
             }
 
