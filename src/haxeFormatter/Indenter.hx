@@ -37,7 +37,7 @@ class Indenter {
 
     public function reindent(prevToken:Token, token:Token, stack:WalkStack) {
         inline function indentTrivia()
-            reindentTrivia(token.leadingTrivia);
+            reindentTrivia(prevToken, token.leadingTrivia);
 
         inline function indentToken()
             reindentToken(prevToken, token);
@@ -179,10 +179,15 @@ class Indenter {
             token.leadingTrivia.push(new Trivia(indent));
     }
 
-    function reindentTrivia(leadingTrivia:Array<Trivia>) {
+    function reindentTrivia(prevToken:Token, leadingTrivia:Array<Trivia>) {
+        var afterNewline = false;
+        if (prevToken != null)
+            for (trivia in prevToken.trailingTrivia)
+                if (trivia.text.isNewline())
+                    afterNewline = true;
+
         var indent = config.indent.whitespace.times(indentHierarchy.depthFor(line));
         var prevTrivia:Trivia = null;
-        var afterNewline = true;
         var i = 0;
         while (i < leadingTrivia.length) {
             var trivia = leadingTrivia[i];

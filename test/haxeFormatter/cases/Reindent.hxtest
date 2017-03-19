@@ -78,6 +78,9 @@ trace("");
 #else
         call();
 #end
+
+trace(#if true true #else false #end);
+trace("foo" /**/);
 }
 
 function i()
@@ -168,6 +171,9 @@ class Main
         #else
         call();
         #end
+
+        trace(#if true true #else false #end);
+        trace("foo" /**/);
     }
 
     function i()
