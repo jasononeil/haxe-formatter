@@ -83,6 +83,11 @@ trace("");
 
 trace(#if true true #else false #end);
 trace("foo" /**/);
+
+trace(
+"a",
+"b"
+);
 }
 
 function i()
@@ -96,6 +101,13 @@ var a = [
 2,
 3
 ];
+
+function j(
+a,
+b,
+c
+)
+{}
 
 // comment before }
 }
@@ -178,6 +190,11 @@ class Main
 
         trace(#if true true #else false #end);
         trace("foo" /**/);
+
+        trace(
+            "a",
+            "b"
+        );
     }
 
     function i()
@@ -191,6 +208,13 @@ class Main
         2,
         3
     ];
+
+    function j(
+        a,
+        b,
+        c
+    )
+    {}
 
     // comment before }
 }

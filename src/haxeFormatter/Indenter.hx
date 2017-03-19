@@ -74,16 +74,16 @@ class Indenter {
         updateLine(token.leadingTrivia);
 
         switch (token.text) {
-            case '{' | '[':
+            case '{' | '[' | '(':
                 indent();
                 incrementIndentLevel();
                 if (!config.indent.indentSwitches && isSwitchEdge("braceOpen")) decrementIndentLevel();
-            case '}' | ']':
+            case '}' | ']' | ')':
                 if (config.indent.indentSwitches && isSwitchEdge("braceClose")) decrementIndentLevel();
                 indentTrivia();
                 decrementIndentLevel();
                 indentToken();
-            case ')':
+
                 switch (stack) {
                     case Edge("parenClose", Node(kind, _)):
                         switch (kind) {
@@ -97,7 +97,6 @@ class Indenter {
                         }
                     case _:
                 }
-                indent();
             case ';':
                 dedentNoBlockExpr();
                 indent();
