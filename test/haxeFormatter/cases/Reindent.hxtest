@@ -17,6 +17,15 @@ trace("foo");
 } else {
 trace("bar");
 }
+
+if (foo)
+{
+    trace("foo");
+}
+else if (bar)
+{
+    trace("bar");
+}
 }
 
 function g()
@@ -123,6 +132,15 @@ class Main
         if (foo) {
             trace("foo");
         } else {
+            trace("bar");
+        }
+
+        if (foo)
+        {
+            trace("foo");
+        }
+        else if (bar)
+        {
             trace("bar");
         }
     }

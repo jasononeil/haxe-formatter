@@ -105,7 +105,8 @@ class Indenter {
                 switch (stack) {
                     case Edge("elseKeyword", Node(ExprElse({ elseKeyword:_, expr:expr }), _)):
                         indent();
-                        indentNoBlockExpr(expr);
+                        if (!expr.match(EIf(_,_,_,_,_,_)))
+                            indentNoBlockExpr(expr);
                     case _:
                         indent();
                 }
