@@ -61,6 +61,12 @@ trace("");
 
 function i()
 trace("i");
+
+var a = [
+1,
+2,
+3
+];
 }
 
 ---
@@ -119,4 +125,10 @@ class Main
 
     function i()
         trace("i");
+
+    var a = [
+        1,
+        2,
+        3
+    ];
 }

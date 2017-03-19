@@ -34,11 +34,11 @@ class Indenter {
         }
 
         switch (token.text) {
-            case '{':
+            case '{' | '[':
                 indentToken();
                 indentLevel++;
                 if (!config.indent.indentSwitches && isSwitchEdge("braceOpen")) indentLevel--;
-            case '}':
+            case '}' | ']':
                 if (config.indent.indentSwitches && isSwitchEdge("braceClose")) indentLevel--;
                 indentLevel--;
                 indentToken();
