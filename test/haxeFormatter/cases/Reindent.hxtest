@@ -122,6 +122,14 @@ c
 @:allow("foo")
 function k() {}
 
+function l() {
+call([{
+}]);
+
+if (foo)
+return;
+}
+
 // comment before }
 }
 
@@ -241,6 +249,14 @@ class Main
 
     @:allow("foo")
     function k() {}
+
+    function l() {
+        call([{
+        }]);
+
+        if (foo)
+            return;
+    }
 
     // comment before }
 }

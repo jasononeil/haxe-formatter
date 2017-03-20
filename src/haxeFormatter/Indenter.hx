@@ -26,6 +26,7 @@ class Indenter extends StackAwareWalker {
     var noBlockExpressions:Int = 0;
     var line:Int = 0;
     var lastNoBlockExprLine:Int;
+    var firstTokenInLine:Token;
 
     public function new(config:Config) {
         this.config = config;
@@ -184,13 +185,24 @@ class Indenter extends StackAwareWalker {
     function reindentToken(prevToken:Token, token:Token) {
         if (prevToken == null) return;
 
+        // stop modifying the first-in-line token's trivia if there was any non-dedent character
+        inline function isNonDedentChar(token:Token):Bool
+            return ![')', ']', '}', ';'].has(token.text);
+
+        if (isNonDedentChar(prevToken) || isNonDedentChar(token))
+            firstTokenInLine = null;
+
+        // after newline?
         var prevLastTrivia = prevToken.trailingTrivia[prevToken.trailingTrivia.length - 1];
-        if (prevLastTrivia == null || !prevLastTrivia.text.isNewline()) return;
+        if (prevLastTrivia != null && prevLastTrivia.text.isNewline())
+            firstTokenInLine = token;
+
+        if (firstTokenInLine == null) return;
 
         // has non-whitespace leading trivia in same line?
-        var i = token.leadingTrivia.length;
+        var i = firstTokenInLine.leadingTrivia.length;
         while (i-- > 0) {
-            var trivia = token.leadingTrivia[i];
+            var trivia = firstTokenInLine.leadingTrivia[i];
             if (trivia.text.isNewline())
                 break;
             else if (!trivia.text.isWhitespace())
@@ -198,11 +210,11 @@ class Indenter extends StackAwareWalker {
         }
 
         var indent = config.indent.whitespace.times(indentHierarchy.depthFor(line));
-        var lastTrivia = token.leadingTrivia[token.leadingTrivia.length - 1];
+        var lastTrivia = firstTokenInLine.leadingTrivia[firstTokenInLine.leadingTrivia.length - 1];
         if (lastTrivia != null && lastTrivia.text.isTabOrSpace())
             lastTrivia.text = indent;
         else
-            token.leadingTrivia.push(new Trivia(indent));
+            firstTokenInLine.leadingTrivia.push(new Trivia(indent));
     }
 
     function reindentTrivia(prevToken:Token, leadingTrivia:Array<Trivia>) {
