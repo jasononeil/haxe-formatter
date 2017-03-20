@@ -9,12 +9,22 @@ class Cli {
         new Cli();
     }
 
+    var config:Config;
+
     function new() {
         var args = Sys.args();
         var paths = [];
         var argHandler = hxargs.Args.generate([
             @doc("File or directory with .hx files to format (multiple allowed).")
             ["-s", "--source"] => function(path:String) paths.push(path),
+
+            @doc("Only reindent.")
+            ["--indent"] => function() config = {
+                    baseConfig: Noop,
+                    indent: {
+                        whitespace: "\t"
+                    }
+                },
         ]);
         argHandler.parse(args);
         if (args.length == 0) {
@@ -38,7 +48,7 @@ class Cli {
     function formatFile(file:String) {
         if (!file.endsWith(".hx"))
             return;
-        var formatted = Formatter.formatSource(File.getContent(file));
+        var formatted = Formatter.formatSource(File.getContent(file), config);
         switch (formatted) {
             case Success(data):
                 File.saveContent(file, data);
