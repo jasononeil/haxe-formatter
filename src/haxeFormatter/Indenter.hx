@@ -21,6 +21,10 @@ private enum IndentKind {
         On dedent, all `SingleExpr` indents in a row need to be cleared.
     **/
     SingleExpr;
+    /**
+        Dedented on the first dedent "as collateral damage".
+    **/
+    Weak;
 }
 
 private abstract IndentStack(Array<Indent>) from Array<Indent> {
@@ -42,17 +46,22 @@ private abstract IndentStack(Array<Indent>) from Array<Indent> {
     }
 
     public function dedent(kind:IndentKind, dedentToken:Token) {
+        clearAllOfKind(Weak);
         switch (kind) {
-            case Normal: this.pop();
-            case SingleExpr: clearSingleExprIndent();
+            case Normal:
+                this.pop();
+            case SingleExpr:
+                clearAllOfKind(SingleExpr);
+            case Weak:
+                throw "wut";
         }
         // dump('dedent ($kind) by ${dedentToken.text}');
     }
 
-    function clearSingleExprIndent() {
+    function clearAllOfKind(kind:IndentKind) {
         var i = this.length;
         while (i-- > 0) {
-            if (this[i].kind == SingleExpr) this.pop();
+            if (this[i].kind == kind) this.pop();
             else break;
         }
     }
@@ -100,6 +109,9 @@ class Indenter extends StackAwareWalker {
             if (!expr.match(EBlock(_, _, _)))
                 indentStack.indent(line, token, SingleExpr);
         }
+
+        inline function indentWeak()
+            indentStack.indent(line, token, Weak);
 
         inline function dedent(kind:IndentKind)
             indentStack.dedent(kind, token);
@@ -219,12 +231,12 @@ class Indenter extends StackAwareWalker {
                         switch (op.text) {
                             case '==' | '!=' | '>=' | '<=': // nothing to do here
                             case op if (op.has('=')):
-                                indentStack.indent(line, token, SingleExpr);
+                                indentWeak();
                             case _:
                         }
                     case Edge("assign", Node(Assignment(_), _)):
                         applyIndent();
-                        indentStack.indent(line, token, SingleExpr);
+                        indentWeak();
                     case _:
                         applyIndent();
                 }

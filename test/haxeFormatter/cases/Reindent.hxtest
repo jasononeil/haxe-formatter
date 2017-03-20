@@ -130,11 +130,13 @@ if (foo)
 return;
 }
 
-function m() {
+function m(a = true) {
 if (f == true || f >= 0 || f != 0 || f <= 0) call();
 
+var a = b;
+
 c +=
-a +
+(a) +
 b;
 
 var c =
@@ -270,11 +272,13 @@ class Main
             return;
     }
 
-    function m() {
+    function m(a = true) {
         if (f == true || f >= 0 || f != 0 || f <= 0) call();
 
+        var a = b;
+
         c +=
-            a +
+            (a) +
             b;
 
         var c =

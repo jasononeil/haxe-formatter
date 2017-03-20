@@ -1,3 +1,4 @@
 bin/
 hxparser/
 dump/
+test/haxeFormatter/ignored/
