@@ -23,7 +23,7 @@ private enum IndentKind {
     SingleExpr;
 }
 
-private abstract IndentHierarchy(Array<Indent>) from Array<Indent> {
+private abstract IndentStack(Array<Indent>) from Array<Indent> {
     public function depthFor(line:Int):Int {
         var depth = 0;
         var lastLine = -1;
@@ -75,7 +75,7 @@ private abstract IndentHierarchy(Array<Indent>) from Array<Indent> {
 class Indenter extends StackAwareWalker {
     var config:Config;
     var prevToken:Token;
-    var indentHierarchy:IndentHierarchy = [];
+    var indentStack:IndentStack = [];
     var line:Int = 0;
     var firstTokenInLine:Token;
 
@@ -94,15 +94,15 @@ class Indenter extends StackAwareWalker {
 
     public function reindent(token:Token, stack:WalkStack) {
         inline function indent()
-            indentHierarchy.indent(line, token, Normal);
+            indentStack.indent(line, token, Normal);
 
         function indentSingleExpr(expr:Expr) {
             if (!expr.match(EBlock(_, _, _)))
-                indentHierarchy.indent(line, token, SingleExpr);
+                indentStack.indent(line, token, SingleExpr);
         }
 
         inline function dedent(kind:IndentKind)
-            indentHierarchy.dedent(kind);
+            indentStack.dedent(kind);
 
         inline function applyTriviaIndent()
             reindentTrivia(prevToken, token.leadingTrivia);
@@ -249,7 +249,7 @@ class Indenter extends StackAwareWalker {
                 return;
         }
 
-        var indent = config.indent.whitespace.times(indentHierarchy.depthFor(line));
+        var indent = config.indent.whitespace.times(indentStack.depthFor(line));
         var lastTrivia = firstTokenInLine.leadingTrivia[firstTokenInLine.leadingTrivia.length - 1];
         if (lastTrivia != null && lastTrivia.text.isTabOrSpace())
             lastTrivia.text = indent;
@@ -264,7 +264,7 @@ class Indenter extends StackAwareWalker {
                 if (trivia.text.isNewline())
                     afterNewline = true;
 
-        var indent = config.indent.whitespace.times(indentHierarchy.depthFor(line));
+        var indent = config.indent.whitespace.times(indentStack.depthFor(line));
         var prevTrivia:Trivia = null;
         var i = 0;
         while (i < leadingTrivia.length) {
