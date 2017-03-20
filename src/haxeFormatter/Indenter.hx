@@ -38,15 +38,15 @@ private abstract IndentStack(Array<Indent>) from Array<Indent> {
 
     public function indent(line:Int, token:Token, kind:IndentKind) {
         this.push({line:line, token:token, kind:kind});
-        // dump("indent");
+        dump("indent");
     }
 
-    public function dedent(kind:IndentKind) {
+    public function dedent(kind:IndentKind, dedentToken:Token) {
         switch (kind) {
             case Normal: this.pop();
             case SingleExpr: clearSingleExprIndent();
         }
-        // dump("dedent " + kind);
+        dump('dedent ($kind) by ${dedentToken.text}');
     }
 
     function clearSingleExprIndent() {
@@ -59,12 +59,12 @@ private abstract IndentStack(Array<Indent>) from Array<Indent> {
 
     function toString() {
         var s = "";
-        var prefix = "";
+        var prefix = "  ";
         for (indent in this) {
             s += '$prefix${indent.token.text} - ${indent.line},${indent.kind}\n';
             prefix += "  ";
         }
-        return s;
+        return if (s == "") "  <none>\n" else s;
     }
 
     function dump(description:String) {
@@ -102,7 +102,7 @@ class Indenter extends StackAwareWalker {
         }
 
         inline function dedent(kind:IndentKind)
-            indentStack.dedent(kind);
+            indentStack.dedent(kind, token);
 
         inline function applyTriviaIndent()
             reindentTrivia(prevToken, token.leadingTrivia);
