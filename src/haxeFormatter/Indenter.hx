@@ -38,6 +38,7 @@ private abstract IndentHierarchy(Array<Indent>) from Array<Indent> {
 
     public function indent(line:Int, token:Token, kind:IndentKind) {
         this.push({line:line, token:token, kind:kind});
+        // dump("indent");
     }
 
     public function dedent(kind:IndentKind) {
@@ -45,6 +46,7 @@ private abstract IndentHierarchy(Array<Indent>) from Array<Indent> {
             case Normal: this.pop();
             case SingleExpr: clearSingleExprIndent();
         }
+        // dump("dedent " + kind);
     }
 
     function clearSingleExprIndent() {
@@ -53,6 +55,20 @@ private abstract IndentHierarchy(Array<Indent>) from Array<Indent> {
             if (this[i].kind == SingleExpr) this.pop();
             else break;
         }
+    }
+
+    function toString() {
+        var s = "";
+        var prefix = "";
+        for (indent in this) {
+            s += '$prefix${indent.token.text} - ${indent.line},${indent.kind}\n';
+            prefix += "  ";
+        }
+        return s;
+    }
+
+    function dump(description:String) {
+        Sys.println('$description\n${toString()}');
     }
 }
 
