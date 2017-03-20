@@ -4,13 +4,13 @@ import hxParser.ParseTree;
 import hxParser.StackAwareWalker;
 import hxParser.WalkStack;
 
-typedef Indent = {
+private typedef Indent = {
     var line:Int;
     var token:Token;
     var kind:IndentKind;
 }
 
-enum IndentKind {
+private enum IndentKind {
     /**
         A regular indent (from `{` for instance).
         Indent and dedent always happens one at a time.
@@ -23,8 +23,7 @@ enum IndentKind {
     SingleExpr;
 }
 
-@:forward(pop, push)
-abstract IndentHierarchy(Array<Indent>) from Array<Indent> {
+private abstract IndentHierarchy(Array<Indent>) from Array<Indent> {
     public function depthFor(line:Int):Int {
         var depth = 0;
         var lastLine = -1;
@@ -37,7 +36,18 @@ abstract IndentHierarchy(Array<Indent>) from Array<Indent> {
         return depth;
     }
 
-    public function clearSingleExprIndent() {
+    public function indent(line:Int, token:Token, kind:IndentKind) {
+        this.push({line:line, token:token, kind:kind});
+    }
+
+    public function dedent(kind:IndentKind) {
+        switch (kind) {
+            case Normal: this.pop();
+            case SingleExpr: clearSingleExprIndent();
+        }
+    }
+
+    function clearSingleExprIndent() {
         var i = this.length;
         while (i-- > 0) {
             if (this[i].kind == SingleExpr) this.pop();
@@ -67,11 +77,8 @@ class Indenter extends StackAwareWalker {
     }
 
     public function reindent(token:Token, stack:WalkStack) {
-        inline function incrementIndentLevel(kind:IndentKind)
-            indentHierarchy.push({line:line, token:token, kind:kind});
-
-        inline function decrementIndentLevel()
-            indentHierarchy.pop();
+        inline function incrementIndentLevel()
+            indentHierarchy.indent(line, token, Normal);
 
         inline function indentTrivia()
             reindentTrivia(prevToken, token.leadingTrivia);
@@ -87,9 +94,9 @@ class Indenter extends StackAwareWalker {
         inline function isSwitchEdge(edge:String):Bool
             return stack.match(Edge(edge, Node(Expr_ESwitch(_, _, _, _, _), _)));
 
-        function indentNoBlockExpr(expr:Expr) {
+        function indentSingleExpr(expr:Expr) {
             if (!expr.match(EBlock(_, _, _)))
-                incrementIndentLevel(SingleExpr);
+                indentHierarchy.indent(line, token, SingleExpr);
         }
 
         function updateLine(trivias:Array<Trivia>)
@@ -102,12 +109,12 @@ class Indenter extends StackAwareWalker {
         switch (token.text) {
             case '{' | '[' | '(':
                 indent();
-                incrementIndentLevel(Normal);
-                if (!config.indent.indentSwitches && isSwitchEdge("braceOpen")) decrementIndentLevel();
+                incrementIndentLevel();
+                if (!config.indent.indentSwitches && isSwitchEdge("braceOpen")) indentHierarchy.dedent(Normal);
             case '}' | ']' | ')':
-                if (config.indent.indentSwitches && isSwitchEdge("braceClose")) decrementIndentLevel();
+                if (config.indent.indentSwitches && isSwitchEdge("braceClose")) indentHierarchy.dedent(Normal);
                 indentTrivia();
-                decrementIndentLevel();
+                indentHierarchy.dedent(Normal);
                 indentToken();
 
                 switch (stack) {
@@ -116,23 +123,23 @@ class Indenter extends StackAwareWalker {
                             case Expr_EIf(_, _, _, _, exprBody, _),
                                 Expr_EFor(_, _, _, _, exprBody),
                                 Expr_EWhile(_, _, _, _, exprBody):
-                                indentNoBlockExpr(exprBody);
+                                indentSingleExpr(exprBody);
                             case Catch(node):
-                                indentNoBlockExpr(node.expr);
+                                indentSingleExpr(node.expr);
                             case _:
                         }
                     case _:
                 }
             case ';':
-                indentHierarchy.clearSingleExprIndent();
+                indentHierarchy.dedent(SingleExpr);
                 indent();
             case 'else':
-                indentHierarchy.clearSingleExprIndent();
+                indentHierarchy.dedent(SingleExpr);
                 switch (stack) {
                     case Edge("elseKeyword", Node(ExprElse({ elseKeyword:_, expr:expr }), _)):
                         indent();
                         if (!expr.match(EIf(_, _, _, _, _, _)))
-                            indentNoBlockExpr(expr);
+                            indentSingleExpr(expr);
                     case _:
                         indent();
                 }
@@ -140,18 +147,18 @@ class Indenter extends StackAwareWalker {
                 switch (stack) {
                     case Edge("tryKeyword", Node(Expr_ETry(_, exprBody, _), _)):
                         indent();
-                        indentNoBlockExpr(exprBody);
+                        indentSingleExpr(exprBody);
                     case _:
                         indent();
                 }
             case 'catch' | 'while':
-                indentHierarchy.clearSingleExprIndent();
+                indentHierarchy.dedent(SingleExpr);
                 indent();
             case 'do':
                 switch (stack) {
                     case Edge("doKeyword", Node(Expr_EDo(_, exprBody, _), _)):
                         indent();
-                        indentNoBlockExpr(exprBody);
+                        indentSingleExpr(exprBody);
                     case _:
                         indent();
                 }
@@ -164,13 +171,13 @@ class Indenter extends StackAwareWalker {
                                 switch (expr) {
                                     case Expr(expr, _):
                                         indent();
-                                        indentNoBlockExpr(expr);
+                                        indentSingleExpr(expr);
                                     case _:
                                         indent();
                                 }
                             case Expr_EFunction(_, fun) | BlockElement_InlineFunction(_, _, fun, _):
                                 indent();
-                                indentNoBlockExpr(fun.expr);
+                                indentSingleExpr(fun.expr);
                             case _:
                                 indent();
                         }
@@ -181,13 +188,13 @@ class Indenter extends StackAwareWalker {
                 switch (stack) {
                     case Edge("caseKeyword", Node(Case_Case(_, _, _, _, _), Element(index, _))) |
                         Edge("defaultKeyword", Node(Case_Default(_, _, _), Element(index, _))):
-                        if (index > 0) decrementIndentLevel();
+                        if (index > 0) indentHierarchy.dedent(Normal);
                         indent();
-                        incrementIndentLevel(Normal);
+                        incrementIndentLevel();
                     case Edge(_, Node(Metadata_WithArgs(_, _, _), _)):
                         // ( is part of the metadata token, so the previous ( case doesn't trigger
                         indent();
-                        incrementIndentLevel(Normal);
+                        incrementIndentLevel();
                     case _:
                         indent();
                 }
