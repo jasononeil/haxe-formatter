@@ -7,6 +7,20 @@ import hxParser.WalkStack;
 typedef Indent = {
     var line:Int;
     var token:Token;
+    var kind:IndentKind;
+}
+
+enum IndentKind {
+    /**
+        A regular indent (from `{` for instance).
+        Indent and dedent always happens one at a time.
+    **/
+    Normal;
+    /**
+        A "single-expr" indent (an `if ()` without braces for instance.
+        On dedent, all `SingleExpr` indents in a row need to be cleared.
+    **/
+    SingleExpr;
 }
 
 @:forward(pop, push)
@@ -22,15 +36,21 @@ abstract IndentHierarchy(Array<Indent>) from Array<Indent> {
         }
         return depth;
     }
+
+    public function clearSingleExprIndent() {
+        var i = this.length;
+        while (i-- > 0) {
+            if (this[i].kind == SingleExpr) this.pop();
+            else break;
+        }
+    }
 }
 
 class Indenter extends StackAwareWalker {
     var config:Config;
     var prevToken:Token;
     var indentHierarchy:IndentHierarchy = [];
-    var noBlockExpressions:Int = 0;
     var line:Int = 0;
-    var lastNoBlockExprLine:Int;
     var firstTokenInLine:Token;
 
     public function new(config:Config) {
@@ -47,8 +67,8 @@ class Indenter extends StackAwareWalker {
     }
 
     public function reindent(token:Token, stack:WalkStack) {
-        inline function incrementIndentLevel()
-            indentHierarchy.push({line:line, token:token});
+        inline function incrementIndentLevel(kind:IndentKind)
+            indentHierarchy.push({line:line, token:token, kind:kind});
 
         inline function decrementIndentLevel()
             indentHierarchy.pop();
@@ -68,19 +88,8 @@ class Indenter extends StackAwareWalker {
             return stack.match(Edge(edge, Node(Expr_ESwitch(_, _, _, _, _), _)));
 
         function indentNoBlockExpr(expr:Expr) {
-            if (!expr.match(EBlock(_, _, _)) && lastNoBlockExprLine != line) {
-                lastNoBlockExprLine = line;
-                noBlockExpressions++;
-                incrementIndentLevel();
-            }
-        }
-
-        function dedentNoBlockExpr() {
-            if (noBlockExpressions > 0) {
-                for (i in 0...noBlockExpressions)
-                    indentHierarchy.pop();
-                noBlockExpressions = 0;
-            }
+            if (!expr.match(EBlock(_, _, _)))
+                incrementIndentLevel(SingleExpr);
         }
 
         function updateLine(trivias:Array<Trivia>)
@@ -93,7 +102,7 @@ class Indenter extends StackAwareWalker {
         switch (token.text) {
             case '{' | '[' | '(':
                 indent();
-                incrementIndentLevel();
+                incrementIndentLevel(Normal);
                 if (!config.indent.indentSwitches && isSwitchEdge("braceOpen")) decrementIndentLevel();
             case '}' | ']' | ')':
                 if (config.indent.indentSwitches && isSwitchEdge("braceClose")) decrementIndentLevel();
@@ -115,10 +124,10 @@ class Indenter extends StackAwareWalker {
                     case _:
                 }
             case ';':
-                dedentNoBlockExpr();
+                indentHierarchy.clearSingleExprIndent();
                 indent();
             case 'else':
-                dedentNoBlockExpr();
+                indentHierarchy.clearSingleExprIndent();
                 switch (stack) {
                     case Edge("elseKeyword", Node(ExprElse({ elseKeyword:_, expr:expr }), _)):
                         indent();
@@ -136,7 +145,7 @@ class Indenter extends StackAwareWalker {
                         indent();
                 }
             case 'catch' | 'while':
-                dedentNoBlockExpr();
+                indentHierarchy.clearSingleExprIndent();
                 indent();
             case 'do':
                 switch (stack) {
@@ -174,11 +183,11 @@ class Indenter extends StackAwareWalker {
                         Edge("defaultKeyword", Node(Case_Default(_, _, _), Element(index, _))):
                         if (index > 0) decrementIndentLevel();
                         indent();
-                        incrementIndentLevel();
+                        incrementIndentLevel(Normal);
                     case Edge(_, Node(Metadata_WithArgs(_, _, _), _)):
                         // ( is part of the metadata token, so the previous ( case doesn't trigger
                         indent();
-                        incrementIndentLevel();
+                        incrementIndentLevel(Normal);
                     case _:
                         indent();
                 }
