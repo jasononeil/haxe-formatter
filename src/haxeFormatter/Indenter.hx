@@ -4,16 +4,21 @@ import hxParser.ParseTree;
 import hxParser.StackAwareWalker;
 import hxParser.WalkStack;
 
+typedef Indent = {
+    var line:Int;
+    var token:Token;
+}
+
 @:forward(pop, push)
-abstract IndentHierarchy(Array<Int>) from Array<Int> {
+abstract IndentHierarchy(Array<Indent>) from Array<Indent> {
     public function depthFor(line:Int):Int {
         var depth = 0;
         var lastLine = -1;
-        for (line in this) {
+        for (indent in this) {
             // don't double-indent (e.g. `function() return switch [...]`
             // indents twice in one line, but we ignore one of them)
-            if (line != lastLine) depth++;
-            lastLine = line;
+            if (indent.line != lastLine) depth++;
+            lastLine = indent.line;
         }
         return depth;
     }
@@ -41,13 +46,13 @@ class Indenter extends StackAwareWalker {
         prevToken = token;
     }
 
-    inline function incrementIndentLevel()
-        indentHierarchy.push(line);
-
-    inline function decrementIndentLevel()
-        indentHierarchy.pop();
-
     public function reindent(token:Token, stack:WalkStack) {
+        inline function incrementIndentLevel()
+            indentHierarchy.push({line:line, token:token});
+
+        inline function decrementIndentLevel()
+            indentHierarchy.pop();
+
         inline function indentTrivia()
             reindentTrivia(prevToken, token.leadingTrivia);
 
@@ -66,7 +71,7 @@ class Indenter extends StackAwareWalker {
             if (!expr.match(EBlock(_, _, _)) && lastNoBlockExprLine != line) {
                 lastNoBlockExprLine = line;
                 noBlockExpressions++;
-                indentHierarchy.push(line);
+                incrementIndentLevel();
             }
         }
 
