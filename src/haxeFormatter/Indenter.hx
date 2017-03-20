@@ -219,8 +219,9 @@ class Indenter extends StackAwareWalker {
                 switch (stack) {
                     case Edge("caseKeyword", Node(Case_Case(_, _, _, _, _), Element(index, _))) |
                         Edge("defaultKeyword", Node(Case_Default(_, _, _), Element(index, _))):
+                        applyTriviaIndent();
                         if (index > 0) dedent(Normal);
-                        applyIndent();
+                        applyTokenIndent();
                         indent();
                     case Edge(_, Node(Metadata_WithArgs(_, _, _), _)):
                         // ( is part of the metadata token, so the previous ( case doesn't trigger
