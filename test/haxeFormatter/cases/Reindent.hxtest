@@ -131,6 +131,8 @@ return;
 }
 
 function m() {
+if (f == true || f >= 0 || f != 0 || f <= 0) call();
+
 c +=
 a +
 b;
@@ -269,6 +271,8 @@ class Main
     }
 
     function m() {
+        if (f == true || f >= 0 || f != 0 || f <= 0) call();
+
         c +=
             a +
             b;

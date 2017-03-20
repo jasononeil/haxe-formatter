@@ -216,8 +216,12 @@ class Indenter extends StackAwareWalker {
                         indent();
                     case Edge("op", Node(Expr_EBinop(_, op, _), _)):
                         applyIndent();
-                        if (op.text.has("="))
-                            indentStack.indent(line, token, SingleExpr);
+                        switch (op.text) {
+                            case '==' | '!=' | '>=' | '<=': // nothing to do here
+                            case op if (op.has('=')):
+                                indentStack.indent(line, token, SingleExpr);
+                            case _:
+                        }
                     case Edge("assign", Node(Assignment(_), _)):
                         applyIndent();
                         indentStack.indent(line, token, SingleExpr);
