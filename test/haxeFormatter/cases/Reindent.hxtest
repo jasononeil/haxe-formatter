@@ -130,6 +130,16 @@ if (foo)
 return;
 }
 
+function m() {
+c +=
+a +
+b;
+
+var c =
+a +
+b;
+}
+
 // comment before }
 }
 
@@ -256,6 +266,16 @@ class Main
 
         if (foo)
             return;
+    }
+
+    function m() {
+        c +=
+            a +
+            b;
+
+        var c =
+            a +
+            b;
     }
 
     // comment before }

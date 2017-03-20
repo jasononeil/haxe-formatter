@@ -38,7 +38,7 @@ private abstract IndentStack(Array<Indent>) from Array<Indent> {
 
     public function indent(line:Int, token:Token, kind:IndentKind) {
         this.push({line:line, token:token, kind:kind});
-        dump("indent");
+        // dump("indent");
     }
 
     public function dedent(kind:IndentKind, dedentToken:Token) {
@@ -46,7 +46,7 @@ private abstract IndentStack(Array<Indent>) from Array<Indent> {
             case Normal: this.pop();
             case SingleExpr: clearSingleExprIndent();
         }
-        dump('dedent ($kind) by ${dedentToken.text}');
+        // dump('dedent ($kind) by ${dedentToken.text}');
     }
 
     function clearSingleExprIndent() {
@@ -214,6 +214,13 @@ class Indenter extends StackAwareWalker {
                         // ( is part of the metadata token, so the previous ( case doesn't trigger
                         applyIndent();
                         indent();
+                    case Edge("op", Node(Expr_EBinop(_, op, _), _)):
+                        applyIndent();
+                        if (op.text.has("="))
+                            indentStack.indent(line, token, SingleExpr);
+                    case Edge("assign", Node(Assignment(_), _)):
+                        applyIndent();
+                        indentStack.indent(line, token, SingleExpr);
                     case _:
                         applyIndent();
                 }
