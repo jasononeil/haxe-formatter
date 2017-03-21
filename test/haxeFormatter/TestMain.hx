@@ -1,6 +1,5 @@
 package haxeFormatter;
 
-import haxe.Json;
 import haxe.PosInfos;
 import haxe.io.Path;
 import haxe.unit.TestResult;
@@ -113,6 +112,7 @@ class TestMain {
                 if (result != formattedCode) {
                     status.error = 'Test case "$name" failed. Expected:\n\n$formattedCode\n\nbut was:\n\n$result';
                     status.success = false;
+                    sys.io.File.saveContent("test/formatter-result.txt", '$formattedCode---$result');
                     print("E");
                 } else {
                     status.success = true;
