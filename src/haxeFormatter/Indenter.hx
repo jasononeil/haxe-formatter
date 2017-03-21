@@ -57,13 +57,12 @@ private abstract IndentStack(Array<Indent>) from Array<Indent> {
         if (top == null) return;
 
         clearAllOfKind(Weak);
+        clearAllOfKind(SingleExpr);
         switch (kind) {
             case Strong:
                 this.pop();
             case Normal if (top.kind != Strong):
                 this.pop();
-            case SingleExpr:
-                clearAllOfKind(SingleExpr);
             case _:
         }
         // dump('dedent ($kind) by ${dedentToken.text}');

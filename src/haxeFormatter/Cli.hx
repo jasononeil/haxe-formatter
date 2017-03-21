@@ -22,7 +22,7 @@ class Cli {
             ["--indent"] => function(whitespace:String) config = {
                     baseConfig: Noop,
                     indent: {
-                        whitespace: whitespace
+                        whitespace: "\t"
                     }
                 },
         ]);

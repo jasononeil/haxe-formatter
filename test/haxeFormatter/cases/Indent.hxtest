@@ -135,6 +135,8 @@ if (f == true || f >= 0 || f != 0 || f <= 0) call();
 
 var a = b;
 
+call(function() a = b);
+
 c +=
 (a) +
 b;
@@ -282,6 +284,8 @@ class Main
         if (f == true || f >= 0 || f != 0 || f <= 0) call();
 
         var a = b;
+
+        call(function() a = b);
 
         c +=
             (a) +
