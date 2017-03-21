@@ -147,6 +147,12 @@ b;
 var c =
 a +
 b;
+
+c
+= somethingVeryVeryVeryLong;
+
+var c
+= somethingVeryVeryVeryLong;
 }
 
 function n() {
@@ -300,6 +306,12 @@ class Main
         var c =
             a +
             b;
+
+        c
+            = somethingVeryVeryVeryLong;
+
+        var c
+            = somethingVeryVeryVeryLong;
     }
 
     function n() {

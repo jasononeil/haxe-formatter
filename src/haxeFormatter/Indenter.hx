@@ -241,16 +241,16 @@ class Indenter extends StackAwareWalker {
                         applyIndent();
                         indent(Normal);
                     case Edge("op", Node(Expr_EBinop(_, op, _), _)):
-                        applyIndent();
                         switch (op.text) {
                             case '==' | '!=' | '>=' | '<=': // nothing to do here
                             case op if (op.has('=')):
                                 indent(Weak);
                             case _:
                         }
-                    case Edge("assign", Node(Assignment(_), _)):
                         applyIndent();
+                    case Edge("assign", Node(Assignment(_), _)):
                         indent(Weak);
+                        applyIndent();
                     case _:
                         applyIndent();
                 }
