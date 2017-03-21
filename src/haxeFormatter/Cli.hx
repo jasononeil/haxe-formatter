@@ -19,10 +19,10 @@ class Cli {
             ["-s", "--source"] => function(path:String) paths.push(path),
 
             @doc("Only reindent.")
-            ["--indent"] => function() config = {
+            ["--indent"] => function(whitespace:String) config = {
                     baseConfig: Noop,
                     indent: {
-                        whitespace: "\t"
+                        whitespace: whitespace
                     }
                 },
         ]);
