@@ -96,6 +96,7 @@ class Indenter extends StackAwareWalker {
     var prevToken:Token;
     var indentStack:IndentStack = [];
     var line:Int = 0;
+    var firstTokenInLine:Token;
 
     public function new(config:Config) {
         this.config = config;
@@ -262,9 +263,22 @@ class Indenter extends StackAwareWalker {
     function reindentToken(prevToken:Token, token:Token) {
         if (prevToken == null) return;
 
+        // stop modifying the first-in-line token's trivia if there was any non-dedent character
+        inline function isNonDedentChar(token:Token):Bool
+            return ![')', ']', '}'].has(token.text);
+
+        if (isNonDedentChar(prevToken) || isNonDedentChar(token))
+            firstTokenInLine = null;
+
         // after newline?
         var prevLastTrivia = prevToken.trailingTrivia[prevToken.trailingTrivia.length - 1];
-        if (prevLastTrivia == null || !prevLastTrivia.text.isNewline()) return;
+        if (prevLastTrivia != null && prevLastTrivia.text.isNewline())
+            firstTokenInLine = token;
+
+        if (firstTokenInLine == null)
+            return;
+
+        token = firstTokenInLine;
 
         // has non-whitespace leading trivia in same line?
         var i = token.leadingTrivia.length;
@@ -276,7 +290,7 @@ class Indenter extends StackAwareWalker {
                 return;
         }
 
-        if (!config.indent.indentBlocksInCalls && indentStack.top != null && indentStack.top.token.text == '(' && token.text == '{')
+        if (indentStack.top != null && indentStack.top.token.text == '(' && token.text == '{')
             indentStack.dedent(Normal, token);
 
         var indent = config.indent.whitespace.times(indentStack.depthFor(line));

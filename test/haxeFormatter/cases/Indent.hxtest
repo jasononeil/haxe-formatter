@@ -1,8 +1,7 @@
 {
     "indent": {
         "whitespace": "    ",
-        "indentSwitches": true,
-        "indentBlocksInCalls": false
+        "indentSwitches": true
     }
 }
 
@@ -156,6 +155,10 @@ var c
 }
 
 function n() {
+call(function() {
+call();
+});
+
 call(function()
 {
 call();
@@ -315,6 +318,10 @@ class Main
     }
 
     function n() {
+        call(function() {
+            call();
+        });
+
         call(function()
         {
             call();

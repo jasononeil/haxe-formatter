@@ -34,7 +34,6 @@ typedef CommaPaddingConfig = {
 typedef IndentConfig = {
     @:optional var whitespace:String;
     @:optional var indentSwitches:Bool;
-    @:optional var indentBlocksInCalls:Bool;
 }
 
 @:enum abstract TwoSidedPadding(String) {
@@ -81,8 +80,7 @@ typedef IndentConfig = {
             },
             indent: {
                 whitespace: "\t",
-                indentSwitches: true,
-                indentBlocksInCalls: false
+                indentSwitches: true
             }
         },
         Noop => {
@@ -106,8 +104,7 @@ typedef IndentConfig = {
             },
             indent: {
                 whitespace: null,
-                indentSwitches: true,
-                indentBlocksInCalls: false
+                indentSwitches: true
             }
         }
     ];
