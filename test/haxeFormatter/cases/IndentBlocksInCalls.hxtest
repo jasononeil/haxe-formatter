@@ -1,0 +1,23 @@
+{
+    "indent": {
+        "whitespace": "    ",
+        "indentBlocksInCalls": true
+    },
+    "testProperties": {
+        "entryPoint": "block_elements"
+    }
+}
+
+---
+
+call(
+{
+
+});
+
+---
+
+call(
+    {
+
+    });

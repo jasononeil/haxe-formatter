@@ -277,7 +277,7 @@ class Indenter extends StackAwareWalker {
                 return;
         }
 
-        if (indentStack.top != null && indentStack.top.token.text == '(' && token.text == '{')
+        if (!config.indent.indentBlocksInCalls && indentStack.top != null && indentStack.top.token.text == '(' && token.text == '{')
             indentStack.dedent(Normal, token);
 
         var indent = config.indent.whitespace.times(indentStack.depthFor(line));
