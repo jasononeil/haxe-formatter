@@ -174,7 +174,7 @@ class Indenter extends StackAwareWalker {
                         }
                     case _:
                 }
-            case ';':
+            case ';' | ',':
                 dedent(SingleExpr);
                 applyIndent();
             case 'else':
