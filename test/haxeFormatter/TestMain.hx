@@ -46,6 +46,7 @@ class TestMain {
                 "test/haxeFormatter/cases");
 
         Sys.println(testResult.toString());
+        if (testResult.success) updateResultFile("---");
         Sys.exit(if (testResult.success) 0 else 1);
     }
 
@@ -112,7 +113,7 @@ class TestMain {
                 if (result != formattedCode) {
                     status.error = 'Test case "$name" failed. Expected:\n\n$formattedCode\n\nbut was:\n\n$result';
                     status.success = false;
-                    sys.io.File.saveContent("test/formatter-result.txt", '$formattedCode---$result');
+                    updateResultFile('$formattedCode---$result');
                     print("E");
                 } else {
                     status.success = true;
@@ -125,6 +126,10 @@ class TestMain {
         }
 
         return status;
+    }
+
+    function updateResultFile(content:String) {
+        sys.io.File.saveContent("test/formatter-result.txt", content);
     }
 
     function invertConfig(config:TestConfig):TestConfig {
