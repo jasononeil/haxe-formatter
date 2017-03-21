@@ -12,48 +12,59 @@ private typedef Indent = {
 
 private enum IndentKind {
     /**
-        A regular indent (from `{` for instance).
-        Indent and dedent always happens one at a time.
+        A "regular" indent - `(`, `[`...
     **/
     Normal;
     /**
         A "single-expr" indent (an `if ()` without braces for instance.
-        On dedent, all `SingleExpr` indents in a row need to be cleared.
+        On dedent, all `SingleExpr` indents in a row are cleared.
     **/
     SingleExpr;
     /**
-        Dedented on the first dedent "as collateral damage".
+        Dedented "as collateral damage" along with any other dedent.
     **/
     Weak;
+    /**
+        Can only be cleared by a strong dedent.
+    **/
+    Strong;
 }
 
 private abstract IndentStack(Array<Indent>) from Array<Indent> {
+    public var top(get,never):Indent;
+
+    function get_top() return this[this.length - 1];
+
     public function depthFor(line:Int):Int {
         var depth = 0;
-        var lastLine = -1;
+        var prevIndent:Indent = null;
         for (indent in this) {
             // don't double-indent (e.g. `function() return switch [...]`
             // indents twice in one line, but we ignore one of them)
-            if (indent.line != lastLine) depth++;
-            lastLine = indent.line;
+            if (prevIndent == null || indent.line != prevIndent.line) depth++;
+            prevIndent = indent;
         }
         return depth;
     }
 
     public function indent(line:Int, token:Token, kind:IndentKind) {
+        if (top != null && top.kind == Weak && top.line == line) this.pop();
         this.push({line:line, token:token, kind:kind});
         // dump("indent");
     }
 
     public function dedent(kind:IndentKind, dedentToken:Token) {
+        if (top == null) return;
+
         clearAllOfKind(Weak);
         switch (kind) {
-            case Normal:
+            case Strong:
+                this.pop();
+            case Normal if (top.kind != Strong):
                 this.pop();
             case SingleExpr:
                 clearAllOfKind(SingleExpr);
-            case Weak:
-                throw "wut";
+            case _:
         }
         // dump('dedent ($kind) by ${dedentToken.text}');
     }
@@ -86,7 +97,6 @@ class Indenter extends StackAwareWalker {
     var prevToken:Token;
     var indentStack:IndentStack = [];
     var line:Int = 0;
-    var firstTokenInLine:Token;
 
     public function new(config:Config) {
         this.config = config;
@@ -102,16 +112,13 @@ class Indenter extends StackAwareWalker {
     }
 
     public function reindent(token:Token, stack:WalkStack) {
-        inline function indent()
-            indentStack.indent(line, token, Normal);
+        inline function indent(kind:IndentKind)
+            indentStack.indent(line, token, kind);
 
         function indentSingleExpr(expr:Expr) {
             if (!expr.match(EBlock(_, _, _)))
-                indentStack.indent(line, token, SingleExpr);
+                indent(SingleExpr);
         }
-
-        inline function indentWeak()
-            indentStack.indent(line, token, Weak);
 
         inline function dedent(kind:IndentKind)
             indentStack.dedent(kind, token);
@@ -138,12 +145,19 @@ class Indenter extends StackAwareWalker {
         updateLine(token.leadingTrivia);
 
         switch (token.text) {
-            case '{' | '[' | '(':
+            case '{':
                 applyIndent();
-                indent();
-                if (!config.indent.indentSwitches && isSwitchEdge("braceOpen")) dedent(Normal);
-            case '}' | ']' | ')':
-                if (config.indent.indentSwitches && isSwitchEdge("braceClose")) dedent(Normal);
+                indent(Strong);
+                if (!config.indent.indentSwitches && isSwitchEdge("braceOpen")) dedent(Strong);
+            case '}':
+                if (config.indent.indentSwitches && isSwitchEdge("braceClose")) dedent(Strong);
+                applyTriviaIndent();
+                dedent(Strong);
+                applyTokenIndent();
+            case '[' | '(':
+                applyIndent();
+                indent(Normal);
+            case ']' | ')':
                 applyTriviaIndent();
                 dedent(Normal);
                 applyTokenIndent();
@@ -222,22 +236,22 @@ class Indenter extends StackAwareWalker {
                         applyTriviaIndent();
                         if (index > 0) dedent(Normal);
                         applyTokenIndent();
-                        indent();
+                        indent(Normal);
                     case Edge(_, Node(Metadata_WithArgs(_, _, _), _)):
                         // ( is part of the metadata token, so the previous ( case doesn't trigger
                         applyIndent();
-                        indent();
+                        indent(Normal);
                     case Edge("op", Node(Expr_EBinop(_, op, _), _)):
                         applyIndent();
                         switch (op.text) {
                             case '==' | '!=' | '>=' | '<=': // nothing to do here
                             case op if (op.has('=')):
-                                indentWeak();
+                                indent(Weak);
                             case _:
                         }
                     case Edge("assign", Node(Assignment(_), _)):
                         applyIndent();
-                        indentWeak();
+                        indent(Weak);
                     case _:
                         applyIndent();
                 }
@@ -249,36 +263,29 @@ class Indenter extends StackAwareWalker {
     function reindentToken(prevToken:Token, token:Token) {
         if (prevToken == null) return;
 
-        // stop modifying the first-in-line token's trivia if there was any non-dedent character
-        inline function isNonDedentChar(token:Token):Bool
-            return ![')', ']', '}', ';'].has(token.text);
-
-        if (isNonDedentChar(prevToken) || isNonDedentChar(token))
-            firstTokenInLine = null;
-
         // after newline?
         var prevLastTrivia = prevToken.trailingTrivia[prevToken.trailingTrivia.length - 1];
-        if (prevLastTrivia != null && prevLastTrivia.text.isNewline())
-            firstTokenInLine = token;
-
-        if (firstTokenInLine == null) return;
+        if (prevLastTrivia == null || !prevLastTrivia.text.isNewline()) return;
 
         // has non-whitespace leading trivia in same line?
-        var i = firstTokenInLine.leadingTrivia.length;
+        var i = token.leadingTrivia.length;
         while (i-- > 0) {
-            var trivia = firstTokenInLine.leadingTrivia[i];
+            var trivia = token.leadingTrivia[i];
             if (trivia.text.isNewline())
                 break;
             else if (!trivia.text.isWhitespace())
                 return;
         }
 
+        if (indentStack.top != null && indentStack.top.token.text == '(' && token.text == '{')
+            indentStack.dedent(Normal, token);
+
         var indent = config.indent.whitespace.times(indentStack.depthFor(line));
-        var lastTrivia = firstTokenInLine.leadingTrivia[firstTokenInLine.leadingTrivia.length - 1];
+        var lastTrivia = token.leadingTrivia[token.leadingTrivia.length - 1];
         if (lastTrivia != null && lastTrivia.text.isTabOrSpace())
             lastTrivia.text = indent;
         else
-            firstTokenInLine.leadingTrivia.push(new Trivia(indent));
+            token.leadingTrivia.push(new Trivia(indent));
     }
 
     function reindentTrivia(prevToken:Token, leadingTrivia:Array<Trivia>) {
@@ -305,9 +312,8 @@ class Indenter extends StackAwareWalker {
                 }
             }
 
-            if (!trivia.text.isWhitespace()) {
+            if (!trivia.text.isWhitespace())
                 afterNewline = false;
-            }
 
             prevTrivia = trivia;
             i++;

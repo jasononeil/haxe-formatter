@@ -57,7 +57,9 @@ call();
 if (foo) if (foo)
 call();
 
-if (foo) if (foo) {
+if (foo)
+if (foo)
+{
 call();
 }
 
@@ -123,9 +125,6 @@ c
 function k() {}
 
 function l() {
-call([{
-}]);
-
 if (foo)
 return;
 }
@@ -142,6 +141,13 @@ b;
 var c =
 a +
 b;
+}
+
+function n() {
+call(function()
+{
+call();
+});
 }
 
 // comment before }
@@ -199,9 +205,11 @@ class Main
         if (foo) if (foo)
             call();
 
-        if (foo) if (foo) {
-            call();
-        }
+        if (foo)
+            if (foo)
+            {
+                call();
+            }
 
         for (i in 0...10)
             trace(i);
@@ -265,9 +273,6 @@ class Main
     function k() {}
 
     function l() {
-        call([{
-        }]);
-
         if (foo)
             return;
     }
@@ -284,6 +289,13 @@ class Main
         var c =
             a +
             b;
+    }
+
+    function n() {
+        call(function()
+        {
+            call();
+        });
     }
 
     // comment before }
