@@ -138,6 +138,18 @@ class Processor extends StackAwareWalker {
         padKeywordParen(ifKeyword);
     }
 
+    override function walkExprElse(node:ExprElse, stack:WalkStack) {
+        switch (config.brackets.newlineBeforeElse) {
+            case Yes:
+                prevToken.trailingTrivia = [makeNewlineTrivia()];
+            case No:
+                prevToken.trailingTrivia = [];
+                node.elseKeyword.leadingTrivia = [new Trivia(" ")];
+            case Ignore:
+        }
+        super.walkExprElse(node, stack);
+    }
+
     override function walkExpr_EFor(forKeyword:Token, parenOpen:Token, exprIter:Expr, parenClose:Token, exprBody:Expr, stack:WalkStack) {
         super.walkExpr_EFor(forKeyword, parenOpen, exprIter, parenClose, exprBody, stack);
         padKeywordParen(forKeyword);

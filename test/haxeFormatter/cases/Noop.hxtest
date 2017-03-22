@@ -14,5 +14,7 @@ import util.Result;
 import hxParser.HxParser;
 
 class C {
-    function new(i:Int, s : String, b :Bool) {}
+    function new(i:Int, s : String, b :Bool)
+    {
+    }
 }

@@ -40,6 +40,7 @@ typedef IndentConfig = {
 
 typedef BracketConfig = {
     @:optional var newlineBeforeOpening:OptionalBool;
+    @:optional var newlineBeforeElse:OptionalBool;
 }
 
 @:enum abstract TwoSidedPadding(String) {
@@ -110,7 +111,8 @@ typedef BracketConfig = {
             },
             newlineCharacter: Auto,
             brackets: {
-                newlineBeforeOpening: No
+                newlineBeforeOpening: No,
+                newlineBeforeElse: No
             }
         },
         Noop => {
@@ -138,7 +140,8 @@ typedef BracketConfig = {
             },
             newlineCharacter: Auto,
             brackets: {
-                newlineBeforeOpening: Ignore
+                newlineBeforeOpening: Ignore,
+                newlineBeforeElse: Ignore
             }
         }
     ];

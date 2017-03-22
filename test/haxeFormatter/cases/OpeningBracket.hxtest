@@ -1,6 +1,7 @@
 {
     "brackets": {
-        "newlineBeforeOpening": "no"
+        "newlineBeforeOpening": "no",
+        "newlineBeforeElse": "no"
     },
     "indent": {
         "whitespace": "    "
@@ -16,7 +17,12 @@ class Main
 {
     function foo()
     {
-
+        if (foo)
+        {
+        }
+        else
+        {
+        }
     }
 }
 
@@ -24,6 +30,8 @@ class Main
 
 class Main {
     function foo() {
-
+        if (foo) {
+        } else {
+        }
     }
 }
