@@ -150,6 +150,11 @@ class TestMain {
             case Insert: Remove;
             case Remove: Insert;
         }
+        function invertOptionalBool(bool):OptionalBool return switch (bool) {
+            case Yes: No;
+            case No: Yes;
+            case Ignore: Ignore;
+        }
 
         var padding = config.padding;
         if (padding != null) {
@@ -170,6 +175,10 @@ class TestMain {
                 comma.defaultPadding = invertTwoSidedPadding(comma.defaultPadding);
                 comma.propertyAccess = invertTwoSidedPadding(comma.propertyAccess);
             }
+        }
+        var brackets = config.brackets;
+        if (brackets != null) {
+            brackets.newlineBeforeOpening = invertOptionalBool(brackets.newlineBeforeOpening);
         }
         return config;
     }

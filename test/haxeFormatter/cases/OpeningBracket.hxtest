@@ -1,0 +1,29 @@
+{
+    "brackets": {
+        "newlineBeforeOpening": "no"
+    },
+    "indent": {
+        "whitespace": "    "
+    },
+    "testProperties": {
+        "type": "invertible"
+    }
+}
+
+---
+
+class Main
+{
+    function foo()
+    {
+
+    }
+}
+
+---
+
+class Main {
+    function foo() {
+
+    }
+}

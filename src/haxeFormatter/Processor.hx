@@ -35,6 +35,16 @@ class Processor extends StackAwareWalker {
                 token.trailingTrivia = padSpace(parenInner, After, token.trailingTrivia);
             case ')':
                 prevToken.trailingTrivia = padSpace(parenInner, Before, prevToken.trailingTrivia);
+            case '{':
+                switch (config.brackets.newlineBeforeOpening) {
+                    case Yes:
+                        prevToken.trailingTrivia = [makeNewlineTrivia()];
+                        token.leadingTrivia = [];
+                    case No:
+                        prevToken.trailingTrivia = [];
+                        token.leadingTrivia = [new Trivia(" ")];
+                    case Ignore:
+                }
             case ',':
                 var comma = config.padding.comma;
                 var config = comma.defaultPadding;
@@ -48,6 +58,10 @@ class Processor extends StackAwareWalker {
         }
 
         prevToken = token;
+    }
+
+    private function makeNewlineTrivia():Trivia {
+        return new Trivia(config.newlineCharacter.getCharacter());
     }
 
     function sortImports(decls:Array<Decl>) {

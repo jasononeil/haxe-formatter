@@ -5,6 +5,8 @@ typedef Config = {
     @:optional var imports:ImportConfig;
     @:optional var padding:PaddingConfig;
     @:optional var indent:IndentConfig;
+    @:optional var newlineCharacter:NewlineCharacter;
+    @:optional var brackets:BracketConfig;
 }
 
 typedef ImportConfig = {
@@ -36,6 +38,10 @@ typedef IndentConfig = {
     @:optional var indentSwitches:Bool;
 }
 
+typedef BracketConfig = {
+    @:optional var newlineBeforeOpening:OptionalBool;
+}
+
 @:enum abstract TwoSidedPadding(String) {
     var Before = "before";
     var After = "after";
@@ -55,6 +61,26 @@ typedef IndentConfig = {
         case Remove: None;
         case _: null;
     }
+}
+
+@:enum abstract NewlineCharacter(String) {
+    var Auto = "auto";
+    var LF = "lf";
+    var CRLF = "crlf";
+
+    public function getCharacter():String {
+        return switch (this) {
+            case LF: "\n";
+            case CRLF: "\r\n";
+            case _: throw "can't call getCharacter() on " + this;
+        }
+    }
+}
+
+@:enum abstract OptionalBool(String) {
+    var Yes = "yes";
+    var No = "no";
+    var Ignore = "ignore";
 }
 
 @:enum abstract BaseConfig(String) to String {
@@ -81,6 +107,10 @@ typedef IndentConfig = {
             indent: {
                 whitespace: "\t",
                 indentSwitches: true
+            },
+            newlineCharacter: Auto,
+            brackets: {
+                newlineBeforeOpening: No
             }
         },
         Noop => {
@@ -105,6 +135,10 @@ typedef IndentConfig = {
             indent: {
                 whitespace: null,
                 indentSwitches: true
+            },
+            newlineCharacter: Auto,
+            brackets: {
+                newlineBeforeOpening: Ignore
             }
         }
     ];

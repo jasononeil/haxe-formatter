@@ -11,7 +11,6 @@ import util.StructDefaultsMacro;
 
 class Formatter {
     public static function formatFile(file:File, ?config:Config):Result<String> {
-        config = applyDefaultSettings(config);
         var walkers = createWalkers(config);
         for (walker in walkers)
             walker.walkFile(file, Root);
@@ -19,7 +18,6 @@ class Formatter {
     }
 
     public static function formatBlockElements(blockElements:Array<BlockElement>, ?config:Config):Result<String> {
-        config = applyDefaultSettings(config);
         var buf = new StringBuf();
         var walkers = createWalkers(config);
         for (element in blockElements) {
@@ -31,7 +29,6 @@ class Formatter {
     }
 
     public static function formatClassFields(classFields:Array<ClassField>, ?config:Config):Result<String> {
-        config = applyDefaultSettings(config);
         var buf = new StringBuf();
         var walkers = createWalkers(config);
         for (field in classFields) {
@@ -48,6 +45,10 @@ class Formatter {
 
     public static function formatSource(source:String, entryPoint:EntryPoint = File, ?config:Config):Result<String> {
         var parsed = HxParser.parse(source, entryPoint);
+        config = applyDefaultSettings(config);
+        if (config.newlineCharacter == Auto) {
+            config.newlineCharacter = if (source.has("\r\n")) CRLF else LF;
+        }
         return switch (parsed) {
             case Success(d):
                 switch (entryPoint) {
@@ -62,7 +63,7 @@ class Formatter {
 
     static function applyDefaultSettings(config:Config):Config {
         config =
-        if (config == null) {};
+            if (config == null) {};
         else Reflect.copy(config);
 
         if (config.baseConfig == null)
