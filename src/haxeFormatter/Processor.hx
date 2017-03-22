@@ -36,31 +36,47 @@ class Processor extends StackAwareWalker {
             case ')':
                 prevToken.trailingTrivia = padSpace(parenInner, Before, prevToken.trailingTrivia);
             case '{':
-                switch (config.brackets.newlineBeforeOpening) {
-                    case Yes:
-                        prevToken.trailingTrivia = [makeNewlineTrivia()];
-                        token.leadingTrivia = [];
-                    case No:
-                        prevToken.trailingTrivia = [];
-                        token.leadingTrivia = [new Trivia(" ")];
-                    case Ignore:
-                }
+                handleOpeningBracket(token, stack);
             case ',':
-                var comma = config.padding.comma;
-                var config = comma.defaultPadding;
-                switch (stack) {
-                    case Edge(_, Node(ClassField_Property(_, _, _, _, _, _, _, _, _, _, _, _), _)):
-                        config = comma.propertyAccess;
-                    case _:
-                }
-                padSpaces(config, prevToken, token);
+                handleComma(token, stack);
             case _:
         }
 
         prevToken = token;
     }
 
-    private function makeNewlineTrivia():Trivia {
+    function handleOpeningBracket(token:Token, stack:WalkStack) {
+        var newlineConfigs = config.brackets.newlineBeforeOpening;
+        var newlineConfig:OptionalBool = switch (stack.getDepth()) {
+            case Block: newlineConfigs.block;
+            case Field: newlineConfigs.field;
+            case Decl: newlineConfigs.type;
+            case Unknown: Ignore;
+        }
+
+        switch (newlineConfig) {
+            case Yes:
+                prevToken.trailingTrivia = [makeNewlineTrivia()];
+                token.leadingTrivia = [];
+            case No:
+                prevToken.trailingTrivia = [];
+                token.leadingTrivia = [new Trivia(" ")];
+            case Ignore:
+        }
+    }
+
+    function handleComma(token:Token, stack:WalkStack) {
+        var comma = config.padding.comma;
+        var config = comma.defaultPadding;
+        switch (stack) {
+            case Edge(_, Node(ClassField_Property(_, _, _, _, _, _, _, _, _, _, _, _), _)):
+                config = comma.propertyAccess;
+            case _:
+        }
+        padSpaces(config, prevToken, token);
+    }
+
+    function makeNewlineTrivia():Trivia {
         return new Trivia(config.newlineCharacter.getCharacter());
     }
 
@@ -104,8 +120,8 @@ class Processor extends StackAwareWalker {
 
     function getImportToken(decl:Decl):Token {
         return switch (decl) {
-            case ImportDecl({importKeyword: _import}): _import;
-            case UsingDecl({usingKeyword: _using}): _using;
+            case ImportDecl( {importKeyword: _import}): _import;
+            case UsingDecl( {usingKeyword: _using}): _using;
             case _: expected("using or import");
         }
     }

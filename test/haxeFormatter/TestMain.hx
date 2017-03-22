@@ -178,7 +178,12 @@ class TestMain {
         }
         var brackets = config.brackets;
         if (brackets != null) {
-            brackets.newlineBeforeOpening = invertOptionalBool(brackets.newlineBeforeOpening);
+            var newlineBeforeOpening = brackets.newlineBeforeOpening;
+            if (newlineBeforeOpening != null) {
+                newlineBeforeOpening.type = invertOptionalBool(newlineBeforeOpening.type);
+                newlineBeforeOpening.field = invertOptionalBool(newlineBeforeOpening.field);
+                newlineBeforeOpening.block = invertOptionalBool(newlineBeforeOpening.block);
+            }
             brackets.newlineBeforeElse = invertOptionalBool(brackets.newlineBeforeElse);
         }
         return config;

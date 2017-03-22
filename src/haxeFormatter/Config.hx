@@ -39,8 +39,14 @@ typedef IndentConfig = {
 }
 
 typedef BracketConfig = {
-    @:optional var newlineBeforeOpening:OptionalBool;
+    @:optional var newlineBeforeOpening:NewlineBeforeOpeningConfig;
     @:optional var newlineBeforeElse:OptionalBool;
+}
+
+typedef NewlineBeforeOpeningConfig = {
+    @:optional var type:OptionalBool;
+    @:optional var field:OptionalBool;
+    @:optional var block:OptionalBool;
 }
 
 @:enum abstract TwoSidedPadding(String) {
@@ -111,7 +117,11 @@ typedef BracketConfig = {
             },
             newlineCharacter: Auto,
             brackets: {
-                newlineBeforeOpening: No,
+                newlineBeforeOpening: {
+                    type: No,
+                    field: No,
+                    block: No
+                },
                 newlineBeforeElse: No
             }
         },
@@ -140,7 +150,11 @@ typedef BracketConfig = {
             },
             newlineCharacter: Auto,
             brackets: {
-                newlineBeforeOpening: Ignore,
+                newlineBeforeOpening: {
+                    type: Ignore,
+                    field: Ignore,
+                    block: Ignore
+                },
                 newlineBeforeElse: Ignore
             }
         }

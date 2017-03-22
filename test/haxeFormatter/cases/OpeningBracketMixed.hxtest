@@ -1,11 +1,10 @@
 {
     "brackets": {
         "newlineBeforeOpening": {
-            "type": "no",
-            "field": "no",
+            "type": "yes",
+            "field": "yes",
             "block": "no"
-        },
-        "newlineBeforeElse": "no"
+        }
     },
     "indent": {
         "whitespace": "    "
@@ -17,14 +16,9 @@
 
 ---
 
-class Main
-{
-    function foo()
-    {
+class Main {
+    function foo() {
         if (foo)
-        {
-        }
-        else
         {
         }
     }
@@ -32,10 +26,11 @@ class Main
 
 ---
 
-class Main {
-    function foo() {
+class Main
+{
+    function foo()
+    {
         if (foo) {
-        } else {
         }
     }
 }
