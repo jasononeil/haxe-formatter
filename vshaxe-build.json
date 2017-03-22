@@ -41,6 +41,17 @@
         },
         {
             "name": "formatter-tests",
+            "composite": true,
+            "targetDependencies": [
+                "formatter-tests-build",
+                "formatter-tests-run"
+            ],
+            "args": {
+                "debug": true
+            }
+        },
+        {
+            "name": "formatter-tests-build",
             "args": {
                 "haxelibs": ["haxe-hxparser", "json2object"],
                 "classPaths": [
@@ -52,6 +63,12 @@
                     "path": "bin/test.js"
                 },
                 "main": "haxeFormatter.TestMain",
+                "debug": true
+            }
+        },
+        {
+            "name": "formatter-tests-run",
+            "args": {
                 "debug": true
             },
             "afterBuildCommands": [
