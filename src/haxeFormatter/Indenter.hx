@@ -33,7 +33,7 @@ private enum IndentKind {
 private abstract IndentStack(Array<Indent>) from Array<Indent> {
     public var top(get,never):Indent;
 
-    function get_top() return this[this.length - 1];
+    function get_top() return this.last();
 
     public function depthFor(line:Int):Int {
         var depth = 0;
@@ -271,7 +271,7 @@ class Indenter extends StackAwareWalker {
             firstTokenInLine = null;
 
         // after newline?
-        var prevLastTrivia = prevToken.trailingTrivia[prevToken.trailingTrivia.length - 1];
+        var prevLastTrivia = prevToken.trailingTrivia.last();
         if (prevLastTrivia != null && prevLastTrivia.text.isNewline())
             firstTokenInLine = token;
 
@@ -294,7 +294,7 @@ class Indenter extends StackAwareWalker {
             indentStack.dedent(Normal, token);
 
         var indent = config.indent.whitespace.times(indentStack.depthFor(line));
-        var lastTrivia = token.leadingTrivia[token.leadingTrivia.length - 1];
+        var lastTrivia = token.leadingTrivia.last();
         if (lastTrivia != null && lastTrivia.text.isTabOrSpace())
             lastTrivia.text = indent;
         else
