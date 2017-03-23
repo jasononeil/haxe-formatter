@@ -16,6 +16,7 @@ typedef ImportConfig = {
 typedef PaddingConfig = {
     @:optional var typeHintColon:TwoSidedPadding;
     @:optional var functionTypeArrow:TwoSidedPadding;
+    @:optional var unaryOperator:OneSidedPadding;
     @:optional var binaryOperator:BinaryOperatorConfig;
     @:optional var parenInner:OneSidedPadding;
     @:optional var beforeParenAfterKeyword:OneSidedPadding;
@@ -99,6 +100,7 @@ typedef NewlineBeforeOpeningConfig = {
             padding: {
                 typeHintColon: None,
                 functionTypeArrow: None,
+                unaryOperator: Remove,
                 binaryOperator: {
                     defaultPadding: Both,
                     padded: [],
@@ -132,6 +134,7 @@ typedef NewlineBeforeOpeningConfig = {
             padding: {
                 typeHintColon: Ignore,
                 functionTypeArrow: Ignore,
+                unaryOperator: Ignore,
                 binaryOperator: {
                     defaultPadding: Ignore,
                     padded: [],

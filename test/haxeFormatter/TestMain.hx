@@ -160,6 +160,7 @@ class TestMain {
         if (padding != null) {
             padding.typeHintColon = invertTwoSidedPadding(config.padding.typeHintColon);
             padding.functionTypeArrow = invertTwoSidedPadding(config.padding.functionTypeArrow);
+            padding.unaryOperator = invertOneSidedPadding(config.padding.unaryOperator);
             var binaryOperator = padding.binaryOperator;
             if (binaryOperator != null) {
                 binaryOperator.defaultPadding = invertTwoSidedPadding(binaryOperator.defaultPadding);

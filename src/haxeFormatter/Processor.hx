@@ -149,6 +149,17 @@ class Processor extends StackAwareWalker {
         super.walkExpr_EBinop(exprLeft, op, exprRight, stack);
     }
 
+    override function walkExpr_EUnaryPostfix(expr:Expr, op:Token, stack:WalkStack) {
+        walkExpr(expr, stack); // no need for this once tokens are doubly linked, just use op.prevToken then
+        padSpace(config.padding.unaryOperator.toTwoSidedPadding(), After, prevToken.trailingTrivia);
+        super.walkExpr_EUnaryPostfix(expr, op, stack);
+    }
+
+    override function walkExpr_EUnaryPrefix(op:Token, expr:Expr, stack:WalkStack) {
+        padSpace(config.padding.unaryOperator.toTwoSidedPadding(), Before, op.trailingTrivia);
+        super.walkExpr_EUnaryPrefix(op, expr, stack);
+    }
+
     override function walkExpr_EIf(ifKeyword:Token, parenOpen:Token, exprCond:Expr, parenClose:Token, exprThen:Expr, exprElse:Null<ExprElse>, stack:WalkStack) {
         super.walkExpr_EIf(ifKeyword, parenOpen, exprCond, parenClose, exprThen, exprElse, stack);
         padKeywordParen(ifKeyword);

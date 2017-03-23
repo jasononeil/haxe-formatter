@@ -1,0 +1,35 @@
+{
+    "padding": {
+        "unaryOperator": "remove"
+    },
+    "testProperties": {
+        "type": "invertible",
+        "entryPoint": "block_elements"
+    }
+}
+
+---
+
+i ++;
+i --;
+++ i;
+-- i;
+
+b !;
+! b;
+
+- 5;
+~ 5;
+
+---
+
+i++;
+i--;
+++i;
+--i;
+
+b!;
+!b;
+
+-5;
+~5;
