@@ -138,59 +138,47 @@ class TestMain {
         if (config.imports != null && config.imports.sort != null) {
             config.imports.sort = !config.imports.sort;
         }
-        function invertTwoSidedPadding(padding):TwoSidedPadding return switch (padding) {
-            case Ignore: Ignore;
-            case Before: After;
-            case After: Before;
-            case None: Both;
-            case Both: None;
-        }
-        function invertOneSidedPadding(padding):OneSidedPadding return switch (padding) {
-            case OneSidedPadding.Ignore: Ignore;
-            case Insert: Remove;
-            case Remove: Insert;
-        }
 
         var padding = config.padding;
         if (padding != null) {
             var colon = padding.colon;
             if (colon != null) {
-                colon.typeHint = invertTwoSidedPadding(colon.typeHint);
+                colon.typeHint = colon.typeHint.inverted();
             }
-            padding.functionTypeArrow = invertTwoSidedPadding(config.padding.functionTypeArrow);
-            padding.unaryOperator = invertOneSidedPadding(config.padding.unaryOperator);
+            padding.functionTypeArrow = config.padding.functionTypeArrow.inverted();
+            padding.unaryOperator = config.padding.unaryOperator.inverted();
             var binaryOperator = padding.binaryOperator;
             if (binaryOperator != null) {
-                binaryOperator.defaultPadding = invertTwoSidedPadding(binaryOperator.defaultPadding);
+                binaryOperator.defaultPadding = binaryOperator.defaultPadding.inverted();
                 var padded = binaryOperator.padded;
                 var unpadded = binaryOperator.unpadded;
                 binaryOperator.padded = unpadded;
                 binaryOperator.unpadded = padded;
             }
-            padding.assignment = invertTwoSidedPadding(padding.assignment);
+            padding.assignment = padding.assignment.inverted();
             var insideBrackets = padding.insideBrackets;
             if (insideBrackets != null) {
-                insideBrackets.parens = invertOneSidedPadding(insideBrackets.parens);
-                insideBrackets.braces = invertOneSidedPadding(insideBrackets.braces);
-                insideBrackets.square = invertOneSidedPadding(insideBrackets.square);
-                insideBrackets.angle = invertOneSidedPadding(insideBrackets.angle);
+                insideBrackets.parens = insideBrackets.parens.inverted();
+                insideBrackets.braces = insideBrackets.braces.inverted();
+                insideBrackets.square = insideBrackets.square.inverted();
+                insideBrackets.angle = insideBrackets.angle.inverted();
             }
-            padding.beforeParenAfterKeyword = invertOneSidedPadding(padding.beforeParenAfterKeyword);
+            padding.beforeParenAfterKeyword = padding.beforeParenAfterKeyword.inverted();
             var comma = padding.comma;
             if (comma != null) {
-                comma.defaultPadding = invertTwoSidedPadding(comma.defaultPadding);
-                comma.propertyAccess = invertTwoSidedPadding(comma.propertyAccess);
+                comma.defaultPadding = comma.defaultPadding.inverted();
+                comma.propertyAccess = comma.propertyAccess.inverted();
             }
         }
         var braces = config.braces;
         if (braces != null) {
             var newlineBeforeOpening = braces.newlineBeforeOpening;
             if (newlineBeforeOpening != null) {
-                newlineBeforeOpening.type = invertOneSidedPadding(newlineBeforeOpening.type);
-                newlineBeforeOpening.field = invertOneSidedPadding(newlineBeforeOpening.field);
-                newlineBeforeOpening.block = invertOneSidedPadding(newlineBeforeOpening.block);
+                newlineBeforeOpening.type = newlineBeforeOpening.type.inverted();
+                newlineBeforeOpening.field = newlineBeforeOpening.field.inverted();
+                newlineBeforeOpening.block = newlineBeforeOpening.block.inverted();
             }
-            braces.newlineBeforeElse = invertOneSidedPadding(braces.newlineBeforeElse);
+            braces.newlineBeforeElse = braces.newlineBeforeElse.inverted();
         }
         return config;
     }

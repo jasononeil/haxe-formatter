@@ -68,6 +68,15 @@ typedef NewlineBeforeOpeningConfig = {
     var Both = "both";
     var None = "none";
     var Ignore = "ignore";
+
+    public function inverted():TwoSidedPadding return switch (this) {
+        case Ignore: Ignore;
+        case Before: After;
+        case After: Before;
+        case None: Both;
+        case Both: None;
+        case _: null;
+        }
 }
 
 @:enum abstract OneSidedPadding(String) {
@@ -75,12 +84,19 @@ typedef NewlineBeforeOpeningConfig = {
     var Remove = "remove";
     var Ignore = "ignore";
 
+    public function inverted():OneSidedPadding return switch (this) {
+        case OneSidedPadding.Ignore: Ignore;
+        case Insert: Remove;
+        case Remove: Insert;
+        case _: null;
+        }
+
     public function toTwoSidedPadding():TwoSidedPadding return switch (this) {
         case OneSidedPadding.Ignore: TwoSidedPadding.Ignore;
         case Insert: Both;
         case Remove: None;
         case _: null;
-    }
+        }
 }
 
 @:enum abstract NewlineCharacter(String) {
