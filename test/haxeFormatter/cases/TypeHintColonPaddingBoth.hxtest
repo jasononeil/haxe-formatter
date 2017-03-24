@@ -1,6 +1,8 @@
 {
     "padding": {
-        "typeHintColon": "none"
+        "colon": {
+            "typeHint": "none"
+        }
     },
     "testProperties": {
         "type": "invertible",

@@ -157,7 +157,7 @@ class Processor extends StackAwareWalker {
     }
 
     override function walkTypeHint(node:TypeHint, stack:WalkStack) {
-        padSpaces(config.padding.typeHintColon, prevToken, node.colon);
+        padSpaces(config.padding.colon.typeHint, prevToken, node.colon);
         super.walkTypeHint(node, stack);
     }
 
@@ -244,8 +244,7 @@ class Processor extends StackAwareWalker {
             return trivia;
 
         if (trivia.length > 0 && trivia[0].text.isWhitespace())
-            trivia[0].text = getPadding(padding, location, trivia[0].text);
-        else
+            trivia[0].text = getPadding(padding, location, trivia[0].text) else
             trivia.insert(0, new Trivia(getPadding(padding, location, "")));
 
         return trivia;
