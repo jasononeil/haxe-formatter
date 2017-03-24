@@ -72,8 +72,7 @@ class Processor extends StackAwareWalker {
             case '<' | '>': insideBrackets.angle;
             case _: null;
         }
-        return if (padding != null) padding.toTwoSidedPadding()
-        else null;
+        return if (padding != null) padding.toTwoSidedPadding() else null;
     }
 
     function handleOpeningBracket(token:Token, stack:WalkStack) {
@@ -160,6 +159,11 @@ class Processor extends StackAwareWalker {
     override function walkTypeHint(node:TypeHint, stack:WalkStack) {
         padSpaces(config.padding.typeHintColon, prevToken, node.colon);
         super.walkTypeHint(node, stack);
+    }
+
+    override function walkAssignment(node:Assignment, stack:WalkStack) {
+        padSpaces(config.padding.assignment, prevToken, node.assign);
+        super.walkAssignment(node, stack);
     }
 
     override function walkComplexType_Function(typeLeft:ComplexType, arrow:Token, typeRight:ComplexType, stack:WalkStack) {

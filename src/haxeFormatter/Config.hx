@@ -18,6 +18,7 @@ typedef PaddingConfig = {
     @:optional var functionTypeArrow:TwoSidedPadding;
     @:optional var unaryOperator:OneSidedPadding;
     @:optional var binaryOperator:BinaryOperatorConfig;
+    @:optional var assignment:TwoSidedPadding;
     @:optional var insideBrackets:InsideBracketsPaddingConfig;
     @:optional var beforeParenAfterKeyword:OneSidedPadding;
     @:optional var comma:CommaPaddingConfig;
@@ -113,6 +114,7 @@ typedef NewlineBeforeOpeningConfig = {
                     padded: [],
                     unpadded: ["..."]
                 },
+                assignment: Both,
                 insideBrackets: {
                     parens: Remove,
                     braces: Remove,
@@ -152,6 +154,7 @@ typedef NewlineBeforeOpeningConfig = {
                     padded: [],
                     unpadded: []
                 },
+                assignment: Ignore,
                 insideBrackets: {
                     parens: Ignore,
                     braces: Ignore,

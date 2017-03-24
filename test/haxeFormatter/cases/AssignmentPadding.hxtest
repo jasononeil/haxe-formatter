@@ -1,0 +1,21 @@
+{
+    "padding": {
+        "assignment": "both"
+    },
+    "testProperties": {
+        "type": "invertible",
+        "entryPoint": "class_fields"
+    }
+}
+
+---
+
+var foo=5;
+var foo(default, null)=5;
+function foo(a=5) {}
+
+---
+
+var foo = 5;
+var foo(default, null) = 5;
+function foo(a = 5) {}

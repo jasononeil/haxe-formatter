@@ -169,6 +169,7 @@ class TestMain {
                 binaryOperator.padded = unpadded;
                 binaryOperator.unpadded = padded;
             }
+            padding.assignment = invertTwoSidedPadding(padding.assignment);
             var insideBrackets = padding.insideBrackets;
             if (insideBrackets != null) {
                 insideBrackets.parens = invertOneSidedPadding(insideBrackets.parens);
