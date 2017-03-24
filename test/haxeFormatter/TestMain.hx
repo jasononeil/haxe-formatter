@@ -183,15 +183,15 @@ class TestMain {
                 comma.propertyAccess = invertTwoSidedPadding(comma.propertyAccess);
             }
         }
-        var brackets = config.brackets;
-        if (brackets != null) {
-            var newlineBeforeOpening = brackets.newlineBeforeOpening;
+        var braces = config.braces;
+        if (braces != null) {
+            var newlineBeforeOpening = braces.newlineBeforeOpening;
             if (newlineBeforeOpening != null) {
                 newlineBeforeOpening.type = invertOptionalBool(newlineBeforeOpening.type);
                 newlineBeforeOpening.field = invertOptionalBool(newlineBeforeOpening.field);
                 newlineBeforeOpening.block = invertOptionalBool(newlineBeforeOpening.block);
             }
-            brackets.newlineBeforeElse = invertOptionalBool(brackets.newlineBeforeElse);
+            braces.newlineBeforeElse = invertOptionalBool(braces.newlineBeforeElse);
         }
         return config;
     }

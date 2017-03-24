@@ -6,7 +6,7 @@ typedef Config = {
     @:optional var padding:PaddingConfig;
     @:optional var indent:IndentConfig;
     @:optional var newlineCharacter:NewlineCharacter;
-    @:optional var brackets:BracketConfig;
+    @:optional var braces:BraceConfig;
 }
 
 typedef ImportConfig = {
@@ -18,7 +18,7 @@ typedef PaddingConfig = {
     @:optional var functionTypeArrow:TwoSidedPadding;
     @:optional var unaryOperator:OneSidedPadding;
     @:optional var binaryOperator:BinaryOperatorConfig;
-    @:optional var insideBrackets:InnerBracePaddingConfig;
+    @:optional var insideBrackets:InsideBracketsPaddingConfig;
     @:optional var beforeParenAfterKeyword:OneSidedPadding;
     @:optional var comma:CommaPaddingConfig;
 }
@@ -29,7 +29,7 @@ typedef BinaryOperatorConfig = {
     @:optional var unpadded:Array<String>;
 }
 
-typedef InnerBracePaddingConfig = {
+typedef InsideBracketsPaddingConfig = {
     @:optional var parens:OneSidedPadding;
     @:optional var braces:OneSidedPadding;
     @:optional var square:OneSidedPadding;
@@ -46,7 +46,7 @@ typedef IndentConfig = {
     @:optional var indentSwitches:Bool;
 }
 
-typedef BracketConfig = {
+typedef BraceConfig = {
     @:optional var newlineBeforeOpening:NewlineBeforeOpeningConfig;
     @:optional var newlineBeforeElse:OptionalBool;
 }
@@ -130,7 +130,7 @@ typedef NewlineBeforeOpeningConfig = {
                 indentSwitches: true
             },
             newlineCharacter: Auto,
-            brackets: {
+            braces: {
                 newlineBeforeOpening: {
                     type: No,
                     field: No,
@@ -169,7 +169,7 @@ typedef NewlineBeforeOpeningConfig = {
                 indentSwitches: true
             },
             newlineCharacter: Auto,
-            brackets: {
+            braces: {
                 newlineBeforeOpening: {
                     type: Ignore,
                     field: Ignore,

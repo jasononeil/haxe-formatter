@@ -77,7 +77,7 @@ class Processor extends StackAwareWalker {
     }
 
     function handleOpeningBracket(token:Token, stack:WalkStack) {
-        var newlineConfigs = config.brackets.newlineBeforeOpening;
+        var newlineConfigs = config.braces.newlineBeforeOpening;
         var newlineConfig:OptionalBool = switch (stack.getDepth()) {
             case Block: newlineConfigs.block;
             case Field: newlineConfigs.field;
@@ -197,7 +197,7 @@ class Processor extends StackAwareWalker {
     }
 
     override function walkExprElse(node:ExprElse, stack:WalkStack) {
-        switch (config.brackets.newlineBeforeElse) {
+        switch (config.braces.newlineBeforeElse) {
             case Yes:
                 prevToken.trailingTrivia = [makeNewlineTrivia()];
             case No:

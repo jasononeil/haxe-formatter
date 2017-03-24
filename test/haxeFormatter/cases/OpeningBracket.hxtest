@@ -1,5 +1,5 @@
 {
-    "brackets": {
+    "braces": {
         "newlineBeforeOpening": {
             "type": "no",
             "field": "no",
