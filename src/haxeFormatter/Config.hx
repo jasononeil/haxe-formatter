@@ -16,11 +16,11 @@ typedef ImportConfig = {
 typedef PaddingConfig = {
     @:optional var colon:ColonPaddingConfig;
     @:optional var functionTypeArrow:TwoSidedPadding;
-    @:optional var unaryOperator:OneSidedPadding;
+    @:optional var unaryOperator:FormattingOperation;
     @:optional var binaryOperator:BinaryOperatorConfig;
     @:optional var assignment:TwoSidedPadding;
     @:optional var insideBrackets:InsideBracketsPaddingConfig;
-    @:optional var beforeParenAfterKeyword:OneSidedPadding;
+    @:optional var beforeParenAfterKeyword:FormattingOperation;
     @:optional var comma:CommaPaddingConfig;
 }
 
@@ -35,10 +35,10 @@ typedef BinaryOperatorConfig = {
 }
 
 typedef InsideBracketsPaddingConfig = {
-    @:optional var parens:OneSidedPadding;
-    @:optional var braces:OneSidedPadding;
-    @:optional var square:OneSidedPadding;
-    @:optional var angle:OneSidedPadding;
+    @:optional var parens:FormattingOperation;
+    @:optional var braces:FormattingOperation;
+    @:optional var square:FormattingOperation;
+    @:optional var angle:FormattingOperation;
 }
 
 typedef CommaPaddingConfig = {
@@ -53,13 +53,13 @@ typedef IndentConfig = {
 
 typedef BraceConfig = {
     @:optional var newlineBeforeOpening:NewlineBeforeOpeningConfig;
-    @:optional var newlineBeforeElse:OneSidedPadding;
+    @:optional var newlineBeforeElse:FormattingOperation;
 }
 
 typedef NewlineBeforeOpeningConfig = {
-    @:optional var type:OneSidedPadding;
-    @:optional var field:OneSidedPadding;
-    @:optional var block:OneSidedPadding;
+    @:optional var type:FormattingOperation;
+    @:optional var field:FormattingOperation;
+    @:optional var block:FormattingOperation;
 }
 
 @:enum abstract TwoSidedPadding(String) {
@@ -79,20 +79,20 @@ typedef NewlineBeforeOpeningConfig = {
         }
 }
 
-@:enum abstract OneSidedPadding(String) {
+@:enum abstract FormattingOperation(String) {
     var Insert = "insert";
     var Remove = "remove";
     var Ignore = "ignore";
 
-    public function inverted():OneSidedPadding return switch (this) {
-        case OneSidedPadding.Ignore: Ignore;
+    public function inverted():FormattingOperation return switch (this) {
+        case FormattingOperation.Ignore: Ignore;
         case Insert: Remove;
         case Remove: Insert;
         case _: null;
         }
 
     public function toTwoSidedPadding():TwoSidedPadding return switch (this) {
-        case OneSidedPadding.Ignore: TwoSidedPadding.Ignore;
+        case FormattingOperation.Ignore: TwoSidedPadding.Ignore;
         case Insert: Both;
         case Remove: None;
         case _: null;

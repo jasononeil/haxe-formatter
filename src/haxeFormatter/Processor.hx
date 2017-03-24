@@ -77,7 +77,7 @@ class Processor extends StackAwareWalker {
 
     function handleOpeningBracket(token:Token, stack:WalkStack) {
         var newlineConfigs = config.braces.newlineBeforeOpening;
-        var newlineConfig:OneSidedPadding = switch (stack.getDepth()) {
+        var newlineConfig:FormattingOperation = switch (stack.getDepth()) {
             case Block: newlineConfigs.block;
             case Field: newlineConfigs.field;
             case Decl: newlineConfigs.type;
@@ -244,7 +244,8 @@ class Processor extends StackAwareWalker {
             return trivia;
 
         if (trivia.length > 0 && trivia[0].text.isWhitespace())
-            trivia[0].text = getPadding(padding, location, trivia[0].text) else
+            trivia[0].text = getPadding(padding, location, trivia[0].text)
+        else
             trivia.insert(0, new Trivia(getPadding(padding, location, "")));
 
         return trivia;
