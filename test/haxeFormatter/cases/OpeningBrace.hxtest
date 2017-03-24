@@ -27,6 +27,11 @@ class Main
         else
         {
         }
+
+        if (foo)
+            call()
+        else
+            call();
     }
 }
 
@@ -37,5 +42,10 @@ class Main {
         if (foo) {
         } else {
         }
+
+        if (foo)
+            call()
+        else
+            call();
     }
 }

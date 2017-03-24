@@ -204,10 +204,10 @@ class Processor extends StackAwareWalker {
         switch (config.braces.newlineBeforeElse) {
             case Yes:
                 prevToken.trailingTrivia = [makeNewlineTrivia()];
-            case No:
+            case No if (prevToken.text == '}'):
                 prevToken.trailingTrivia = [];
                 node.elseKeyword.leadingTrivia = [new Trivia(" ")];
-            case Ignore:
+            case _:
         }
         super.walkExprElse(node, stack);
     }
