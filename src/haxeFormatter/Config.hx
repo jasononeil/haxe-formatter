@@ -53,13 +53,13 @@ typedef IndentConfig = {
 
 typedef BraceConfig = {
     @:optional var newlineBeforeOpening:NewlineBeforeOpeningConfig;
-    @:optional var newlineBeforeElse:OptionalBool;
+    @:optional var newlineBeforeElse:OneSidedPadding;
 }
 
 typedef NewlineBeforeOpeningConfig = {
-    @:optional var type:OptionalBool;
-    @:optional var field:OptionalBool;
-    @:optional var block:OptionalBool;
+    @:optional var type:OneSidedPadding;
+    @:optional var field:OneSidedPadding;
+    @:optional var block:OneSidedPadding;
 }
 
 @:enum abstract TwoSidedPadding(String) {
@@ -95,12 +95,6 @@ typedef NewlineBeforeOpeningConfig = {
             case _: throw "can't call getCharacter() on " + this;
         }
     }
-}
-
-@:enum abstract OptionalBool(String) {
-    var Yes = "yes";
-    var No = "no";
-    var Ignore = "ignore";
 }
 
 @:enum abstract BaseConfig(String) to String {
@@ -140,11 +134,11 @@ typedef NewlineBeforeOpeningConfig = {
             newlineCharacter: Auto,
             braces: {
                 newlineBeforeOpening: {
-                    type: No,
-                    field: No,
-                    block: No
+                    type: Remove,
+                    field: Remove,
+                    block: Remove
                 },
-                newlineBeforeElse: No
+                newlineBeforeElse: Remove
             }
         },
         Noop => {

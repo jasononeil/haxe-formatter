@@ -1,11 +1,11 @@
 {
     "braces": {
         "newlineBeforeOpening": {
-            "type": "no",
-            "field": "no",
-            "block": "no"
+            "type": "remove",
+            "field": "remove",
+            "block": "remove"
         },
-        "newlineBeforeElse": "no"
+        "newlineBeforeElse": "remove"
     },
     "indent": {
         "whitespace": "    "

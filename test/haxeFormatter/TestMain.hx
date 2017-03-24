@@ -150,11 +150,6 @@ class TestMain {
             case Insert: Remove;
             case Remove: Insert;
         }
-        function invertOptionalBool(bool):OptionalBool return switch (bool) {
-            case Yes: No;
-            case No: Yes;
-            case Ignore: Ignore;
-        }
 
         var padding = config.padding;
         if (padding != null) {
@@ -191,11 +186,11 @@ class TestMain {
         if (braces != null) {
             var newlineBeforeOpening = braces.newlineBeforeOpening;
             if (newlineBeforeOpening != null) {
-                newlineBeforeOpening.type = invertOptionalBool(newlineBeforeOpening.type);
-                newlineBeforeOpening.field = invertOptionalBool(newlineBeforeOpening.field);
-                newlineBeforeOpening.block = invertOptionalBool(newlineBeforeOpening.block);
+                newlineBeforeOpening.type = invertOneSidedPadding(newlineBeforeOpening.type);
+                newlineBeforeOpening.field = invertOneSidedPadding(newlineBeforeOpening.field);
+                newlineBeforeOpening.block = invertOneSidedPadding(newlineBeforeOpening.block);
             }
-            braces.newlineBeforeElse = invertOptionalBool(braces.newlineBeforeElse);
+            braces.newlineBeforeElse = invertOneSidedPadding(braces.newlineBeforeElse);
         }
         return config;
     }

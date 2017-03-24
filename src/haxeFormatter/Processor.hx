@@ -77,7 +77,7 @@ class Processor extends StackAwareWalker {
 
     function handleOpeningBracket(token:Token, stack:WalkStack) {
         var newlineConfigs = config.braces.newlineBeforeOpening;
-        var newlineConfig:OptionalBool = switch (stack.getDepth()) {
+        var newlineConfig:OneSidedPadding = switch (stack.getDepth()) {
             case Block: newlineConfigs.block;
             case Field: newlineConfigs.field;
             case Decl: newlineConfigs.type;
@@ -85,10 +85,10 @@ class Processor extends StackAwareWalker {
         }
 
         switch (newlineConfig) {
-            case Yes:
+            case Insert:
                 prevToken.trailingTrivia = [makeNewlineTrivia()];
                 token.leadingTrivia = [];
-            case No:
+            case Remove:
                 prevToken.trailingTrivia = [];
                 token.leadingTrivia = [new Trivia(" ")];
             case Ignore:
@@ -202,9 +202,9 @@ class Processor extends StackAwareWalker {
 
     override function walkExprElse(node:ExprElse, stack:WalkStack) {
         switch (config.braces.newlineBeforeElse) {
-            case Yes:
+            case Insert:
                 prevToken.trailingTrivia = [makeNewlineTrivia()];
-            case No if (prevToken.text == '}'):
+            case Remove if (prevToken.text == '}'):
                 prevToken.trailingTrivia = [];
                 node.elseKeyword.leadingTrivia = [new Trivia(" ")];
             case _:

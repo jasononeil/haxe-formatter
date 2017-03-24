@@ -1,9 +1,9 @@
 {
     "braces": {
         "newlineBeforeOpening": {
-            "type": "yes",
-            "field": "yes",
-            "block": "no"
+            "type": "insert",
+            "field": "insert",
+            "block": "remove"
         }
     },
     "indent": {
