@@ -28,13 +28,9 @@ class Processor extends StackAwareWalker {
 
     override function walkToken(token:Token, stack:WalkStack) {
         super.walkToken(token, stack);
+        padInsideBrackets(token, stack);
 
-        var parenInner = config.padding.parenInner.toTwoSidedPadding();
         switch (token.text) {
-            case '(':
-                token.trailingTrivia = padSpace(parenInner, After, token.trailingTrivia);
-            case ')':
-                prevToken.trailingTrivia = padSpace(parenInner, Before, prevToken.trailingTrivia);
             case '{':
                 handleOpeningBracket(token, stack);
             case ',':
@@ -43,6 +39,41 @@ class Processor extends StackAwareWalker {
         }
 
         prevToken = token;
+    }
+
+    function padInsideBrackets(token:Token, stack:WalkStack) {
+        var insideBracketsConfig = getInsideBracketsConfig(token.text);
+
+        inline function padOpening()
+            token.trailingTrivia = padSpace(insideBracketsConfig, After, token.trailingTrivia);
+
+        inline function padClosing()
+            prevToken.trailingTrivia = padSpace(insideBracketsConfig, Before, prevToken.trailingTrivia);
+
+        inline function inTypeParams()
+            return stack.match(Edge(_, Node(TypePathParameters(_), _))) ||
+            stack.match(Edge(_, Node(TypeDeclParameters(_), _)));
+
+        switch (token.text) {
+            case '(' | '{' | '[': padOpening();
+            case ')' | '}' | ']': padClosing();
+            case '<' if (inTypeParams()): padOpening();
+            case '>' if (inTypeParams()): padClosing();
+            case _:
+        }
+    }
+
+    function getInsideBracketsConfig(token:String):TwoSidedPadding {
+        var insideBrackets = config.padding.insideBrackets;
+        var padding = switch (token) {
+            case '(' | ')': insideBrackets.parens;
+            case '{' | '}': insideBrackets.braces;
+            case '[' | ']': insideBrackets.square;
+            case '<' | '>': insideBrackets.angle;
+            case _: null;
+        }
+        return if (padding != null) padding.toTwoSidedPadding()
+        else null;
     }
 
     function handleOpeningBracket(token:Token, stack:WalkStack) {

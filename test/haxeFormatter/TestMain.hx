@@ -169,7 +169,13 @@ class TestMain {
                 binaryOperator.padded = unpadded;
                 binaryOperator.unpadded = padded;
             }
-            padding.parenInner = invertOneSidedPadding(padding.parenInner);
+            var insideBrackets = padding.insideBrackets;
+            if (insideBrackets != null) {
+                insideBrackets.parens = invertOneSidedPadding(insideBrackets.parens);
+                insideBrackets.braces = invertOneSidedPadding(insideBrackets.braces);
+                insideBrackets.square = invertOneSidedPadding(insideBrackets.square);
+                insideBrackets.angle = invertOneSidedPadding(insideBrackets.angle);
+            }
             padding.beforeParenAfterKeyword = invertOneSidedPadding(padding.beforeParenAfterKeyword);
             var comma = padding.comma;
             if (comma != null) {
