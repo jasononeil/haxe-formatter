@@ -16,6 +16,10 @@ class Processor extends StackAwareWalker {
     var config:Config;
     var prevToken:Token;
 
+    var padding(get,never):PaddingConfig;
+
+    inline function get_padding() return config.padding;
+
     public function new(config:Config) {
         this.config = config;
     }
@@ -36,7 +40,7 @@ class Processor extends StackAwareWalker {
             case ',':
                 handleComma(token, stack);
             case ';':
-                padSpace(config.padding.beforeSemicolon.toTwoSidedPadding(), Before, token.prevToken);
+                padSpace(padding.beforeSemicolon.toTwoSidedPadding(), Before, token.prevToken);
             case _:
         }
 
@@ -66,7 +70,7 @@ class Processor extends StackAwareWalker {
     }
 
     function getInsideBracketsConfig(token:String):TwoSidedPadding {
-        var insideBrackets = config.padding.insideBrackets;
+        var insideBrackets = padding.insideBrackets;
         var padding = switch (token) {
             case '(' | ')': insideBrackets.parens;
             case '{' | '}': insideBrackets.braces;
@@ -98,7 +102,7 @@ class Processor extends StackAwareWalker {
     }
 
     function handleComma(token:Token, stack:WalkStack) {
-        var comma = config.padding.comma;
+        var comma = padding.comma;
         var config = comma.defaultPadding;
         switch (stack) {
             case Edge(_, Node(ClassField_Property(_, _, _, _, _, _, _, _, _, _, _, _), _)):
@@ -160,33 +164,33 @@ class Processor extends StackAwareWalker {
 
     override function walkTypeHint(node:TypeHint, stack:WalkStack) {
         super.walkTypeHint(node, stack);
-        padSpaces(config.padding.colon.typeHint, node.colon);
+        padSpaces(padding.colon.typeHint, node.colon);
     }
 
     override function walkObjectField(node:ObjectField, stack:WalkStack) {
         super.walkObjectField(node, stack);
-        padSpaces(config.padding.colon.objectField, node.colon);
+        padSpaces(padding.colon.objectField, node.colon);
     }
 
     override function walkCase_Case(caseKeyword:Token, patterns:CommaSeparated<Expr>, guard:Null<Guard>, colon:Token, body:Array<BlockElement>, stack:WalkStack) {
         super.walkCase_Case(caseKeyword, patterns, guard, colon, body, stack);
-        padSpaces(config.padding.colon.caseAndDefault, colon);
+        padSpaces(padding.colon.caseAndDefault, colon);
     }
 
     override function walkCase_Default(defaultKeyword:Token, colon:Token, body:Array<BlockElement>, stack:WalkStack) {
         super.walkCase_Default(defaultKeyword, colon, body, stack);
-        padSpaces(config.padding.colon.caseAndDefault, colon);
+        padSpaces(padding.colon.caseAndDefault, colon);
     }
 
     override function walkExpr_ECheckType(parenOpen:Token, expr:Expr, colon:Token, type:ComplexType, parenClose:Token, stack:WalkStack) {
         super.walkExpr_ECheckType(parenOpen, expr, colon, type, parenClose, stack);
-        padSpaces(config.padding.colon.typeCheck, colon);
+        padSpaces(padding.colon.typeCheck, colon);
     }
 
     override function walkExpr_ETernary(exprCond:Expr, questionMark:Token, exprThen:Expr, colon:Token, exprElse:Expr, stack:WalkStack) {
         super.walkExpr_ETernary(exprCond, questionMark, exprThen, colon, exprElse, stack);
-        padSpaces(config.padding.questionMark.ternary, questionMark);
-        padSpaces(config.padding.colon.ternary, colon);
+        padSpaces(padding.questionMark.ternary, questionMark);
+        padSpaces(padding.colon.ternary, colon);
     }
 
     override function walkComplexType_Optional(questionMark:Token, type:ComplexType, stack:WalkStack) {
@@ -210,21 +214,21 @@ class Processor extends StackAwareWalker {
     }
 
     inline function padOptional(questionMark:Token) {
-        padSpace(config.padding.questionMark.optional.toTwoSidedPadding(), After, questionMark);
+        padSpace(padding.questionMark.optional.toTwoSidedPadding(), After, questionMark);
     }
 
     override function walkAssignment(node:Assignment, stack:WalkStack) {
         super.walkAssignment(node, stack);
-        padSpaces(config.padding.assignment, node.assign);
+        padSpaces(padding.assignment, node.assign);
     }
 
     override function walkComplexType_Function(typeLeft:ComplexType, arrow:Token, typeRight:ComplexType, stack:WalkStack) {
         super.walkComplexType_Function(typeLeft, arrow, typeRight, stack);
-        padSpaces(config.padding.functionTypeArrow, arrow);
+        padSpaces(padding.functionTypeArrow, arrow);
     }
 
     override function walkExpr_EBinop(exprLeft:Expr, op:Token, exprRight:Expr, stack:WalkStack) {
-        var binopConfig = config.padding.binaryOperator;
+        var binopConfig = padding.binaryOperator;
         var spacing = binopConfig.defaultPadding;
         if (binopConfig.padded.has(op.text)) spacing = Both;
         if (binopConfig.unpadded.has(op.text)) spacing = None;
@@ -234,12 +238,12 @@ class Processor extends StackAwareWalker {
     }
 
     override function walkExpr_EUnaryPostfix(expr:Expr, op:Token, stack:WalkStack) {
-        padSpace(config.padding.unaryOperator.toTwoSidedPadding(), After, op.prevToken);
+        padSpace(padding.unaryOperator.toTwoSidedPadding(), After, op.prevToken);
         super.walkExpr_EUnaryPostfix(expr, op, stack);
     }
 
     override function walkExpr_EUnaryPrefix(op:Token, expr:Expr, stack:WalkStack) {
-        padSpace(config.padding.unaryOperator.toTwoSidedPadding(), Before, op);
+        padSpace(padding.unaryOperator.toTwoSidedPadding(), Before, op);
         super.walkExpr_EUnaryPrefix(op, expr, stack);
     }
 
@@ -276,7 +280,7 @@ class Processor extends StackAwareWalker {
     }
 
     function padKeywordParen(keyword:Token) {
-        padSpace(config.padding.beforeParenAfterKeyword.toTwoSidedPadding(), After, keyword);
+        padSpace(padding.beforeParenAfterKeyword.toTwoSidedPadding(), After, keyword);
     }
 
     function padSpaces(padding:TwoSidedPadding, token:Token) {
