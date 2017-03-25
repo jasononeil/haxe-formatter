@@ -1,0 +1,33 @@
+{
+    "padding": {
+        "beforeDot": "remove"
+    },
+    "testProperties": {
+        "entryPoint": "file",
+        "type": "invertible"
+    }
+}
+
+---
+
+package foo .Bar;
+
+import foo .*;
+
+class C {
+    function f() {
+        foo .bar;
+    }
+}
+
+---
+
+package foo.Bar;
+
+import foo.*;
+
+class C {
+    function f() {
+        foo.bar;
+    }
+}

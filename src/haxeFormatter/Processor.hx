@@ -279,6 +279,16 @@ class Processor extends StackAwareWalker {
         padKeywordParen(switchKeyword);
     }
 
+    override function walkNDotIdent_PDotIdent(name:Token, stack:WalkStack) {
+        super.walkNDotIdent_PDotIdent(name, stack);
+        padSpace(padding.beforeDot.toTwoSidedPadding(), Before, name.prevToken);
+    }
+
+    override function walkImportMode_IAll(dotStar:Token, stack:WalkStack) {
+        super.walkImportMode_IAll(dotStar, stack);
+        padSpace(padding.beforeDot.toTwoSidedPadding(), Before, dotStar.prevToken);
+    }
+
     function padKeywordParen(keyword:Token) {
         padSpace(padding.beforeParenAfterKeyword.toTwoSidedPadding(), After, keyword);
     }

@@ -179,6 +179,7 @@ class TestMain {
                 questionMark.optional = questionMark.optional.inverted();
             }
             padding.beforeSemicolon = padding.beforeSemicolon.inverted();
+            padding.beforeDot = padding.beforeDot.inverted();
         }
         var braces = config.braces;
         if (braces != null) {
