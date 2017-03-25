@@ -182,7 +182,7 @@ typedef NewlineBeforeOpeningConfig = {
                 beforeParenAfterKeyword: Insert,
                 comma: {
                     defaultPadding: After,
-                    propertyAccess: None
+                    propertyAccess: After
                 },
                 questionMark: {
                     ternary: Both,

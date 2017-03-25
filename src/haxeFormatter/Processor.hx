@@ -16,7 +16,7 @@ class Processor extends StackAwareWalker {
     var config:Config;
     var prevToken:Token;
 
-    var padding(get,never):PaddingConfig;
+    var padding(get, never):PaddingConfig;
 
     inline function get_padding() return config.padding;
 

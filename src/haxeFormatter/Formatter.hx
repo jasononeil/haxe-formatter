@@ -62,9 +62,7 @@ class Formatter {
     }
 
     static function applyDefaultSettings(config:Config):Config {
-        config =
-            if (config == null) {};
-        else Reflect.copy(config);
+        config = if (config == null) {} else Reflect.copy(config);
 
         if (config.baseConfig == null)
             config.baseConfig = Default;

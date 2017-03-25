@@ -31,7 +31,7 @@ private enum IndentKind {
 }
 
 private abstract IndentStack(Array<Indent>) from Array<Indent> {
-    public var top(get,never):Indent;
+    public var top(get, never):Indent;
 
     function get_top() return this.last();
 
