@@ -217,6 +217,11 @@ class Processor extends StackAwareWalker {
         padSpace(padding.questionMark.optional.toTwoSidedPadding(), After, questionMark);
     }
 
+    override function walkStructuralExtension(node:StructuralExtension, stack:WalkStack) {
+        super.walkStructuralExtension(node, stack);
+        padSpace(padding.afterStructuralExtension.toTwoSidedPadding(), After, node.gt);
+    }
+
     override function walkAssignment(node:Assignment, stack:WalkStack) {
         super.walkAssignment(node, stack);
         padSpaces(padding.assignment, node.assign);

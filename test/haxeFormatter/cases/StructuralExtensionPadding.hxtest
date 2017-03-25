@@ -1,0 +1,20 @@
+{
+    "padding": {
+        "afterStructuralExtension": "insert"
+    },
+    "testProperties": {
+        "type": "invertible"
+    }
+}
+
+---
+
+typedef T2 = {
+    >T1,
+}
+
+---
+
+typedef T2 = {
+    > T1,
+}
