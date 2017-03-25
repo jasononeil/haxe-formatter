@@ -145,6 +145,7 @@ class TestMain {
             if (colon != null) {
                 colon.typeHint = colon.typeHint.inverted();
                 colon.objectField = colon.objectField.inverted();
+                colon.caseAndDefault = colon.caseAndDefault.inverted();
             }
             padding.functionTypeArrow = config.padding.functionTypeArrow.inverted();
             padding.unaryOperator = config.padding.unaryOperator.inverted();

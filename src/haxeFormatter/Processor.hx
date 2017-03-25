@@ -167,6 +167,19 @@ class Processor extends StackAwareWalker {
         super.walkObjectField(node, stack);
     }
 
+    override function walkCase_Case(caseKeyword:Token, patterns:CommaSeparated<Expr>, guard:Null<Guard>, colon:Token, body:Array<BlockElement>, stack:WalkStack) {
+        if (guard != null) walkGuard(guard, stack);
+        else walkCase_Case_patterns(patterns, stack);
+
+        padSpaces(config.padding.colon.caseAndDefault, prevToken, colon);
+        super.walkCase_Case(caseKeyword, patterns, guard, colon, body, stack);
+    }
+
+    override function walkCase_Default(defaultKeyword:Token, colon:Token, body:Array<BlockElement>, stack:WalkStack) {
+        super.walkCase_Default(defaultKeyword, colon, body, stack);
+        padSpaces(config.padding.colon.caseAndDefault, defaultKeyword, colon);
+    }
+
     override function walkAssignment(node:Assignment, stack:WalkStack) {
         padSpaces(config.padding.assignment, prevToken, node.assign);
         super.walkAssignment(node, stack);

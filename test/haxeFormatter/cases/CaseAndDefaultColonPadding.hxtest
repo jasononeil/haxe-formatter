@@ -1,0 +1,27 @@
+{
+    "padding": {
+        "colon": {
+            "caseAndDefault": "after"
+        }
+    },
+    "testProperties": {
+        "entryPoint": "block_elements",
+        "type": "invertible"
+    }
+}
+
+---
+
+switch (foo) {
+    case foo if (foo > 0) :call();
+    case 0 :call();
+    default :call();
+}
+
+---
+
+switch (foo) {
+    case foo if (foo > 0): call();
+    case 0: call();
+    default: call();
+}
