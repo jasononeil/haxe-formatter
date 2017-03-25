@@ -38,6 +38,8 @@ class Processor extends StackAwareWalker {
             case '{':
                 handleOpeningBracket(token, stack);
                 padSpace(padding.beforeOpeningBrace.toTwoSidedPadding(), Before, token.prevToken);
+            case ')':
+                padSpace(padding.afterClosingParen.toTwoSidedPadding(), After, token);
             case ',':
                 handleComma(token, stack);
             case ';':

@@ -30,6 +30,7 @@ typedef PaddingConfig = {
     @:optional var beforeOpeningBrace:FormattingOperation;
     @:optional var beforeElse:FormattingOperation;
     @:optional var afterStructuralExtension:FormattingOperation;
+    @:optional var afterClosingParen:FormattingOperation;
 }
 
 typedef ColonPaddingConfig = {
@@ -194,7 +195,8 @@ typedef NewlineBeforeOpeningConfig = {
                 beforeDot: Remove,
                 beforeOpeningBrace: Insert,
                 beforeElse: Insert,
-                afterStructuralExtension: Insert
+                afterStructuralExtension: Insert,
+                afterClosingParen: Insert
             },
             indent: {
                 whitespace: "\t",
@@ -259,7 +261,8 @@ typedef NewlineBeforeOpeningConfig = {
                 beforeDot: Ignore,
                 beforeOpeningBrace: Ignore,
                 beforeElse: Ignore,
-                afterStructuralExtension: Ignore
+                afterStructuralExtension: Ignore,
+                afterClosingParen: Ignore
             },
             indent: {
                 whitespace: null,

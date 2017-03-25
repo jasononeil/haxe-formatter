@@ -1,0 +1,24 @@
+{
+    "padding": {
+        "insideBrackets": {
+            "parens": "remove"
+        },
+        "beforeSemicolon": "remove",
+        "afterClosingParen": "insert"
+    },
+    "testProperties": {
+        "entryPoint": "block_elements"
+    }
+}
+
+---
+
+function foo()call();
+if (foo)call();
+if ((foo))call();
+
+---
+
+function foo() call();
+if (foo) call();
+if ((foo)) call();

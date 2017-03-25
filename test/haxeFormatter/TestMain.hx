@@ -183,6 +183,7 @@ class TestMain {
             padding.beforeOpeningBrace = padding.beforeOpeningBrace.inverted();
             padding.beforeElse = padding.beforeElse.inverted();
             padding.afterStructuralExtension = padding.afterStructuralExtension.inverted();
+            padding.afterClosingParen = padding.afterClosingParen.inverted();
         }
         var braces = config.braces;
         if (braces != null) {
