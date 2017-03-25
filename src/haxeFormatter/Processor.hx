@@ -37,7 +37,8 @@ class Processor extends StackAwareWalker {
         switch (token.text) {
             case '{':
                 handleOpeningBracket(token, stack);
-                padSpace(padding.beforeOpeningBrace.toTwoSidedPadding(), Before, token.prevToken);
+                if (token.prevToken != null && !['{', '(', '[', '<'].has(token.prevToken.text))
+                    padSpace(padding.beforeOpeningBrace.toTwoSidedPadding(), Before, token.prevToken);
             case ')':
                 padSpace(padding.afterClosingParen.toTwoSidedPadding(), After, token);
             case ',':
