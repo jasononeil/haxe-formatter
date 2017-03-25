@@ -53,6 +53,7 @@ typedef CommaPaddingConfig = {
 
 typedef QuestionMarkPaddingConfig = {
     @:optional var ternary:TwoSidedPadding;
+    @:optional var optional:FormattingOperation;
 }
 
 typedef IndentConfig = {
@@ -156,7 +157,8 @@ typedef NewlineBeforeOpeningConfig = {
                     propertyAccess: None
                 },
                 questionMark: {
-                    ternary: Both
+                    ternary: Both,
+                    optional: Remove
                 }
             },
             indent: {
@@ -205,7 +207,8 @@ typedef NewlineBeforeOpeningConfig = {
                     propertyAccess: Ignore
                 },
                 questionMark: {
-                    ternary: Ignore
+                    ternary: Ignore,
+                    optional: Ignore
                 }
             },
             indent: {

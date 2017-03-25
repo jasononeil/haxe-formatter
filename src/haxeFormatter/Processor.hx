@@ -187,6 +187,30 @@ class Processor extends StackAwareWalker {
         padSpaces(config.padding.colon.ternary, colon);
     }
 
+    override function walkComplexType_Optional(questionMark:Token, type:ComplexType, stack:WalkStack) {
+        super.walkComplexType_Optional(questionMark, type, stack);
+        padOptional(questionMark);
+    }
+
+    override function walkFunctionArgument(node:FunctionArgument, stack:WalkStack) {
+        super.walkFunctionArgument(node, stack);
+        padOptional(node.questionMark);
+    }
+
+    override function walkAnonymousStructureField(node:AnonymousStructureField, stack:WalkStack) {
+        super.walkAnonymousStructureField(node, stack);
+        padOptional(node.questionMark);
+    }
+
+    override function walkNEnumFieldArg(node:NEnumFieldArg, stack:WalkStack) {
+        super.walkNEnumFieldArg(node, stack);
+        padOptional(node.questionMark);
+    }
+
+    inline function padOptional(questionMark:Token) {
+        padSpace(config.padding.questionMark.optional.toTwoSidedPadding(), After, questionMark);
+    }
+
     override function walkAssignment(node:Assignment, stack:WalkStack) {
         super.walkAssignment(node, stack);
         padSpaces(config.padding.assignment, node.assign);

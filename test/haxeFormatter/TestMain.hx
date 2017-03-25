@@ -176,6 +176,7 @@ class TestMain {
             var questionMark = padding.questionMark;
             if (questionMark != null) {
                 questionMark.ternary = questionMark.ternary.inverted();
+                questionMark.optional = questionMark.optional.inverted();
             }
         }
         var braces = config.braces;

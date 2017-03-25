@@ -1,0 +1,35 @@
+{
+    "padding": {
+        "questionMark": {
+            "optional": "remove"
+        }
+    },
+    "testProperties": {
+        "type": "invertible",
+        "entryPoint": "file"
+    }
+}
+
+---
+
+class C {
+    var i:{? i:Int};
+    var f:? Int->Void;
+    function f(? i:Int) {}
+}
+
+enum E {
+    Constructor(? i:Int);
+}
+
+---
+
+class C {
+    var i:{?i:Int};
+    var f:?Int->Void;
+    function f(?i:Int) {}
+}
+
+enum E {
+    Constructor(?i:Int);
+}
