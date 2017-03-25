@@ -1,0 +1,18 @@
+{
+    "fieldModifierOrder": [
+        "override",
+        "public",
+        "static"
+    ],
+    "testProperties": {
+        "entryPoint": "class_fields"
+    }
+}
+
+---
+
+#if js inline #end static public override function foo() {}
+
+---
+
+override public static #if js inline #end function foo() {}

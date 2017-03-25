@@ -8,6 +8,7 @@ typedef Config = {
     @:optional var newlineCharacter:NewlineCharacter;
     @:optional var braces:BraceConfig;
     @:optional var hexadecimalLiterals:LetterCase;
+    @:optional var fieldModifierOrder:Array<Modifier>;
 }
 
 typedef ImportConfig = {
@@ -140,6 +141,16 @@ typedef NewlineBeforeOpeningConfig = {
     }
 }
 
+@:enum abstract Modifier(String) from String {
+    var Static = "static";
+    var Macro = "macro";
+    var Public = "public";
+    var Private = "private";
+    var Override = "override";
+    var Dynamic = "dynamic";
+    var Inline = "inline";
+}
+
 @:enum abstract BaseConfig(String) to String {
     static var configs:Map<String, Config> = [
         Default => {
@@ -194,7 +205,16 @@ typedef NewlineBeforeOpeningConfig = {
                 },
                 newlineBeforeElse: Remove
             },
-            hexadecimalLiterals: UpperCase
+            hexadecimalLiterals: UpperCase,
+            fieldModifierOrder: [
+                Override,
+                Public,
+                Private,
+                Static,
+                Macro,
+                Dynamic,
+                Inline
+            ]
         },
         Noop => {
             imports: {
@@ -248,7 +268,8 @@ typedef NewlineBeforeOpeningConfig = {
                 },
                 newlineBeforeElse: Ignore
             },
-            hexadecimalLiterals: Ignore
+            hexadecimalLiterals: Ignore,
+            fieldModifierOrder: []
         }
     ];
 

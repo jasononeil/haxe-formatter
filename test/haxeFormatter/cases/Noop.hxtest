@@ -14,7 +14,7 @@ import util.Result;
 import hxParser.HxParser;
 
 class C {
-    function new(i:Int, s : String, b :Bool)
+    inline public dynamic function new(i:Int, s : String, b :Bool)
     {
     }
 }

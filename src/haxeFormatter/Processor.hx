@@ -308,6 +308,30 @@ class Processor extends StackAwareWalker {
         }
     }
 
+    override function walkClassField_Function(annotations:NAnnotations, modifiers:Array<FieldModifier>, functionKeyword:Token, name:Token, params:Null<TypeDeclParameters>, parenOpen:Token, args:Null<CommaSeparated<FunctionArgument>>, parenClose:Token, typeHint:Null<TypeHint>, expr:MethodExpr, stack:WalkStack) {
+        super.walkClassField_Function(annotations, modifiers, functionKeyword, name, params, parenOpen, args, parenClose, typeHint, expr, stack);
+        sortModifiers(modifiers);
+    }
+
+    override function walkClassField_Variable(annotations:NAnnotations, modifiers:Array<FieldModifier>, varKeyword:Token, name:Token, typeHint:Null<TypeHint>, assignment:Null<Assignment>, semicolon:Token, stack:WalkStack) {
+        super.walkClassField_Variable(annotations, modifiers, varKeyword, name, typeHint, assignment, semicolon, stack);
+        sortModifiers(modifiers);
+    }
+
+    override function walkClassField_Property(annotations:NAnnotations, modifiers:Array<FieldModifier>, varKeyword:Token, name:Token, parenOpen:Token, read:Token, comma:Token, write:Token, parenClose:Token, typeHint:Null<TypeHint>, assignment:Null<Assignment>, semicolon:Token, stack:WalkStack) {
+        super.walkClassField_Property(annotations, modifiers, varKeyword, name, parenOpen, read, comma, write, parenClose, typeHint, assignment, semicolon, stack);
+        sortModifiers(modifiers);
+    }
+
+    function sortModifiers(modifiers:Array<FieldModifier>) {
+        inline function getRank(modifier:FieldModifier):Int {
+            var rank = config.fieldModifierOrder.indexOf(modifier.getName().toLowerCase());
+            return if (rank == -1) 100 else rank;
+        }
+
+        ArraySort.sort(modifiers, function(modifier1, modifier2) return getRank(modifier1) - getRank(modifier2));
+    }
+
     function padKeywordParen(keyword:Token) {
         padSpace(padding.beforeParenAfterKeyword.toTwoSidedPadding(), After, keyword);
     }
