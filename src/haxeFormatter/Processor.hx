@@ -180,6 +180,12 @@ class Processor extends StackAwareWalker {
         padSpaces(config.padding.colon.caseAndDefault, defaultKeyword, colon);
     }
 
+    override function walkExpr_ECheckType(parenOpen:Token, expr:Expr, colon:Token, type:ComplexType, parenClose:Token, stack:WalkStack) {
+        walkExpr(expr, stack);
+        padSpaces(config.padding.colon.typeCheck, prevToken, colon);
+        super.walkExpr_ECheckType(parenOpen, expr, colon, type, parenClose, stack);
+    }
+
     override function walkAssignment(node:Assignment, stack:WalkStack) {
         padSpaces(config.padding.assignment, prevToken, node.assign);
         super.walkAssignment(node, stack);

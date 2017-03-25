@@ -28,6 +28,7 @@ typedef ColonPaddingConfig = {
     @:optional var typeHint:TwoSidedPadding;
     @:optional var objectField:TwoSidedPadding;
     @:optional var caseAndDefault:TwoSidedPadding;
+    @:optional var typeCheck:TwoSidedPadding;
 }
 
 typedef BinaryOperatorConfig = {
@@ -125,7 +126,8 @@ typedef NewlineBeforeOpeningConfig = {
                 colon: {
                     typeHint: None,
                     objectField: After,
-                    caseAndDefault: After
+                    caseAndDefault: After,
+                    typeCheck: Both
                 },
                 functionTypeArrow: None,
                 unaryOperator: Remove,
@@ -169,7 +171,8 @@ typedef NewlineBeforeOpeningConfig = {
                 colon: {
                     typeHint: Ignore,
                     objectField: Ignore,
-                    caseAndDefault: Ignore
+                    caseAndDefault: Ignore,
+                    typeCheck: Ignore
                 },
                 functionTypeArrow: Ignore,
                 unaryOperator: Ignore,

@@ -1,0 +1,19 @@
+{
+    "padding": {
+        "colon": {
+            "typeCheck": "both"
+        }
+    },
+    "testProperties": {
+        "entryPoint": "block_elements",
+        "type": "invertible"
+    }
+}
+
+---
+
+(1:Int);
+
+---
+
+(1 : Int);
