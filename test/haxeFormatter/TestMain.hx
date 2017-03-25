@@ -180,6 +180,8 @@ class TestMain {
             }
             padding.beforeSemicolon = padding.beforeSemicolon.inverted();
             padding.beforeDot = padding.beforeDot.inverted();
+            padding.beforeOpeningBrace = padding.beforeOpeningBrace.inverted();
+            padding.beforeElse = padding.beforeElse.inverted();
             padding.afterStructuralExtension = padding.afterStructuralExtension.inverted();
         }
         var braces = config.braces;

@@ -28,6 +28,7 @@ typedef PaddingConfig = {
     @:optional var beforeSemicolon:FormattingOperation;
     @:optional var beforeDot:FormattingOperation;
     @:optional var beforeOpeningBrace:FormattingOperation;
+    @:optional var beforeElse:FormattingOperation;
     @:optional var afterStructuralExtension:FormattingOperation;
 }
 
@@ -192,6 +193,7 @@ typedef NewlineBeforeOpeningConfig = {
                 beforeSemicolon: Remove,
                 beforeDot: Remove,
                 beforeOpeningBrace: Insert,
+                beforeElse: Insert,
                 afterStructuralExtension: Insert
             },
             indent: {
@@ -256,6 +258,7 @@ typedef NewlineBeforeOpeningConfig = {
                 beforeSemicolon: Ignore,
                 beforeDot: Ignore,
                 beforeOpeningBrace: Ignore,
+                beforeElse: Ignore,
                 afterStructuralExtension: Ignore
             },
             indent: {

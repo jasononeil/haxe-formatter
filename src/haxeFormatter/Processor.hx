@@ -42,6 +42,8 @@ class Processor extends StackAwareWalker {
                 handleComma(token, stack);
             case ';':
                 padSpace(padding.beforeSemicolon.toTwoSidedPadding(), Before, token.prevToken);
+            case 'else':
+                padSpace(padding.beforeElse.toTwoSidedPadding(), Before, token.prevToken);
             case _:
         }
 
@@ -264,7 +266,7 @@ class Processor extends StackAwareWalker {
                 prevToken.trailingTrivia = [makeNewlineTrivia()];
             case Remove if (prevToken.text == '}'):
                 prevToken.trailingTrivia = [];
-                node.elseKeyword.leadingTrivia = [new Trivia(" ")];
+                node.elseKeyword.leadingTrivia = [];
             case _:
         }
         super.walkExprElse(node, stack);

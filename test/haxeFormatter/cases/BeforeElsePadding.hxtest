@@ -1,6 +1,6 @@
 {
     "padding": {
-        "beforeOpeningBrace": "insert"
+        "beforeElse": "insert"
     },
     "testProperties": {
         "entryPoint": "block_elements",
@@ -10,8 +10,8 @@
 
 ---
 
-if (foo){
-} else{
+if (foo) {
+}else {
 }
 
 ---

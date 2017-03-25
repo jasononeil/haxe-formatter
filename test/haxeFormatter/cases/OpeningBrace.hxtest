@@ -40,7 +40,7 @@ class Main
 class Main{
     function foo(){
         if (foo){
-        } else{
+        }else{
         }
 
         if (foo)
