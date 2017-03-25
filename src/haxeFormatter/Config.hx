@@ -22,6 +22,7 @@ typedef PaddingConfig = {
     @:optional var insideBrackets:InsideBracketsPaddingConfig;
     @:optional var beforeParenAfterKeyword:FormattingOperation;
     @:optional var comma:CommaPaddingConfig;
+    @:optional var questionMark:QuestionMarkPaddingConfig;
 }
 
 typedef ColonPaddingConfig = {
@@ -29,6 +30,7 @@ typedef ColonPaddingConfig = {
     @:optional var objectField:TwoSidedPadding;
     @:optional var caseAndDefault:TwoSidedPadding;
     @:optional var typeCheck:TwoSidedPadding;
+    @:optional var ternary:TwoSidedPadding;
 }
 
 typedef BinaryOperatorConfig = {
@@ -47,6 +49,10 @@ typedef InsideBracketsPaddingConfig = {
 typedef CommaPaddingConfig = {
     @:optional var defaultPadding:TwoSidedPadding;
     @:optional var propertyAccess:TwoSidedPadding;
+}
+
+typedef QuestionMarkPaddingConfig = {
+    @:optional var ternary:TwoSidedPadding;
 }
 
 typedef IndentConfig = {
@@ -127,7 +133,8 @@ typedef NewlineBeforeOpeningConfig = {
                     typeHint: None,
                     objectField: After,
                     caseAndDefault: After,
-                    typeCheck: Both
+                    typeCheck: Both,
+                    ternary: Both
                 },
                 functionTypeArrow: None,
                 unaryOperator: Remove,
@@ -147,6 +154,9 @@ typedef NewlineBeforeOpeningConfig = {
                 comma: {
                     defaultPadding: After,
                     propertyAccess: None
+                },
+                questionMark: {
+                    ternary: Both
                 }
             },
             indent: {
@@ -172,7 +182,8 @@ typedef NewlineBeforeOpeningConfig = {
                     typeHint: Ignore,
                     objectField: Ignore,
                     caseAndDefault: Ignore,
-                    typeCheck: Ignore
+                    typeCheck: Ignore,
+                    ternary: Ignore
                 },
                 functionTypeArrow: Ignore,
                 unaryOperator: Ignore,
@@ -192,6 +203,9 @@ typedef NewlineBeforeOpeningConfig = {
                 comma: {
                     defaultPadding: Ignore,
                     propertyAccess: Ignore
+                },
+                questionMark: {
+                    ternary: Ignore
                 }
             },
             indent: {

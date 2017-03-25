@@ -1,0 +1,22 @@
+{
+    "padding": {
+        "colon": {
+            "ternary": "both"
+        },
+        "questionMark": {
+            "ternary": "both"
+        }
+    },
+    "testProperties": {
+        "entryPoint": "block_elements",
+        "type": "invertible"
+    }
+}
+
+---
+
+true?1:0;
+
+---
+
+true ? 1 : 0;

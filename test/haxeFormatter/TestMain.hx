@@ -147,6 +147,7 @@ class TestMain {
                 colon.objectField = colon.objectField.inverted();
                 colon.caseAndDefault = colon.caseAndDefault.inverted();
                 colon.typeCheck = colon.typeCheck.inverted();
+                colon.ternary = colon.ternary.inverted();
             }
             padding.functionTypeArrow = config.padding.functionTypeArrow.inverted();
             padding.unaryOperator = config.padding.unaryOperator.inverted();
@@ -171,6 +172,10 @@ class TestMain {
             if (comma != null) {
                 comma.defaultPadding = comma.defaultPadding.inverted();
                 comma.propertyAccess = comma.propertyAccess.inverted();
+            }
+            var questionMark = padding.questionMark;
+            if (questionMark != null) {
+                questionMark.ternary = questionMark.ternary.inverted();
             }
         }
         var braces = config.braces;

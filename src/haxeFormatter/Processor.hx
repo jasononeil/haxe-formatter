@@ -186,6 +186,16 @@ class Processor extends StackAwareWalker {
         super.walkExpr_ECheckType(parenOpen, expr, colon, type, parenClose, stack);
     }
 
+    override function walkExpr_ETernary(exprCond:Expr, questionMark:Token, exprThen:Expr, colon:Token, exprElse:Expr, stack:WalkStack) {
+        walkExpr(exprCond, stack);
+        padSpaces(config.padding.questionMark.ternary, prevToken, questionMark);
+
+        walkExpr(exprThen, stack);
+        padSpaces(config.padding.colon.ternary, prevToken, colon);
+
+        super.walkExpr_ETernary(exprCond, questionMark, exprThen, colon, exprElse, stack);
+    }
+
     override function walkAssignment(node:Assignment, stack:WalkStack) {
         padSpaces(config.padding.assignment, prevToken, node.assign);
         super.walkAssignment(node, stack);
