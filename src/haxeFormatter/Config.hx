@@ -90,7 +90,7 @@ typedef NewlineBeforeOpeningConfig = {
         case None: Both;
         case Both: None;
         case _: null;
-        }
+    }
 }
 
 @:enum abstract FormattingOperation(String) {
@@ -103,14 +103,14 @@ typedef NewlineBeforeOpeningConfig = {
         case Insert: Remove;
         case Remove: Insert;
         case _: null;
-        }
+    }
 
     public function toTwoSidedPadding():TwoSidedPadding return switch (this) {
         case FormattingOperation.Ignore: TwoSidedPadding.Ignore;
         case Insert: Both;
         case Remove: None;
         case _: null;
-        }
+    }
 }
 
 @:enum abstract LetterCase(String) {
@@ -123,7 +123,7 @@ typedef NewlineBeforeOpeningConfig = {
         case LowerCase: UpperCase;
         case UpperCase: LowerCase;
         case _: null;
-        }
+    }
 }
 
 @:enum abstract NewlineCharacter(String) {

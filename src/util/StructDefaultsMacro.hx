@@ -43,8 +43,8 @@ class StructDefaultsMacro {
                     if (innerFields != null)
                         assignments = assignments.concat(generateAssignments(
                             innerFields,
-                            macro { $struct.$name; },
-                            macro { $defaults.$name; }
+                            macro {$struct.$name;},
+                            macro {$defaults.$name;}
                         ));
                 case _:
             }
@@ -57,7 +57,7 @@ class StructDefaultsMacro {
             case TType(t, params): switch (t.get().type) {
                 case TAnonymous(a): a.get().fields;
                 case _: null;
-            }
+                }
             case _: null;
         }
     }

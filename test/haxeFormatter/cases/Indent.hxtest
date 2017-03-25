@@ -165,6 +165,10 @@ call();
 });
 }
 
+function m() return switch (foo) {
+case _:
+}
+
 // comment before }
 }
 
@@ -326,6 +330,10 @@ class Main
         {
             call();
         });
+    }
+
+    function m() return switch (foo) {
+        case _:
     }
 
     // comment before }

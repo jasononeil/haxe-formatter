@@ -20,11 +20,11 @@ class Cli {
 
             @doc("Only reindent.")
             ["--indent"] => function(whitespace:String) config = {
-                    baseConfig: Noop,
-                    indent: {
-                        whitespace: "\t"
-                    }
-                },
+                baseConfig: Noop,
+                indent: {
+                    whitespace: "\t"
+                }
+            },
         ]);
         argHandler.parse(args);
         if (args.length == 0) {
@@ -41,7 +41,7 @@ class Cli {
                 run([for (file in FileSystem.readDirectory(path)) '$path/$file']);
             else
                 try formatFile(path)
-                catch (e:Any) error(path, e);
+            catch (e:Any) error(path, e);
         }
     }
 

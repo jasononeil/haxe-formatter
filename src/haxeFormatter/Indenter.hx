@@ -49,8 +49,8 @@ private abstract IndentStack(Array<Indent>) from Array<Indent> {
 
     public function indent(line:Int, token:Token, kind:IndentKind) {
         if (top != null && top.kind == Weak && top.line == line) this.pop();
-        this.push({line:line, token:token, kind:kind});
-        // dump("indent");
+        this.push({line: line, token: token, kind: kind});
+        dump("indent");
     }
 
     public function dedent(kind:IndentKind, dedentToken:Token) {
@@ -60,18 +60,27 @@ private abstract IndentStack(Array<Indent>) from Array<Indent> {
         clearAllOfKind(SingleExpr);
         switch (kind) {
             case Strong:
-                this.pop();
+                var popped = this.pop();
+                if (popped != null) {
+                    clearAll(function(indent) {
+                        return indent.kind == SingleExpr && indent.line == popped.line;
+                    });
+                }
             case Normal if (top.kind != Strong):
                 this.pop();
             case _:
         }
-        // dump('dedent ($kind) by ${dedentToken.text}');
+        dump('dedent ($kind) by ${dedentToken.text}');
     }
 
-    function clearAllOfKind(kind:IndentKind) {
+    inline function clearAllOfKind(kind:IndentKind) {
+        return clearAll(function(indent) return indent.kind == kind);
+    }
+
+    function clearAll(shouldClear:Indent->Bool) {
         var i = this.length;
         while (i-- > 0) {
-            if (this[i].kind == kind) this.pop();
+            if (shouldClear(this[i])) this.pop();
             else break;
         }
     }
@@ -87,7 +96,7 @@ private abstract IndentStack(Array<Indent>) from Array<Indent> {
     }
 
     function dump(description:String) {
-        Sys.println('$description\n${toString()}');
+        // Sys.println('$description\n${toString()}');
     }
 }
 
@@ -181,7 +190,7 @@ class Indenter extends StackAwareWalker {
             case 'else':
                 dedent(SingleExpr);
                 switch (stack) {
-                    case Edge("elseKeyword", Node(ExprElse({ elseKeyword:_, expr:expr }), _)):
+                    case Edge("elseKeyword", Node(ExprElse({elseKeyword: _, expr: expr}), _)):
                         applyIndent();
                         if (!expr.match(EIf(_, _, _, _, _, _)))
                             indentSingleExpr(expr);
