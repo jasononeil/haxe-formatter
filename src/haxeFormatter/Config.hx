@@ -23,6 +23,7 @@ typedef PaddingConfig = {
     @:optional var beforeParenAfterKeyword:FormattingOperation;
     @:optional var comma:CommaPaddingConfig;
     @:optional var questionMark:QuestionMarkPaddingConfig;
+    @:optional var beforeSemicolon:FormattingOperation;
 }
 
 typedef ColonPaddingConfig = {
@@ -159,7 +160,8 @@ typedef NewlineBeforeOpeningConfig = {
                 questionMark: {
                     ternary: Both,
                     optional: Remove
-                }
+                },
+                beforeSemicolon: Remove
             },
             indent: {
                 whitespace: "\t",
@@ -209,7 +211,8 @@ typedef NewlineBeforeOpeningConfig = {
                 questionMark: {
                     ternary: Ignore,
                     optional: Ignore
-                }
+                },
+                beforeSemicolon: Ignore
             },
             indent: {
                 whitespace: null,

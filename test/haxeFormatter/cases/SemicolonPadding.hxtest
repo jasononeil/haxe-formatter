@@ -1,0 +1,17 @@
+{
+    "padding": {
+        "beforeSemicolon": "remove"
+    },
+    "testProperties": {
+        "type": "invertible",
+        "entryPoint": "block_elements"
+    }
+}
+
+---
+
+call() ;
+
+---
+
+call();
