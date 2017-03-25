@@ -37,6 +37,7 @@ class Processor extends StackAwareWalker {
         switch (token.text) {
             case '{':
                 handleOpeningBracket(token, stack);
+                padSpace(padding.beforeOpeningBrace.toTwoSidedPadding(), Before, token.prevToken);
             case ',':
                 handleComma(token, stack);
             case ';':
@@ -96,7 +97,7 @@ class Processor extends StackAwareWalker {
                 token.leadingTrivia = [];
             case Remove:
                 prevToken.trailingTrivia = [];
-                token.leadingTrivia = [new Trivia(" ")];
+                token.leadingTrivia = [];
             case Ignore:
         }
     }

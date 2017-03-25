@@ -37,10 +37,10 @@ class Main
 
 ---
 
-class Main {
-    function foo() {
-        if (foo) {
-        } else {
+class Main{
+    function foo(){
+        if (foo){
+        } else{
         }
 
         if (foo)

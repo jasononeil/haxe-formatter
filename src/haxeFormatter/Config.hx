@@ -27,6 +27,7 @@ typedef PaddingConfig = {
     @:optional var questionMark:QuestionMarkPaddingConfig;
     @:optional var beforeSemicolon:FormattingOperation;
     @:optional var beforeDot:FormattingOperation;
+    @:optional var beforeOpeningBrace:FormattingOperation;
     @:optional var afterStructuralExtension:FormattingOperation;
 }
 
@@ -190,6 +191,7 @@ typedef NewlineBeforeOpeningConfig = {
                 },
                 beforeSemicolon: Remove,
                 beforeDot: Remove,
+                beforeOpeningBrace: Insert,
                 afterStructuralExtension: Insert
             },
             indent: {
@@ -253,6 +255,7 @@ typedef NewlineBeforeOpeningConfig = {
                 },
                 beforeSemicolon: Ignore,
                 beforeDot: Ignore,
+                beforeOpeningBrace: Ignore,
                 afterStructuralExtension: Ignore
             },
             indent: {
