@@ -7,8 +7,8 @@ import haxe.unit.TestRunner.print;
 import haxe.unit.TestStatus;
 import haxeFormatter.Config;
 import hxParser.HxParser.EntryPoint;
-import sys.FileSystem;
 import json2object.JsonParser;
+import sys.FileSystem;
 import sys.io.File;
 using StringTools;
 using json2object.ErrorUtils;
@@ -144,6 +144,7 @@ class TestMain {
             var colon = padding.colon;
             if (colon != null) {
                 colon.typeHint = colon.typeHint.inverted();
+                colon.objectField = colon.objectField.inverted();
             }
             padding.functionTypeArrow = config.padding.functionTypeArrow.inverted();
             padding.unaryOperator = config.padding.unaryOperator.inverted();

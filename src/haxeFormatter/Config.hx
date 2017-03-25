@@ -26,6 +26,7 @@ typedef PaddingConfig = {
 
 typedef ColonPaddingConfig = {
     @:optional var typeHint:TwoSidedPadding;
+    @:optional var objectField:TwoSidedPadding;
 }
 
 typedef BinaryOperatorConfig = {
@@ -121,7 +122,8 @@ typedef NewlineBeforeOpeningConfig = {
             },
             padding: {
                 colon: {
-                    typeHint: None
+                    typeHint: None,
+                    objectField: After
                 },
                 functionTypeArrow: None,
                 unaryOperator: Remove,
@@ -163,7 +165,8 @@ typedef NewlineBeforeOpeningConfig = {
             },
             padding: {
                 colon: {
-                    typeHint: Ignore
+                    typeHint: Ignore,
+                    objectField: Ignore
                 },
                 functionTypeArrow: Ignore,
                 unaryOperator: Ignore,

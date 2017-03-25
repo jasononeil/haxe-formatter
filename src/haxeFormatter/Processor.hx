@@ -150,8 +150,8 @@ class Processor extends StackAwareWalker {
 
     function getImportToken(decl:Decl):Token {
         return switch (decl) {
-            case ImportDecl( {importKeyword: _import}): _import;
-            case UsingDecl( {usingKeyword: _using}): _using;
+            case ImportDecl({importKeyword: _import}): _import;
+            case UsingDecl({usingKeyword: _using}): _using;
             case _: expected("using or import");
         }
     }
@@ -159,6 +159,12 @@ class Processor extends StackAwareWalker {
     override function walkTypeHint(node:TypeHint, stack:WalkStack) {
         padSpaces(config.padding.colon.typeHint, prevToken, node.colon);
         super.walkTypeHint(node, stack);
+    }
+
+    override function walkObjectField(node:ObjectField, stack:WalkStack) {
+        walkObjectFieldName(node.name, stack);
+        padSpaces(config.padding.colon.objectField, prevToken, node.colon);
+        super.walkObjectField(node, stack);
     }
 
     override function walkAssignment(node:Assignment, stack:WalkStack) {

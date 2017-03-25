@@ -1,0 +1,25 @@
+{
+    "padding": {
+        "colon": {
+            "objectField": "after"
+        }
+    },
+    "testProperties": {
+        "entryPoint": "block_elements",
+        "type": "invertible"
+    }
+}
+
+---
+
+{
+    a :1,
+    b :true
+}
+
+---
+
+{
+    a: 1,
+    b: true
+}
