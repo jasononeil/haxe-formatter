@@ -192,6 +192,7 @@ class TestMain {
             }
             braces.newlineBeforeElse = braces.newlineBeforeElse.inverted();
         }
+        config.hexadecimalLiterals = config.hexadecimalLiterals.inverted();
         return config;
     }
 }

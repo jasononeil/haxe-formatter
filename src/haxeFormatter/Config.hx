@@ -7,6 +7,7 @@ typedef Config = {
     @:optional var indent:IndentConfig;
     @:optional var newlineCharacter:NewlineCharacter;
     @:optional var braces:BraceConfig;
+    @:optional var hexadecimalLiterals:LetterCase;
 }
 
 typedef ImportConfig = {
@@ -112,6 +113,19 @@ typedef NewlineBeforeOpeningConfig = {
         }
 }
 
+@:enum abstract LetterCase(String) {
+    var UpperCase = "upperCase";
+    var LowerCase = "lowerCase";
+    var Ignore = "ignore";
+
+    public function inverted():LetterCase return switch (this) {
+        case Ignore: Ignore;
+        case LowerCase: UpperCase;
+        case UpperCase: LowerCase;
+        case _: null;
+        }
+}
+
 @:enum abstract NewlineCharacter(String) {
     var Auto = "auto";
     var LF = "lf";
@@ -179,7 +193,8 @@ typedef NewlineBeforeOpeningConfig = {
                     block: Remove
                 },
                 newlineBeforeElse: Remove
-            }
+            },
+            hexadecimalLiterals: UpperCase
         },
         Noop => {
             imports: {
@@ -232,7 +247,8 @@ typedef NewlineBeforeOpeningConfig = {
                     block: Ignore
                 },
                 newlineBeforeElse: Ignore
-            }
+            },
+            hexadecimalLiterals: Ignore
         }
     ];
 

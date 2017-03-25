@@ -1,0 +1,15 @@
+{
+    "hexadecimalLiterals": "upperCase",
+    "testProperties": {
+        "type": "invertible",
+        "entryPoint": "block_elements"
+    }
+}
+
+---
+
+0xab5cdef0;
+
+---
+
+0xAB5CDEF0;

@@ -294,6 +294,20 @@ class Processor extends StackAwareWalker {
         padSpace(padding.beforeDot.toTwoSidedPadding(), Before, dotStar.prevToken);
     }
 
+    override function walkLiteral_PLiteralInt(token:Token, stack:WalkStack) {
+        super.walkLiteral_PLiteralInt(token, stack);
+        if (config.hexadecimalLiterals == Ignore) return;
+        var hexRegex = ~/0x([0-9a-fA-F]+)/;
+        if (hexRegex.match(token.text)) {
+            var literal = hexRegex.matched(1);
+            token.text = '0x${switch (config.hexadecimalLiterals) {
+                case UpperCase: literal.toUpperCase();
+                case LowerCase: literal.toLowerCase();
+                case Ignore: throw "unexpected Ignore";
+            }}';
+        }
+    }
+
     function padKeywordParen(keyword:Token) {
         padSpace(padding.beforeParenAfterKeyword.toTwoSidedPadding(), After, keyword);
     }
