@@ -45,10 +45,10 @@ class Processor extends StackAwareWalker {
         var insideBracketsConfig = getInsideBracketsConfig(token.text);
 
         inline function padOpening()
-            token.trailingTrivia = padSpace(insideBracketsConfig, After, token.trailingTrivia);
+            padSpace(insideBracketsConfig, After, token);
 
         inline function padClosing()
-            prevToken.trailingTrivia = padSpace(insideBracketsConfig, Before, prevToken.trailingTrivia);
+            padSpace(insideBracketsConfig, Before, prevToken);
 
         inline function inTypeParams()
             return stack.match(Edge(_, Node(TypePathParameters(_), _))) ||
@@ -103,7 +103,7 @@ class Processor extends StackAwareWalker {
                 config = comma.propertyAccess;
             case _:
         }
-        padSpaces(config, prevToken, token);
+        padSpaces(config, token);
     }
 
     function makeNewlineTrivia():Trivia {
@@ -157,76 +157,63 @@ class Processor extends StackAwareWalker {
     }
 
     override function walkTypeHint(node:TypeHint, stack:WalkStack) {
-        padSpaces(config.padding.colon.typeHint, prevToken, node.colon);
         super.walkTypeHint(node, stack);
+        padSpaces(config.padding.colon.typeHint, node.colon);
     }
 
     override function walkObjectField(node:ObjectField, stack:WalkStack) {
-        walkObjectFieldName(node.name, stack);
-        padSpaces(config.padding.colon.objectField, prevToken, node.colon);
         super.walkObjectField(node, stack);
+        padSpaces(config.padding.colon.objectField, node.colon);
     }
 
     override function walkCase_Case(caseKeyword:Token, patterns:CommaSeparated<Expr>, guard:Null<Guard>, colon:Token, body:Array<BlockElement>, stack:WalkStack) {
-        if (guard != null) walkGuard(guard, stack);
-        else walkCase_Case_patterns(patterns, stack);
-
-        padSpaces(config.padding.colon.caseAndDefault, prevToken, colon);
         super.walkCase_Case(caseKeyword, patterns, guard, colon, body, stack);
+        padSpaces(config.padding.colon.caseAndDefault, colon);
     }
 
     override function walkCase_Default(defaultKeyword:Token, colon:Token, body:Array<BlockElement>, stack:WalkStack) {
         super.walkCase_Default(defaultKeyword, colon, body, stack);
-        padSpaces(config.padding.colon.caseAndDefault, defaultKeyword, colon);
+        padSpaces(config.padding.colon.caseAndDefault, colon);
     }
 
     override function walkExpr_ECheckType(parenOpen:Token, expr:Expr, colon:Token, type:ComplexType, parenClose:Token, stack:WalkStack) {
-        walkExpr(expr, stack);
-        padSpaces(config.padding.colon.typeCheck, prevToken, colon);
         super.walkExpr_ECheckType(parenOpen, expr, colon, type, parenClose, stack);
+        padSpaces(config.padding.colon.typeCheck, colon);
     }
 
     override function walkExpr_ETernary(exprCond:Expr, questionMark:Token, exprThen:Expr, colon:Token, exprElse:Expr, stack:WalkStack) {
-        walkExpr(exprCond, stack);
-        padSpaces(config.padding.questionMark.ternary, prevToken, questionMark);
-
-        walkExpr(exprThen, stack);
-        padSpaces(config.padding.colon.ternary, prevToken, colon);
-
         super.walkExpr_ETernary(exprCond, questionMark, exprThen, colon, exprElse, stack);
+        padSpaces(config.padding.questionMark.ternary, questionMark);
+        padSpaces(config.padding.colon.ternary, colon);
     }
 
     override function walkAssignment(node:Assignment, stack:WalkStack) {
-        padSpaces(config.padding.assignment, prevToken, node.assign);
         super.walkAssignment(node, stack);
+        padSpaces(config.padding.assignment, node.assign);
     }
 
     override function walkComplexType_Function(typeLeft:ComplexType, arrow:Token, typeRight:ComplexType, stack:WalkStack) {
-        walkComplexType(typeLeft, stack);
-        padSpaces(config.padding.functionTypeArrow, prevToken, arrow);
         super.walkComplexType_Function(typeLeft, arrow, typeRight, stack);
+        padSpaces(config.padding.functionTypeArrow, arrow);
     }
 
     override function walkExpr_EBinop(exprLeft:Expr, op:Token, exprRight:Expr, stack:WalkStack) {
-        walkExpr(exprLeft, stack);
-
         var binopConfig = config.padding.binaryOperator;
         var spacing = binopConfig.defaultPadding;
         if (binopConfig.padded.has(op.text)) spacing = Both;
         if (binopConfig.unpadded.has(op.text)) spacing = None;
 
-        padSpaces(spacing, prevToken, op);
+        padSpaces(spacing, op);
         super.walkExpr_EBinop(exprLeft, op, exprRight, stack);
     }
 
     override function walkExpr_EUnaryPostfix(expr:Expr, op:Token, stack:WalkStack) {
-        walkExpr(expr, stack); // no need for this once tokens are doubly linked, just use op.prevToken then
-        padSpace(config.padding.unaryOperator.toTwoSidedPadding(), After, prevToken.trailingTrivia);
+        padSpace(config.padding.unaryOperator.toTwoSidedPadding(), After, op.prevToken);
         super.walkExpr_EUnaryPostfix(expr, op, stack);
     }
 
     override function walkExpr_EUnaryPrefix(op:Token, expr:Expr, stack:WalkStack) {
-        padSpace(config.padding.unaryOperator.toTwoSidedPadding(), Before, op.trailingTrivia);
+        padSpace(config.padding.unaryOperator.toTwoSidedPadding(), Before, op);
         super.walkExpr_EUnaryPrefix(op, expr, stack);
     }
 
@@ -263,27 +250,32 @@ class Processor extends StackAwareWalker {
     }
 
     function padKeywordParen(keyword:Token) {
-        keyword.trailingTrivia = padSpace(config.padding.beforeParenAfterKeyword.toTwoSidedPadding(), After, keyword.trailingTrivia);
+        padSpace(config.padding.beforeParenAfterKeyword.toTwoSidedPadding(), After, keyword);
     }
 
-    function padSpaces(padding:TwoSidedPadding, leftToken:Token, rightToken:Token) {
-        leftToken.trailingTrivia = padSpace(padding, Before, leftToken.trailingTrivia);
-        rightToken.trailingTrivia = padSpace(padding, After, rightToken.trailingTrivia);
+    function padSpaces(padding:TwoSidedPadding, token:Token) {
+        var prevToken = token.prevToken;
+        if (prevToken != null) padSpace(padding, Before, prevToken);
+        padSpace(padding, After, token);
     }
 
-    function padSpace(padding:TwoSidedPadding, location:SpacingLocation, trivia:Array<Trivia>):Array<Trivia> {
+    function padSpace(padding:TwoSidedPadding, location:SpacingLocation, token:Token) {
+        if (token == null)
+            return;
+
+        var trivia = token.trailingTrivia;
         if (trivia == null)
             trivia = [];
 
         if (trivia.length > 0 && trivia[0].text.isNewline())
-            return trivia;
+            return;
 
         if (trivia.length > 0 && trivia[0].text.isWhitespace())
             trivia[0].text = getPadding(padding, location, trivia[0].text)
         else
             trivia.insert(0, new Trivia(getPadding(padding, location, "")));
 
-        return trivia;
+        token.trailingTrivia = trivia;
     }
 
     function getPadding(padding:TwoSidedPadding, location:SpacingLocation, whitespace:String):String {
