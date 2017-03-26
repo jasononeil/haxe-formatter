@@ -1,4 +1,4 @@
-package haxeFormatter;
+package haxeFormatter.walkers;
 
 import hxParser.ParseTree;
 import hxParser.StackAwareWalker;

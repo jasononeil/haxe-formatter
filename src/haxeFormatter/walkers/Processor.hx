@@ -1,4 +1,4 @@
-package haxeFormatter;
+package haxeFormatter.walkers;
 
 import haxeFormatter.Config;
 import haxeFormatter.formatting.ImportSorter;

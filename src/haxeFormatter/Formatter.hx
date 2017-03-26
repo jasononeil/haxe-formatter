@@ -2,6 +2,8 @@ package haxeFormatter;
 
 import haxeFormatter.Config;
 import haxeFormatter.util.StructDefaultsMacro;
+import haxeFormatter.walkers.Indenter;
+import haxeFormatter.walkers.Processor;
 import hxParser.Converter;
 import hxParser.HxParser;
 import hxParser.ParseTree;
