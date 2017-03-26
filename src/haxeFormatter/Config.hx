@@ -83,10 +83,10 @@ typedef NewlineBeforeOpeningConfig = {
 @:enum abstract OneSidedPadding(String) {
     var SingleSpace = "singleSpace";
     var NoSpace = "noSpace";
-    var Ignore = "ignore";
+    var Keep = "keep";
 
     public function inverted():OneSidedPadding return switch (this) {
-        case Ignore: Ignore;
+        case Keep: Keep;
         case SingleSpace: NoSpace;
         case NoSpace: SingleSpace;
         case _: null;
@@ -98,10 +98,10 @@ typedef NewlineBeforeOpeningConfig = {
     var SpaceAfter = "spaceAfter";
     var SpacesAround = "spacesAround";
     var NoSpaces = "noSpaces";
-    var Ignore = "ignore";
+    var Keep = "keep";
 
     public function inverted():TwoSidedPadding return switch (this) {
-        case Ignore: Ignore;
+        case Keep: Keep;
         case SpaceBefore: SpaceAfter;
         case SpaceAfter: SpaceBefore;
         case NoSpaces: SpacesAround;
@@ -113,10 +113,10 @@ typedef NewlineBeforeOpeningConfig = {
 @:enum abstract FormattingOperation(String) {
     var Insert = "insert";
     var Remove = "remove";
-    var Ignore = "ignore";
+    var Keep = "ignore";
 
     public function inverted():FormattingOperation return switch (this) {
-        case FormattingOperation.Ignore: Ignore;
+        case FormattingOperation.Keep: Keep;
         case Insert: Remove;
         case Remove: Insert;
         case _: null;
@@ -126,10 +126,10 @@ typedef NewlineBeforeOpeningConfig = {
 @:enum abstract LetterCase(String) {
     var UpperCase = "upperCase";
     var LowerCase = "lowerCase";
-    var Ignore = "ignore";
+    var Keep = "ignore";
 
     public function inverted():LetterCase return switch (this) {
-        case Ignore: Ignore;
+        case Keep: Keep;
         case LowerCase: UpperCase;
         case UpperCase: LowerCase;
         case _: null;
@@ -234,41 +234,41 @@ typedef NewlineBeforeOpeningConfig = {
             },
             padding: {
                 colon: {
-                    typeHint: Ignore,
-                    objectField: Ignore,
-                    caseAndDefault: Ignore,
-                    typeCheck: Ignore,
-                    ternary: Ignore
+                    typeHint: Keep,
+                    objectField: Keep,
+                    caseAndDefault: Keep,
+                    typeCheck: Keep,
+                    ternary: Keep
                 },
-                functionTypeArrow: Ignore,
-                unaryOperator: Ignore,
+                functionTypeArrow: Keep,
+                unaryOperator: Keep,
                 binaryOperator: {
-                    defaultPadding: Ignore,
+                    defaultPadding: Keep,
                     padded: [],
                     unpadded: []
                 },
-                assignment: Ignore,
+                assignment: Keep,
                 insideBrackets: {
-                    parens: Ignore,
-                    braces: Ignore,
-                    square: Ignore,
-                    angle: Ignore
+                    parens: Keep,
+                    braces: Keep,
+                    square: Keep,
+                    angle: Keep
                 },
-                beforeParenAfterKeyword: Ignore,
+                beforeParenAfterKeyword: Keep,
                 comma: {
-                    defaultPadding: Ignore,
-                    propertyAccess: Ignore
+                    defaultPadding: Keep,
+                    propertyAccess: Keep
                 },
                 questionMark: {
-                    ternary: Ignore,
-                    optional: Ignore
+                    ternary: Keep,
+                    optional: Keep
                 },
-                beforeSemicolon: Ignore,
-                beforeDot: Ignore,
-                beforeOpeningBrace: Ignore,
-                beforeElse: Ignore,
-                afterStructuralExtension: Ignore,
-                afterClosingParen: Ignore
+                beforeSemicolon: Keep,
+                beforeDot: Keep,
+                beforeOpeningBrace: Keep,
+                beforeElse: Keep,
+                afterStructuralExtension: Keep,
+                afterClosingParen: Keep
             },
             indent: {
                 whitespace: null,
@@ -277,13 +277,13 @@ typedef NewlineBeforeOpeningConfig = {
             newlineCharacter: Auto,
             braces: {
                 newlineBeforeOpening: {
-                    type: Ignore,
-                    field: Ignore,
-                    block: Ignore
+                    type: Keep,
+                    field: Keep,
+                    block: Keep
                 },
-                newlineBeforeElse: Ignore
+                newlineBeforeElse: Keep
             },
-            hexadecimalLiterals: Ignore,
+            hexadecimalLiterals: Keep,
             fieldModifierOrder: []
         }
     ];

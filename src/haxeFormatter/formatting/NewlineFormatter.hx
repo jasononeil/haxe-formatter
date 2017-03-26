@@ -12,7 +12,7 @@ class NewlineFormatter {
             case Block: newlineConfigs.block;
             case Field: newlineConfigs.field;
             case Decl: newlineConfigs.type;
-            case Unknown: Ignore;
+            case Unknown: Keep;
         }
 
         var prevToken = openingBrace.prevToken;
@@ -23,7 +23,7 @@ class NewlineFormatter {
             case Remove:
                 prevToken.trailingTrivia = [];
                 openingBrace.leadingTrivia = [];
-            case Ignore:
+            case Keep:
         }
     }
 

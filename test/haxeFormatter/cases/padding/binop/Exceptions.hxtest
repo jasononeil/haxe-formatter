@@ -1,7 +1,7 @@
 {
     "padding": {
         "binaryOperator": {
-            "defaultPadding": "ignore",
+            "defaultPadding": "keep",
             "unpadded": ["..."],
             "padded": ["*"]
         }

@@ -11,24 +11,24 @@ class TokenPaddingTools {
     }
 
     public static function padAround(token:Token, padding:TwoSidedPadding) {
-        if (padding == Ignore)
+        if (padding == Keep)
             return;
 
         token.padBefore(switch (padding) {
             case SpaceBefore | SpacesAround: SingleSpace;
             case SpaceAfter | NoSpaces: NoSpace;
-            case Ignore: OneSidedPadding.Ignore;
+            case Keep: OneSidedPadding.Keep;
         });
 
         token.padAfter(switch (padding) {
             case SpaceAfter | SpacesAround: SingleSpace;
             case SpaceBefore | NoSpaces: NoSpace;
-            case Ignore: OneSidedPadding.Ignore;
+            case Keep: OneSidedPadding.Keep;
         });
     }
 
     public static function padAfter(token:Token, padding:OneSidedPadding) {
-        if (padding == Ignore || token == null)
+        if (padding == Keep || token == null)
             return;
 
         var trivia = token.trailingTrivia;
