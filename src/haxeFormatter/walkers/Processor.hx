@@ -26,8 +26,8 @@ class Processor extends StackAwareWalker {
 
     override function walkToken(token:Token, stack:WalkStack) {
         super.walkToken(token, stack);
-        token.padToken(stack, padding);
         if (token.text == '{') NewlineFormatter.formatOpeningBrace(token, stack, config);
+        token.padToken(stack, padding);
     }
 
     override function walkTypeHint(node:TypeHint, stack:WalkStack) {
@@ -118,8 +118,8 @@ class Processor extends StackAwareWalker {
 
     override function walkExprElse(node:ExprElse, stack:WalkStack) {
         super.walkExprElse(node, stack);
-        node.elseKeyword.padBefore(padding.beforeElse);
         NewlineFormatter.formatBeforeElse(node.elseKeyword, config);
+        node.elseKeyword.padBefore(padding.beforeElse);
     }
 
     override function walkExpr_EFor(forKeyword:Token, parenOpen:Token, exprIter:Expr, parenClose:Token, exprBody:Expr, stack:WalkStack) {
