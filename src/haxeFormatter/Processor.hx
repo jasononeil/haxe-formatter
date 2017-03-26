@@ -6,6 +6,7 @@ import hxParser.ParseTree;
 import hxParser.Printer.print;
 import hxParser.StackAwareWalker;
 import hxParser.WalkStack;
+using util.TokenPaddingTools;
 
 class Processor extends StackAwareWalker {
     var config:Config;
@@ -33,15 +34,15 @@ class Processor extends StackAwareWalker {
             case '{':
                 handleOpeningBracket(token, stack);
                 if (token.prevToken != null && !['{', '(', '[', '<'].has(token.prevToken.text))
-                    padSpace(padding.beforeOpeningBrace, token.prevToken);
+                    token.padBefore(padding.beforeOpeningBrace);
             case ')':
-                padSpace(padding.afterClosingParen, token);
+                token.padAfter(padding.afterClosingParen);
             case ',':
                 handleComma(token, stack);
             case ';':
-                padSpace(padding.beforeSemicolon, token.prevToken);
+                token.padBefore(padding.beforeSemicolon);
             case 'else':
-                padSpace(padding.beforeElse, token.prevToken);
+                token.padBefore(padding.beforeElse);
             case _:
         }
 
@@ -52,10 +53,10 @@ class Processor extends StackAwareWalker {
         var insideBracketsConfig = getInsideBracketsConfig(token.text);
 
         inline function padOpening()
-            padSpace(insideBracketsConfig, token);
+            token.padAfter(insideBracketsConfig);
 
         inline function padClosing()
-            padSpace(insideBracketsConfig, prevToken);
+            token.padBefore(insideBracketsConfig);
 
         inline function inTypeParams()
             return stack.match(Edge(_, Node(TypePathParameters(_), _))) ||
@@ -102,14 +103,10 @@ class Processor extends StackAwareWalker {
     }
 
     function handleComma(token:Token, stack:WalkStack) {
-        var comma = padding.comma;
-        var config = comma.defaultPadding;
-        switch (stack) {
-            case Edge(_, Node(ClassField_Property(_, _, _, _, _, _, _, _, _, _, _, _), _)):
-                config = comma.propertyAccess;
-            case _:
-        }
-        padSpaces(config, token);
+        var config = padding.comma.defaultPadding;
+        if (stack.match(Edge(_, Node(ClassField_Property(_, _, _, _, _, _, _, _, _, _, _, _), _))))
+            config = padding.comma.propertyAccess;
+        token.padAround(config);
     }
 
     function makeNewlineTrivia():Trivia {
@@ -164,33 +161,33 @@ class Processor extends StackAwareWalker {
 
     override function walkTypeHint(node:TypeHint, stack:WalkStack) {
         super.walkTypeHint(node, stack);
-        padSpaces(padding.colon.typeHint, node.colon);
+        node.colon.padAround(padding.colon.typeHint);
     }
 
     override function walkObjectField(node:ObjectField, stack:WalkStack) {
         super.walkObjectField(node, stack);
-        padSpaces(padding.colon.objectField, node.colon);
+        node.colon.padAround(padding.colon.objectField);
     }
 
     override function walkCase_Case(caseKeyword:Token, patterns:CommaSeparated<Expr>, guard:Null<Guard>, colon:Token, body:Array<BlockElement>, stack:WalkStack) {
         super.walkCase_Case(caseKeyword, patterns, guard, colon, body, stack);
-        padSpaces(padding.colon.caseAndDefault, colon);
+        colon.padAround(padding.colon.caseAndDefault);
     }
 
     override function walkCase_Default(defaultKeyword:Token, colon:Token, body:Array<BlockElement>, stack:WalkStack) {
         super.walkCase_Default(defaultKeyword, colon, body, stack);
-        padSpaces(padding.colon.caseAndDefault, colon);
+        colon.padAround(padding.colon.caseAndDefault);
     }
 
     override function walkExpr_ECheckType(parenOpen:Token, expr:Expr, colon:Token, type:ComplexType, parenClose:Token, stack:WalkStack) {
         super.walkExpr_ECheckType(parenOpen, expr, colon, type, parenClose, stack);
-        padSpaces(padding.colon.typeCheck, colon);
+        colon.padAround(padding.colon.typeCheck);
     }
 
     override function walkExpr_ETernary(exprCond:Expr, questionMark:Token, exprThen:Expr, colon:Token, exprElse:Expr, stack:WalkStack) {
         super.walkExpr_ETernary(exprCond, questionMark, exprThen, colon, exprElse, stack);
-        padSpaces(padding.questionMark.ternary, questionMark);
-        padSpaces(padding.colon.ternary, colon);
+        questionMark.padAround(padding.questionMark.ternary);
+        colon.padAround(padding.colon.ternary);
     }
 
     override function walkComplexType_Optional(questionMark:Token, type:ComplexType, stack:WalkStack) {
@@ -214,22 +211,22 @@ class Processor extends StackAwareWalker {
     }
 
     inline function padOptional(questionMark:Token) {
-        padSpace(padding.questionMark.optional, questionMark);
+        questionMark.padAfter(padding.questionMark.optional);
     }
 
     override function walkStructuralExtension(node:StructuralExtension, stack:WalkStack) {
         super.walkStructuralExtension(node, stack);
-        padSpace(padding.afterStructuralExtension, node.gt);
+        node.gt.padAfter(padding.afterStructuralExtension);
     }
 
     override function walkAssignment(node:Assignment, stack:WalkStack) {
         super.walkAssignment(node, stack);
-        padSpaces(padding.assignment, node.assign);
+        node.assign.padAround(padding.assignment);
     }
 
     override function walkComplexType_Function(typeLeft:ComplexType, arrow:Token, typeRight:ComplexType, stack:WalkStack) {
         super.walkComplexType_Function(typeLeft, arrow, typeRight, stack);
-        padSpaces(padding.functionTypeArrow, arrow);
+        arrow.padAround(padding.functionTypeArrow);
     }
 
     override function walkExpr_EBinop(exprLeft:Expr, op:Token, exprRight:Expr, stack:WalkStack) {
@@ -238,18 +235,18 @@ class Processor extends StackAwareWalker {
         if (binopConfig.padded.has(op.text)) spacing = Both;
         if (binopConfig.unpadded.has(op.text)) spacing = None;
 
-        padSpaces(spacing, op);
+        op.padAround(spacing);
         super.walkExpr_EBinop(exprLeft, op, exprRight, stack);
     }
 
     override function walkExpr_EUnaryPostfix(expr:Expr, op:Token, stack:WalkStack) {
-        padSpace(padding.unaryOperator, op.prevToken);
         super.walkExpr_EUnaryPostfix(expr, op, stack);
+        op.padBefore(padding.unaryOperator);
     }
 
     override function walkExpr_EUnaryPrefix(op:Token, expr:Expr, stack:WalkStack) {
-        padSpace(padding.unaryOperator, op);
         super.walkExpr_EUnaryPrefix(op, expr, stack);
+        op.padAfter(padding.unaryOperator);
     }
 
     override function walkExpr_EIf(ifKeyword:Token, parenOpen:Token, exprCond:Expr, parenClose:Token, exprThen:Expr, exprElse:Null<ExprElse>, stack:WalkStack) {
@@ -286,12 +283,12 @@ class Processor extends StackAwareWalker {
 
     override function walkNDotIdent_PDotIdent(name:Token, stack:WalkStack) {
         super.walkNDotIdent_PDotIdent(name, stack);
-        padSpace(padding.beforeDot, name.prevToken);
+        name.padBefore(padding.beforeDot);
     }
 
     override function walkImportMode_IAll(dotStar:Token, stack:WalkStack) {
         super.walkImportMode_IAll(dotStar, stack);
-        padSpace(padding.beforeDot, dotStar.prevToken);
+        dotStar.padBefore(padding.beforeDot);
     }
 
     override function walkLiteral_PLiteralInt(token:Token, stack:WalkStack) {
@@ -332,52 +329,8 @@ class Processor extends StackAwareWalker {
         ArraySort.sort(modifiers, function(modifier1, modifier2) return getRank(modifier1) - getRank(modifier2));
     }
 
-    function padKeywordParen(keyword:Token) {
-        padSpace(padding.beforeParenAfterKeyword, keyword);
-    }
-
-    function padSpaces(padding:TwoSidedPadding, token:Token) {
-        var operation = switch (padding) {
-            case Before | Both: Insert;
-            case After | None: Remove;
-            case Ignore: FormattingOperation.Ignore;
-        }
-        var prevToken = token.prevToken;
-        if (prevToken != null) padSpace(operation, prevToken);
-
-        operation = switch (padding) {
-            case After | Both: Insert;
-            case Before | None: Remove;
-            case Ignore: FormattingOperation.Ignore;
-        }
-        padSpace(operation, token);
-    }
-
-    function padSpace(operation:FormattingOperation, token:Token) {
-        if (token == null)
-            return;
-
-        var trivia = token.trailingTrivia;
-        if (trivia == null)
-            trivia = [];
-
-        if (trivia.length > 0 && trivia[0].text.isNewline())
-            return;
-
-        if (trivia.length > 0 && trivia[0].text.isWhitespace())
-            trivia[0].text = getPadding(operation, trivia[0].text)
-        else
-            trivia.insert(0, new Trivia(getPadding(operation, "")));
-
-        token.trailingTrivia = trivia;
-    }
-
-    function getPadding(operation:FormattingOperation, current:String):String {
-        return switch (operation) {
-            case Ignore: current;
-            case Insert: " ";
-            case Remove: "";
-        }
+    inline function padKeywordParen(keyword:Token) {
+        keyword.padAfter(padding.beforeParenAfterKeyword);
     }
 
     inline function expected(what:String) {
