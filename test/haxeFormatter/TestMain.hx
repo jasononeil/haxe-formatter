@@ -39,30 +39,36 @@ class TestMain {
 
     public function new() {
         var singleDir = "test/haxeFormatter/single";
-        var testResult = processTestDirectory(
-            if (FileSystem.exists(singleDir) && FileSystem.readDirectory(singleDir).length > 0)
+        var oldCwd = Sys.getCwd();
+        var cwd = if (FileSystem.exists(singleDir) && FileSystem.readDirectory(singleDir).length > 0)
                 singleDir
             else
-                "test/haxeFormatter/cases");
+                "test/haxeFormatter/cases";
+
+        Sys.setCwd(cwd);
+
+        var testResult = new TestResult();
+        processTestDirectory(".", testResult);
+
+        Sys.setCwd(oldCwd);
 
         Sys.println(testResult.toString());
         if (testResult.success) updateResultFile("---");
         Sys.exit(if (testResult.success) 0 else 1);
     }
 
-    function processTestDirectory(dir:String):TestResult {
-        var testResult = new TestResult();
+    function processTestDirectory(dir:String, testResult:TestResult) {
         for (file in FileSystem.readDirectory(dir)) {
-            if (!file.endsWith(".hxtest"))
-                continue;
-            for (result in processTestDefinition(dir, file))
-                testResult.add(result);
+            var path = Path.join([dir, file]);
+            if (FileSystem.isDirectory(path))
+                processTestDirectory(path, testResult)
+            else if (file.endsWith(".hxtest"))
+                for (result in processTestDefinition(path))
+                    testResult.add(result);
         }
-        return testResult;
     }
 
-    function processTestDefinition(dir:String, file:String):Array<TestStatus> {
-        var path = Path.join([dir, file]);
+    function processTestDefinition(path:String):Array<TestStatus> {
         var content = sys.io.File.getContent(path);
         var nl = "(\r?\n)";
         var reg = new EReg('$nl$nl---$nl$nl', "g");
@@ -85,7 +91,7 @@ class TestMain {
         if (segments.length != requiredSegments)
             throw 'Exactly $requiredSegments segments expected, but found ${segments.length}.';
 
-        var name = Path.withoutExtension(file);
+        var name = Path.withoutExtension(path);
         var source = segments[1];
         var expected = if (isNoopTest) source else segments[2];
 
