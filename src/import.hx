@@ -1,4 +1,4 @@
 using hxParser.WalkStackTools;
-using util.ArrayTools;
-using util.StringTools;
+using haxeFormatter.util.ArrayTools;
+using haxeFormatter.util.StringTools;
 using StringTools;

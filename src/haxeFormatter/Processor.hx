@@ -6,7 +6,7 @@ import hxParser.ParseTree;
 import hxParser.Printer.print;
 import hxParser.StackAwareWalker;
 import hxParser.WalkStack;
-using util.TokenPaddingTools;
+using haxeFormatter.util.TokenPaddingTools;
 
 class Processor extends StackAwareWalker {
     var config:Config;

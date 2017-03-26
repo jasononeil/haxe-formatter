@@ -1,4 +1,4 @@
-package util;
+package haxeFormatter.util;
 
 class StringTools {
     public static inline function has(s:String, substring:String):Bool {

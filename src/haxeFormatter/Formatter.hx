@@ -1,13 +1,13 @@
 package haxeFormatter;
 
 import haxeFormatter.Config;
+import haxeFormatter.util.StructDefaultsMacro;
 import hxParser.Converter;
 import hxParser.HxParser;
 import hxParser.ParseTree;
 import hxParser.Printer;
 import hxParser.StackAwareWalker;
 import util.Result;
-import util.StructDefaultsMacro;
 
 class Formatter {
     public static function formatFile(file:File, ?config:Config):Result<String> {

@@ -1,10 +1,10 @@
-package util;
+package haxeFormatter.util;
 
 import haxeFormatter.Config.FormattingOperation;
 import haxeFormatter.Config.TwoSidedPadding;
 import hxParser.ParseTree.Token;
 import hxParser.ParseTree.Trivia;
-using util.TokenPaddingTools;
+using haxeFormatter.util.TokenPaddingTools;
 
 class TokenPaddingTools {
     public static function padBefore(token:Token, operation:FormattingOperation) {
