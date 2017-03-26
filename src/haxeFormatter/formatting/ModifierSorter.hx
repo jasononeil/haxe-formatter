@@ -1,4 +1,4 @@
-package haxeFormatter.util;
+package haxeFormatter.formatting;
 
 import haxe.ds.ArraySort;
 import haxeFormatter.Config.Modifier;

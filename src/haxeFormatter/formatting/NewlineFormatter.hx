@@ -1,4 +1,4 @@
-package haxeFormatter.util;
+package haxeFormatter.formatting;
 
 import haxeFormatter.Config.FormattingOperation;
 import hxParser.ParseTree.Token;

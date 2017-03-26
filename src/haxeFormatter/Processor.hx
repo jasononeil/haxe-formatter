@@ -1,14 +1,14 @@
 package haxeFormatter;
 
 import haxeFormatter.Config;
-import haxeFormatter.util.ImportSorter;
-import haxeFormatter.util.ModifierSorter;
-import haxeFormatter.util.NewlineFormatter;
+import haxeFormatter.formatting.ImportSorter;
+import haxeFormatter.formatting.ModifierSorter;
+import haxeFormatter.formatting.NewlineFormatter;
 import hxParser.ParseTree;
 import hxParser.StackAwareWalker;
 import hxParser.WalkStack;
-using haxeFormatter.util.TokenFormattingTools;
-using haxeFormatter.util.TokenPaddingTools;
+using haxeFormatter.formatting.TokenFormattingTools;
+using haxeFormatter.formatting.TokenPaddingTools;
 
 class Processor extends StackAwareWalker {
     var config:Config;

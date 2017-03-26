@@ -1,9 +1,9 @@
-package haxeFormatter.util;
+package haxeFormatter.formatting;
 
 import haxeFormatter.Config;
 import hxParser.ParseTree;
 import hxParser.WalkStack;
-using haxeFormatter.util.TokenPaddingTools;
+using haxeFormatter.formatting.TokenPaddingTools;
 
 class TokenPaddingTools {
     public static inline function padBefore(token:Token, operation:FormattingOperation) {
