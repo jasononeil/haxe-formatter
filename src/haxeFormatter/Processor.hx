@@ -7,11 +7,6 @@ import hxParser.Printer.print;
 import hxParser.StackAwareWalker;
 import hxParser.WalkStack;
 
-enum SpacingLocation {
-    Before;
-    After;
-}
-
 class Processor extends StackAwareWalker {
     var config:Config;
     var prevToken:Token;
@@ -38,15 +33,15 @@ class Processor extends StackAwareWalker {
             case '{':
                 handleOpeningBracket(token, stack);
                 if (token.prevToken != null && !['{', '(', '[', '<'].has(token.prevToken.text))
-                    padSpace(padding.beforeOpeningBrace.toTwoSidedPadding(), Before, token.prevToken);
+                    padSpace(padding.beforeOpeningBrace, token.prevToken);
             case ')':
-                padSpace(padding.afterClosingParen.toTwoSidedPadding(), After, token);
+                padSpace(padding.afterClosingParen, token);
             case ',':
                 handleComma(token, stack);
             case ';':
-                padSpace(padding.beforeSemicolon.toTwoSidedPadding(), Before, token.prevToken);
+                padSpace(padding.beforeSemicolon, token.prevToken);
             case 'else':
-                padSpace(padding.beforeElse.toTwoSidedPadding(), Before, token.prevToken);
+                padSpace(padding.beforeElse, token.prevToken);
             case _:
         }
 
@@ -57,10 +52,10 @@ class Processor extends StackAwareWalker {
         var insideBracketsConfig = getInsideBracketsConfig(token.text);
 
         inline function padOpening()
-            padSpace(insideBracketsConfig, After, token);
+            padSpace(insideBracketsConfig, token);
 
         inline function padClosing()
-            padSpace(insideBracketsConfig, Before, prevToken);
+            padSpace(insideBracketsConfig, prevToken);
 
         inline function inTypeParams()
             return stack.match(Edge(_, Node(TypePathParameters(_), _))) ||
@@ -75,16 +70,15 @@ class Processor extends StackAwareWalker {
         }
     }
 
-    function getInsideBracketsConfig(token:String):TwoSidedPadding {
+    function getInsideBracketsConfig(token:String):FormattingOperation {
         var insideBrackets = padding.insideBrackets;
-        var padding = switch (token) {
+        return switch (token) {
             case '(' | ')': insideBrackets.parens;
             case '{' | '}': insideBrackets.braces;
             case '[' | ']': insideBrackets.square;
             case '<' | '>': insideBrackets.angle;
             case _: null;
         }
-        return if (padding != null) padding.toTwoSidedPadding() else null;
     }
 
     function handleOpeningBracket(token:Token, stack:WalkStack) {
@@ -220,12 +214,12 @@ class Processor extends StackAwareWalker {
     }
 
     inline function padOptional(questionMark:Token) {
-        padSpace(padding.questionMark.optional.toTwoSidedPadding(), After, questionMark);
+        padSpace(padding.questionMark.optional, questionMark);
     }
 
     override function walkStructuralExtension(node:StructuralExtension, stack:WalkStack) {
         super.walkStructuralExtension(node, stack);
-        padSpace(padding.afterStructuralExtension.toTwoSidedPadding(), After, node.gt);
+        padSpace(padding.afterStructuralExtension, node.gt);
     }
 
     override function walkAssignment(node:Assignment, stack:WalkStack) {
@@ -249,12 +243,12 @@ class Processor extends StackAwareWalker {
     }
 
     override function walkExpr_EUnaryPostfix(expr:Expr, op:Token, stack:WalkStack) {
-        padSpace(padding.unaryOperator.toTwoSidedPadding(), After, op.prevToken);
+        padSpace(padding.unaryOperator, op.prevToken);
         super.walkExpr_EUnaryPostfix(expr, op, stack);
     }
 
     override function walkExpr_EUnaryPrefix(op:Token, expr:Expr, stack:WalkStack) {
-        padSpace(padding.unaryOperator.toTwoSidedPadding(), Before, op);
+        padSpace(padding.unaryOperator, op);
         super.walkExpr_EUnaryPrefix(op, expr, stack);
     }
 
@@ -292,12 +286,12 @@ class Processor extends StackAwareWalker {
 
     override function walkNDotIdent_PDotIdent(name:Token, stack:WalkStack) {
         super.walkNDotIdent_PDotIdent(name, stack);
-        padSpace(padding.beforeDot.toTwoSidedPadding(), Before, name.prevToken);
+        padSpace(padding.beforeDot, name.prevToken);
     }
 
     override function walkImportMode_IAll(dotStar:Token, stack:WalkStack) {
         super.walkImportMode_IAll(dotStar, stack);
-        padSpace(padding.beforeDot.toTwoSidedPadding(), Before, dotStar.prevToken);
+        padSpace(padding.beforeDot, dotStar.prevToken);
     }
 
     override function walkLiteral_PLiteralInt(token:Token, stack:WalkStack) {
@@ -339,16 +333,27 @@ class Processor extends StackAwareWalker {
     }
 
     function padKeywordParen(keyword:Token) {
-        padSpace(padding.beforeParenAfterKeyword.toTwoSidedPadding(), After, keyword);
+        padSpace(padding.beforeParenAfterKeyword, keyword);
     }
 
     function padSpaces(padding:TwoSidedPadding, token:Token) {
+        var operation = switch (padding) {
+            case Before | Both: Insert;
+            case After | None: Remove;
+            case Ignore: FormattingOperation.Ignore;
+        }
         var prevToken = token.prevToken;
-        if (prevToken != null) padSpace(padding, Before, prevToken);
-        padSpace(padding, After, token);
+        if (prevToken != null) padSpace(operation, prevToken);
+
+        operation = switch (padding) {
+            case After | Both: Insert;
+            case Before | None: Remove;
+            case Ignore: FormattingOperation.Ignore;
+        }
+        padSpace(operation, token);
     }
 
-    function padSpace(padding:TwoSidedPadding, location:SpacingLocation, token:Token) {
+    function padSpace(operation:FormattingOperation, token:Token) {
         if (token == null)
             return;
 
@@ -360,18 +365,18 @@ class Processor extends StackAwareWalker {
             return;
 
         if (trivia.length > 0 && trivia[0].text.isWhitespace())
-            trivia[0].text = getPadding(padding, location, trivia[0].text)
+            trivia[0].text = getPadding(operation, trivia[0].text)
         else
-            trivia.insert(0, new Trivia(getPadding(padding, location, "")));
+            trivia.insert(0, new Trivia(getPadding(operation, "")));
 
         token.trailingTrivia = trivia;
     }
 
-    function getPadding(padding:TwoSidedPadding, location:SpacingLocation, whitespace:String):String {
-        return switch [padding, location] {
-            case [Ignore, _]: whitespace;
-            case [Both, _], [Before, Before], [After, After]: " ";
-            case _: "";
+    function getPadding(operation:FormattingOperation, current:String):String {
+        return switch (operation) {
+            case Ignore: current;
+            case Insert: " ";
+            case Remove: "";
         }
     }
 

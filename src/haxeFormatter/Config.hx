@@ -108,13 +108,6 @@ typedef NewlineBeforeOpeningConfig = {
         case Remove: Insert;
         case _: null;
     }
-
-    public function toTwoSidedPadding():TwoSidedPadding return switch (this) {
-        case FormattingOperation.Ignore: TwoSidedPadding.Ignore;
-        case Insert: Both;
-        case Remove: None;
-        case _: null;
-    }
 }
 
 @:enum abstract LetterCase(String) {
