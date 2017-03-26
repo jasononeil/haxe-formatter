@@ -19,15 +19,15 @@ class Processor extends StackAwareWalker {
         padding = config.padding;
     }
 
-    override function walkFile_decls(elems:Array<Decl>, stack:WalkStack) {
-        super.walkFile_decls(elems, stack);
-        ImportSorter.sort(elems, config.imports);
-    }
-
     override function walkToken(token:Token, stack:WalkStack) {
         super.walkToken(token, stack);
         if (token.text == '{') NewlineFormatter.formatOpeningBrace(token, stack, config);
         token.padToken(stack, padding);
+    }
+
+    override function walkFile_decls(elems:Array<Decl>, stack:WalkStack) {
+        super.walkFile_decls(elems, stack);
+        ImportSorter.sort(elems, config.imports);
     }
 
     override function walkTypeHint(node:TypeHint, stack:WalkStack) {

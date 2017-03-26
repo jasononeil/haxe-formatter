@@ -1,8 +1,8 @@
 {
     "padding": {
         "comma": {
-            "defaultPadding": "after",
-            "propertyAccess": "none"
+            "defaultPadding": "spaceAfter",
+            "propertyAccess": "noSpaces"
         }
     },
     "testProperties": {

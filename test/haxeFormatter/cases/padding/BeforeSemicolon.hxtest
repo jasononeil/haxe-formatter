@@ -1,6 +1,6 @@
 {
     "padding": {
-        "beforeSemicolon": "remove"
+        "beforeSemicolon": "noSpace"
     },
     "testProperties": {
         "type": "invertible",

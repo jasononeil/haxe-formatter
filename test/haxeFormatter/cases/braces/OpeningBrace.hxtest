@@ -1,7 +1,7 @@
 {
     "padding": {
-        "beforeOpeningBrace": "insert",
-        "beforeElse": "insert"
+        "beforeOpeningBrace": "singleSpace",
+        "beforeElse": "singleSpace"
     },
     "braces": {
         "newlineBeforeOpening": {

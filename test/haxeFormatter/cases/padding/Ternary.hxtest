@@ -1,10 +1,10 @@
 {
     "padding": {
         "colon": {
-            "ternary": "both"
+            "ternary": "spacesAround"
         },
         "questionMark": {
-            "ternary": "both"
+            "ternary": "spacesAround"
         }
     },
     "testProperties": {

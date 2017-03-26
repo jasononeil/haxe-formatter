@@ -1,12 +1,12 @@
 {
     "padding": {
         "insideBrackets": {
-            "braces": "remove",
-            "parens": "remove",
-            "square": "remove",
-            "angle": "remove"
+            "braces": "noSpace",
+            "parens": "noSpace",
+            "square": "noSpace",
+            "angle": "noSpace"
         },
-        "beforeOpeningBrace": "insert"
+        "beforeOpeningBrace": "singleSpace"
     },
     "testProperties": {
         "entryPoint": "block_elements"

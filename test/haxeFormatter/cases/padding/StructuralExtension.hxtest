@@ -1,6 +1,6 @@
 {
     "padding": {
-        "afterStructuralExtension": "insert"
+        "afterStructuralExtension": "singleSpace"
     },
     "testProperties": {
         "type": "invertible"

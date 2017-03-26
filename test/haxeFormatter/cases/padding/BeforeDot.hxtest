@@ -1,6 +1,6 @@
 {
     "padding": {
-        "beforeDot": "remove"
+        "beforeDot": "noSpace"
     },
     "testProperties": {
         "type": "invertible"

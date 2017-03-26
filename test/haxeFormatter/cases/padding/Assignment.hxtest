@@ -1,6 +1,6 @@
 {
     "padding": {
-        "assignment": "both"
+        "assignment": "spacesAround"
     },
     "testProperties": {
         "type": "invertible",

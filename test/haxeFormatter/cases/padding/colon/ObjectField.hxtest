@@ -1,7 +1,7 @@
 {
     "padding": {
         "colon": {
-            "objectField": "after"
+            "objectField": "spaceAfter"
         }
     },
     "testProperties": {

@@ -1,7 +1,7 @@
 {
     "padding": {
         "colon": {
-            "typeCheck": "both"
+            "typeCheck": "spacesAround"
         }
     },
     "testProperties": {

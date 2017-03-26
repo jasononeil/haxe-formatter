@@ -1,7 +1,7 @@
 {
     "padding": {
         "colon": {
-            "typeHint": "after"
+            "typeHint": "spaceAfter"
         }
     },
     "testProperties": {

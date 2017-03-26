@@ -1,7 +1,7 @@
 {
     "padding": {
         "colon": {
-            "typeHint": "none"
+            "typeHint": "noSpaces"
         }
     },
     "testProperties": {

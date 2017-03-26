@@ -1,10 +1,10 @@
 {
     "padding": {
         "insideBrackets": {
-            "parens": "insert",
-            "braces": "insert",
-            "square": "insert",
-            "angle": "insert"
+            "parens": "singleSpace",
+            "braces": "singleSpace",
+            "square": "singleSpace",
+            "angle": "singleSpace"
         }
     },
     "testProperties": {

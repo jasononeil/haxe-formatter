@@ -1,6 +1,6 @@
 {
     "padding": {
-        "functionTypeArrow": "none"
+        "functionTypeArrow": "noSpaces"
     },
     "testProperties": {
         "type": "invertible",

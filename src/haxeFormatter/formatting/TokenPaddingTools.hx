@@ -6,8 +6,8 @@ import hxParser.WalkStack;
 using haxeFormatter.formatting.TokenPaddingTools;
 
 class TokenPaddingTools {
-    public static inline function padBefore(token:Token, operation:FormattingOperation) {
-        token.prevToken.padAfter(operation);
+    public static inline function padBefore(token:Token, padding:OneSidedPadding) {
+        token.prevToken.padAfter(padding);
     }
 
     public static function padAround(token:Token, padding:TwoSidedPadding) {
@@ -15,20 +15,20 @@ class TokenPaddingTools {
             return;
 
         token.padBefore(switch (padding) {
-            case Before | Both: Insert;
-            case After | None: Remove;
-            case Ignore: FormattingOperation.Ignore;
+            case SpaceBefore | SpacesAround: SingleSpace;
+            case SpaceAfter | NoSpaces: NoSpace;
+            case Ignore: OneSidedPadding.Ignore;
         });
 
         token.padAfter(switch (padding) {
-            case After | Both: Insert;
-            case Before | None: Remove;
-            case Ignore: FormattingOperation.Ignore;
+            case SpaceAfter | SpacesAround: SingleSpace;
+            case SpaceBefore | NoSpaces: NoSpace;
+            case Ignore: OneSidedPadding.Ignore;
         });
     }
 
-    public static function padAfter(token:Token, operation:FormattingOperation) {
-        if (operation == Ignore || token == null)
+    public static function padAfter(token:Token, padding:OneSidedPadding) {
+        if (padding == Ignore || token == null)
             return;
 
         var trivia = token.trailingTrivia;
@@ -38,7 +38,7 @@ class TokenPaddingTools {
         if (trivia.length > 0 && trivia[0].text.isNewline())
             return;
 
-        var spacing = if (operation == Insert) " " else "";
+        var spacing = if (padding == SingleSpace) " " else "";
         if (trivia.length > 0 && trivia[0].text.isWhitespace())
             trivia[0].text = spacing
         else
@@ -75,7 +75,7 @@ class TokenPaddingTools {
         }
     }
 
-    static function getInsideBracketsConfig(token:String, padding:PaddingConfig):FormattingOperation {
+    static function getInsideBracketsConfig(token:String, padding:PaddingConfig):OneSidedPadding {
         var insideBrackets = padding.insideBrackets;
         return switch (token) {
             case '(' | ')': insideBrackets.parens;
@@ -109,8 +109,8 @@ class TokenPaddingTools {
     public static function padBinop(op:Token, padding:PaddingConfig) {
         var binopConfig = padding.binaryOperator;
         var spacing = binopConfig.defaultPadding;
-        if (binopConfig.padded.has(op.text)) spacing = Both;
-        if (binopConfig.unpadded.has(op.text)) spacing = None;
+        if (binopConfig.padded.has(op.text)) spacing = SpacesAround;
+        if (binopConfig.unpadded.has(op.text)) spacing = NoSpaces;
 
         op.padAround(spacing);
     }

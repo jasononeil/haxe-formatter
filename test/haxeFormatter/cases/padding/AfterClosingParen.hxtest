@@ -1,10 +1,10 @@
 {
     "padding": {
         "insideBrackets": {
-            "parens": "remove"
+            "parens": "noSpace"
         },
-        "beforeSemicolon": "remove",
-        "afterClosingParen": "insert"
+        "beforeSemicolon": "noSpace",
+        "afterClosingParen": "singleSpace"
     },
     "testProperties": {
         "entryPoint": "block_elements"

@@ -1,6 +1,6 @@
 {
     "padding": {
-        "unaryOperator": "remove"
+        "unaryOperator": "noSpace"
     },
     "testProperties": {
         "type": "invertible",

@@ -1,6 +1,6 @@
 {
     "padding": {
-        "beforeOpeningBrace": "insert"
+        "beforeOpeningBrace": "singleSpace"
     },
     "testProperties": {
         "entryPoint": "block_elements",

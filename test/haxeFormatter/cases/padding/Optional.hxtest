@@ -1,7 +1,7 @@
 {
     "padding": {
         "questionMark": {
-            "optional": "remove"
+            "optional": "noSpace"
         }
     },
     "testProperties": {

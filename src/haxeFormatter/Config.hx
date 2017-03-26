@@ -18,19 +18,19 @@ typedef ImportConfig = {
 typedef PaddingConfig = {
     @:optional var colon:ColonPaddingConfig;
     @:optional var functionTypeArrow:TwoSidedPadding;
-    @:optional var unaryOperator:FormattingOperation;
+    @:optional var unaryOperator:OneSidedPadding;
     @:optional var binaryOperator:BinaryOperatorConfig;
     @:optional var assignment:TwoSidedPadding;
     @:optional var insideBrackets:InsideBracketsPaddingConfig;
-    @:optional var beforeParenAfterKeyword:FormattingOperation;
+    @:optional var beforeParenAfterKeyword:OneSidedPadding;
     @:optional var comma:CommaPaddingConfig;
     @:optional var questionMark:QuestionMarkPaddingConfig;
-    @:optional var beforeSemicolon:FormattingOperation;
-    @:optional var beforeDot:FormattingOperation;
-    @:optional var beforeOpeningBrace:FormattingOperation;
-    @:optional var beforeElse:FormattingOperation;
-    @:optional var afterStructuralExtension:FormattingOperation;
-    @:optional var afterClosingParen:FormattingOperation;
+    @:optional var beforeSemicolon:OneSidedPadding;
+    @:optional var beforeDot:OneSidedPadding;
+    @:optional var beforeOpeningBrace:OneSidedPadding;
+    @:optional var beforeElse:OneSidedPadding;
+    @:optional var afterStructuralExtension:OneSidedPadding;
+    @:optional var afterClosingParen:OneSidedPadding;
 }
 
 typedef ColonPaddingConfig = {
@@ -48,10 +48,10 @@ typedef BinaryOperatorConfig = {
 }
 
 typedef InsideBracketsPaddingConfig = {
-    @:optional var parens:FormattingOperation;
-    @:optional var braces:FormattingOperation;
-    @:optional var square:FormattingOperation;
-    @:optional var angle:FormattingOperation;
+    @:optional var parens:OneSidedPadding;
+    @:optional var braces:OneSidedPadding;
+    @:optional var square:OneSidedPadding;
+    @:optional var angle:OneSidedPadding;
 }
 
 typedef CommaPaddingConfig = {
@@ -61,7 +61,7 @@ typedef CommaPaddingConfig = {
 
 typedef QuestionMarkPaddingConfig = {
     @:optional var ternary:TwoSidedPadding;
-    @:optional var optional:FormattingOperation;
+    @:optional var optional:OneSidedPadding;
 }
 
 typedef IndentConfig = {
@@ -80,19 +80,32 @@ typedef NewlineBeforeOpeningConfig = {
     @:optional var block:FormattingOperation;
 }
 
+@:enum abstract OneSidedPadding(String) {
+    var SingleSpace = "singleSpace";
+    var NoSpace = "noSpace";
+    var Ignore = "ignore";
+
+    public function inverted():OneSidedPadding return switch (this) {
+        case Ignore: Ignore;
+        case SingleSpace: NoSpace;
+        case NoSpace: SingleSpace;
+        case _: null;
+    }
+}
+
 @:enum abstract TwoSidedPadding(String) {
-    var Before = "before";
-    var After = "after";
-    var Both = "both";
-    var None = "none";
+    var SpaceBefore = "spaceBefore";
+    var SpaceAfter = "spaceAfter";
+    var SpacesAround = "spacesAround";
+    var NoSpaces = "noSpaces";
     var Ignore = "ignore";
 
     public function inverted():TwoSidedPadding return switch (this) {
         case Ignore: Ignore;
-        case Before: After;
-        case After: Before;
-        case None: Both;
-        case Both: None;
+        case SpaceBefore: SpaceAfter;
+        case SpaceAfter: SpaceBefore;
+        case NoSpaces: SpacesAround;
+        case SpacesAround: NoSpaces;
         case _: null;
     }
 }
@@ -155,41 +168,41 @@ typedef NewlineBeforeOpeningConfig = {
             },
             padding: {
                 colon: {
-                    typeHint: None,
-                    objectField: After,
-                    caseAndDefault: After,
-                    typeCheck: Both,
-                    ternary: Both
+                    typeHint: NoSpaces,
+                    objectField: SpaceAfter,
+                    caseAndDefault: SpaceAfter,
+                    typeCheck: SpacesAround,
+                    ternary: SpacesAround
                 },
-                functionTypeArrow: None,
-                unaryOperator: Remove,
+                functionTypeArrow: NoSpaces,
+                unaryOperator: NoSpace,
                 binaryOperator: {
-                    defaultPadding: Both,
+                    defaultPadding: SpacesAround,
                     padded: [],
                     unpadded: ["..."]
                 },
-                assignment: Both,
+                assignment: SpacesAround,
                 insideBrackets: {
-                    parens: Remove,
-                    braces: Remove,
-                    square: Remove,
-                    angle: Remove
+                    parens: NoSpace,
+                    braces: NoSpace,
+                    square: NoSpace,
+                    angle: NoSpace
                 },
-                beforeParenAfterKeyword: Insert,
+                beforeParenAfterKeyword: SingleSpace,
                 comma: {
-                    defaultPadding: After,
-                    propertyAccess: After
+                    defaultPadding: SpaceAfter,
+                    propertyAccess: SpaceAfter
                 },
                 questionMark: {
-                    ternary: Both,
-                    optional: Remove
+                    ternary: SpacesAround,
+                    optional: NoSpace
                 },
-                beforeSemicolon: Remove,
-                beforeDot: Remove,
-                beforeOpeningBrace: Insert,
-                beforeElse: Insert,
-                afterStructuralExtension: Insert,
-                afterClosingParen: Insert
+                beforeSemicolon: NoSpace,
+                beforeDot: NoSpace,
+                beforeOpeningBrace: SingleSpace,
+                beforeElse: SingleSpace,
+                afterStructuralExtension: SingleSpace,
+                afterClosingParen: SingleSpace
             },
             indent: {
                 whitespace: "\t",

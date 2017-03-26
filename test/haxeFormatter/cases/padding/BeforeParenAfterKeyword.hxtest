@@ -1,6 +1,6 @@
 {
     "padding": {
-        "beforeParenAfterKeyword": "insert"
+        "beforeParenAfterKeyword": "singleSpace"
     },
     "testProperties": {
         "type": "invertible",
