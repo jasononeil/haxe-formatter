@@ -1,5 +1,7 @@
 package haxeFormatter;
 
+import hxParser.ParseTree.FieldModifier;
+
 typedef Config = {
     @:optional var baseConfig:BaseConfig;
     @:optional var imports:ImportConfig;
@@ -150,7 +152,7 @@ typedef NewlineBeforeOpeningConfig = {
     }
 }
 
-@:enum abstract Modifier(String) from String {
+@:enum abstract Modifier(String) {
     var Static = "static";
     var Macro = "macro";
     var Public = "public";
@@ -158,6 +160,12 @@ typedef NewlineBeforeOpeningConfig = {
     var Override = "override";
     var Dynamic = "dynamic";
     var Inline = "inline";
+
+    function new(modifier) this = modifier;
+
+    @:from static function fromFieldModifier(modifier:FieldModifier):Modifier {
+        return new Modifier(modifier.getName().toLowerCase());
+    }
 }
 
 @:enum abstract BaseConfig(String) to String {

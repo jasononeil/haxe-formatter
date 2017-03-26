@@ -7,7 +7,7 @@ import hxParser.ParseTree.FieldModifier;
 class ModifierSorter {
     public static function sort(modifiers:Array<FieldModifier>, order:Array<Modifier>) {
         inline function getRank(modifier:FieldModifier):Int {
-            var rank = order.indexOf(modifier.getName().toLowerCase());
+            var rank = order.indexOf(modifier);
             return if (rank == -1) 100 else rank;
         }
 
