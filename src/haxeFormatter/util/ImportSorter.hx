@@ -1,11 +1,15 @@
 package haxeFormatter.util;
 
 import haxe.ds.ArraySort;
+import haxeFormatter.Config.ImportConfig;
 import hxParser.ParseTree;
 import hxParser.Printer.print;
 
 class ImportSorter {
-    public static function sort(decls:Array<Decl>) {
+    public static function sort(decls:Array<Decl>, config:ImportConfig) {
+        if (!config.sort)
+            return;
+
         var firstImport = getFirstImportDecl(decls);
         if (firstImport == null)
             return;

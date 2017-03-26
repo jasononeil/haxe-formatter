@@ -1,70 +1,33 @@
 package haxeFormatter;
 
-import haxe.ds.ArraySort;
 import haxeFormatter.Config;
 import haxeFormatter.util.ImportSorter;
+import haxeFormatter.util.ModifierSorter;
+import haxeFormatter.util.NewlineFormatter;
 import hxParser.ParseTree;
 import hxParser.StackAwareWalker;
 import hxParser.WalkStack;
+using haxeFormatter.util.TokenFormattingTools;
 using haxeFormatter.util.TokenPaddingTools;
 
 class Processor extends StackAwareWalker {
     var config:Config;
-    var prevToken:Token;
-
-    var padding(get, never):PaddingConfig;
-
-    inline function get_padding() return config.padding;
+    var padding:PaddingConfig;
 
     public function new(config:Config) {
         this.config = config;
+        padding = config.padding;
     }
 
     override function walkFile_decls(elems:Array<Decl>, stack:WalkStack) {
         super.walkFile_decls(elems, stack);
-        if (config.imports.sort) ImportSorter.sort(elems);
+        ImportSorter.sort(elems, config.imports);
     }
 
     override function walkToken(token:Token, stack:WalkStack) {
         super.walkToken(token, stack);
-        token.padInsideBrackets(stack, padding);
-
-        switch (token.text) {
-            case '{': handleOpeningBracket(token, stack);
-            case ')': token.padAfter(padding.afterClosingParen);
-            case ',': token.padComma(stack, padding);
-            case ';': token.padBefore(padding.beforeSemicolon);
-            case 'else': token.padBefore(padding.beforeElse);
-            case _:
-        }
-
-        prevToken = token;
-    }
-
-    function handleOpeningBracket(token:Token, stack:WalkStack) {
-        var newlineConfigs = config.braces.newlineBeforeOpening;
-        var newlineConfig:FormattingOperation = switch (stack.getDepth()) {
-            case Block: newlineConfigs.block;
-            case Field: newlineConfigs.field;
-            case Decl: newlineConfigs.type;
-            case Unknown: Ignore;
-        }
-
-        switch (newlineConfig) {
-            case Insert:
-                prevToken.trailingTrivia = [makeNewlineTrivia()];
-                token.leadingTrivia = [];
-            case Remove:
-                prevToken.trailingTrivia = [];
-                token.leadingTrivia = [];
-            case Ignore:
-        }
-
-        token.padBeforeOpeningBrace(padding);
-    }
-
-    function makeNewlineTrivia():Trivia {
-        return new Trivia(config.newlineCharacter.getCharacter());
+        token.padToken(stack, padding);
+        if (token.text == '{') NewlineFormatter.formatOpeningBrace(token, stack, config);
     }
 
     override function walkTypeHint(node:TypeHint, stack:WalkStack) {
@@ -154,15 +117,9 @@ class Processor extends StackAwareWalker {
     }
 
     override function walkExprElse(node:ExprElse, stack:WalkStack) {
-        switch (config.braces.newlineBeforeElse) {
-            case Insert:
-                prevToken.trailingTrivia = [makeNewlineTrivia()];
-            case Remove if (prevToken.text == '}'):
-                prevToken.trailingTrivia = [];
-                node.elseKeyword.leadingTrivia = [];
-            case _:
-        }
         super.walkExprElse(node, stack);
+        node.elseKeyword.padBefore(padding.beforeElse);
+        NewlineFormatter.formatBeforeElse(node.elseKeyword, config);
     }
 
     override function walkExpr_EFor(forKeyword:Token, parenOpen:Token, exprIter:Expr, parenClose:Token, exprBody:Expr, stack:WalkStack) {
@@ -192,39 +149,21 @@ class Processor extends StackAwareWalker {
 
     override function walkLiteral_PLiteralInt(token:Token, stack:WalkStack) {
         super.walkLiteral_PLiteralInt(token, stack);
-        if (config.hexadecimalLiterals == Ignore) return;
-        var hexRegex = ~/0x([0-9a-fA-F]+)/;
-        if (hexRegex.match(token.text)) {
-            var literal = hexRegex.matched(1);
-            token.text = '0x${switch (config.hexadecimalLiterals) {
-                case UpperCase: literal.toUpperCase();
-                case LowerCase: literal.toLowerCase();
-                case Ignore: throw "unexpected Ignore";
-            }}';
-        }
+        token.formatHexLiteral(config.hexadecimalLiterals);
     }
 
     override function walkClassField_Function(annotations:NAnnotations, modifiers:Array<FieldModifier>, functionKeyword:Token, name:Token, params:Null<TypeDeclParameters>, parenOpen:Token, args:Null<CommaSeparated<FunctionArgument>>, parenClose:Token, typeHint:Null<TypeHint>, expr:MethodExpr, stack:WalkStack) {
         super.walkClassField_Function(annotations, modifiers, functionKeyword, name, params, parenOpen, args, parenClose, typeHint, expr, stack);
-        sortModifiers(modifiers);
+        ModifierSorter.sort(modifiers, config.fieldModifierOrder);
     }
 
     override function walkClassField_Variable(annotations:NAnnotations, modifiers:Array<FieldModifier>, varKeyword:Token, name:Token, typeHint:Null<TypeHint>, assignment:Null<Assignment>, semicolon:Token, stack:WalkStack) {
         super.walkClassField_Variable(annotations, modifiers, varKeyword, name, typeHint, assignment, semicolon, stack);
-        sortModifiers(modifiers);
+        ModifierSorter.sort(modifiers, config.fieldModifierOrder);
     }
 
     override function walkClassField_Property(annotations:NAnnotations, modifiers:Array<FieldModifier>, varKeyword:Token, name:Token, parenOpen:Token, read:Token, comma:Token, write:Token, parenClose:Token, typeHint:Null<TypeHint>, assignment:Null<Assignment>, semicolon:Token, stack:WalkStack) {
         super.walkClassField_Property(annotations, modifiers, varKeyword, name, parenOpen, read, comma, write, parenClose, typeHint, assignment, semicolon, stack);
-        sortModifiers(modifiers);
-    }
-
-    function sortModifiers(modifiers:Array<FieldModifier>) {
-        inline function getRank(modifier:FieldModifier):Int {
-            var rank = config.fieldModifierOrder.indexOf(modifier.getName().toLowerCase());
-            return if (rank == -1) 100 else rank;
-        }
-
-        ArraySort.sort(modifiers, function(modifier1, modifier2) return getRank(modifier1) - getRank(modifier2));
+        ModifierSorter.sort(modifiers, config.fieldModifierOrder);
     }
 }

@@ -47,6 +47,18 @@ class TokenPaddingTools {
         token.trailingTrivia = trivia;
     }
 
+    public static function padToken(token:Token, stack:WalkStack, padding:PaddingConfig) {
+        token.padInsideBrackets(stack, padding);
+
+        switch (token.text) {
+            case '{': token.padBeforeOpeningBrace(padding);
+            case ')': token.padAfter(padding.afterClosingParen);
+            case ',': token.padComma(stack, padding);
+            case ';': token.padBefore(padding.beforeSemicolon);
+            case _:
+        }
+    }
+
     public static function padInsideBrackets(token:Token, stack:WalkStack, padding:PaddingConfig) {
         inline function padOpening() token.padAfter(getInsideBracketsConfig(token.text, padding));
         inline function padClosing() token.padBefore(getInsideBracketsConfig(token.text, padding));
