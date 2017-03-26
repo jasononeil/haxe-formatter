@@ -12,7 +12,7 @@ class StructDefaultsMacro {
         `struct` and `defaults` are assumed to be structure types.
         Assignments are generated recursively for fields that themselves have a structure type.
     **/
-    public macro static function applyDefaults(struct:Expr, defaults:Expr):Expr {
+    public static macro function applyDefaults(struct:Expr, defaults:Expr):Expr {
         inline function error(message:String)
             Context.fatalError(message, (macro 0).pos);
 
@@ -21,11 +21,11 @@ class StructDefaultsMacro {
         if (!defaultsType.unify(structType))
             error("Arguments don't unify");
 
-        var fields = extractStructFields(structType);
+        var fields = MacroStructTools.getFields(structType);
         if (fields == null)
             error("Unable to retrieve struct fields");
 
-        return macro $b{generateAssignments(fields, struct, defaults)};
+        return macro $b {generateAssignments(fields, struct, defaults)};
     }
 
     static function generateAssignments(fields:Array<ClassField>, struct:Expr, defaults:Expr):Array<Expr> {
@@ -39,7 +39,7 @@ class StructDefaultsMacro {
             // recurse
             switch (field.type) {
                 case TType(_, params) if (params.length > 0):
-                    var innerFields = extractStructFields(params[0]);
+                    var innerFields = MacroStructTools.getFields(params[0]);
                     if (innerFields != null)
                         assignments = assignments.concat(generateAssignments(
                             innerFields,
@@ -50,15 +50,5 @@ class StructDefaultsMacro {
             }
         }
         return assignments;
-    }
-
-    static function extractStructFields(type:Type):Array<ClassField> {
-        return switch (type) {
-            case TType(t, params): switch (t.get().type) {
-                case TAnonymous(a): a.get().fields;
-                case _: null;
-                }
-            case _: null;
-        }
     }
 }

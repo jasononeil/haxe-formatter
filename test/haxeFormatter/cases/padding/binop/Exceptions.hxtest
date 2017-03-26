@@ -7,7 +7,6 @@
         }
     },
     "testProperties": {
-        "type": "invertible",
         "entryPoint": "block_elements"
     }
 }
