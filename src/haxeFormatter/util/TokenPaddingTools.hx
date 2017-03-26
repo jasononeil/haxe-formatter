@@ -7,11 +7,14 @@ import hxParser.ParseTree.Trivia;
 using haxeFormatter.util.TokenPaddingTools;
 
 class TokenPaddingTools {
-    public static function padBefore(token:Token, operation:FormattingOperation) {
-        if (token.prevToken != null) token.prevToken.padAfter(operation);
+    public static inline function padBefore(token:Token, operation:FormattingOperation) {
+        token.prevToken.padAfter(operation);
     }
 
     public static function padAround(token:Token, padding:TwoSidedPadding) {
+        if (padding == Ignore)
+            return;
+
         token.padBefore(switch (padding) {
             case Before | Both: Insert;
             case After | None: Remove;
@@ -26,7 +29,7 @@ class TokenPaddingTools {
     }
 
     public static function padAfter(token:Token, operation:FormattingOperation) {
-        if (token == null)
+        if (operation == Ignore || token == null)
             return;
 
         var trivia = token.trailingTrivia;
@@ -36,19 +39,12 @@ class TokenPaddingTools {
         if (trivia.length > 0 && trivia[0].text.isNewline())
             return;
 
+        var spacing = if (operation == Insert) " " else "";
         if (trivia.length > 0 && trivia[0].text.isWhitespace())
-            trivia[0].text = getPadding(operation, trivia[0].text)
+            trivia[0].text = spacing
         else
-            trivia.insert(0, new Trivia(getPadding(operation, "")));
+            trivia.insert(0, new Trivia(spacing));
 
         token.trailingTrivia = trivia;
-    }
-
-    static function getPadding(operation:FormattingOperation, current:String):String {
-        return switch (operation) {
-            case Ignore: current;
-            case Insert: " ";
-            case Remove: "";
-        }
     }
 }
