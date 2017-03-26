@@ -1,9 +1,8 @@
 package haxeFormatter.util;
 
-import haxeFormatter.Config.FormattingOperation;
-import haxeFormatter.Config.TwoSidedPadding;
-import hxParser.ParseTree.Token;
-import hxParser.ParseTree.Trivia;
+import haxeFormatter.Config;
+import hxParser.ParseTree;
+import hxParser.WalkStack;
 using haxeFormatter.util.TokenPaddingTools;
 
 class TokenPaddingTools {
@@ -46,5 +45,61 @@ class TokenPaddingTools {
             trivia.insert(0, new Trivia(spacing));
 
         token.trailingTrivia = trivia;
+    }
+
+    public static function padInsideBrackets(token:Token, stack:WalkStack, padding:PaddingConfig) {
+        inline function padOpening() token.padAfter(getInsideBracketsConfig(token.text, padding));
+        inline function padClosing() token.padBefore(getInsideBracketsConfig(token.text, padding));
+
+        inline function inTypeParams()
+            return stack.match(Edge(_, Node(TypePathParameters(_), _))) || stack.match(Edge(_, Node(TypeDeclParameters(_), _)));
+
+        switch (token.text) {
+            case '(' | '{' | '[': padOpening();
+            case ')' | '}' | ']': padClosing();
+            case '<' if (inTypeParams()): padOpening();
+            case '>' if (inTypeParams()): padClosing();
+            case _:
+        }
+    }
+
+    static function getInsideBracketsConfig(token:String, padding:PaddingConfig):FormattingOperation {
+        var insideBrackets = padding.insideBrackets;
+        return switch (token) {
+            case '(' | ')': insideBrackets.parens;
+            case '{' | '}': insideBrackets.braces;
+            case '[' | ']': insideBrackets.square;
+            case '<' | '>': insideBrackets.angle;
+            case _: null;
+        }
+    }
+
+    public static inline function padKeywordParen(keyword:Token, padding:PaddingConfig) {
+        keyword.padAfter(padding.beforeParenAfterKeyword);
+    }
+
+    public static function padComma(comma:Token, stack:WalkStack, padding:PaddingConfig) {
+        var config = padding.comma.defaultPadding;
+        if (stack.match(Edge(_, Node(ClassField_Property(_, _, _, _, _, _, _, _, _, _, _, _), _))))
+            config = padding.comma.propertyAccess;
+        comma.padAround(config);
+    }
+
+    public static function padBeforeOpeningBrace(openingBrace:Token, padding:PaddingConfig) {
+        if (openingBrace.prevToken != null && !['{', '(', '[', '<'].has(openingBrace.prevToken.text))
+            openingBrace.padBefore(padding.beforeOpeningBrace);
+    }
+
+    public static inline function padOptional(questionMark:Token, padding:PaddingConfig) {
+        questionMark.padAfter(padding.questionMark.optional);
+    }
+
+    public static function padBinop(op:Token, padding:PaddingConfig) {
+        var binopConfig = padding.binaryOperator;
+        var spacing = binopConfig.defaultPadding;
+        if (binopConfig.padded.has(op.text)) spacing = Both;
+        if (binopConfig.unpadded.has(op.text)) spacing = None;
+
+        op.padAround(spacing);
     }
 }

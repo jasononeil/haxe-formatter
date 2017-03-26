@@ -28,58 +28,18 @@ class Processor extends StackAwareWalker {
 
     override function walkToken(token:Token, stack:WalkStack) {
         super.walkToken(token, stack);
-        padInsideBrackets(token, stack);
+        token.padInsideBrackets(stack, padding);
 
         switch (token.text) {
-            case '{':
-                handleOpeningBracket(token, stack);
-                if (token.prevToken != null && !['{', '(', '[', '<'].has(token.prevToken.text))
-                    token.padBefore(padding.beforeOpeningBrace);
-            case ')':
-                token.padAfter(padding.afterClosingParen);
-            case ',':
-                handleComma(token, stack);
-            case ';':
-                token.padBefore(padding.beforeSemicolon);
-            case 'else':
-                token.padBefore(padding.beforeElse);
+            case '{': handleOpeningBracket(token, stack);
+            case ')': token.padAfter(padding.afterClosingParen);
+            case ',': token.padComma(stack, padding);
+            case ';': token.padBefore(padding.beforeSemicolon);
+            case 'else': token.padBefore(padding.beforeElse);
             case _:
         }
 
         prevToken = token;
-    }
-
-    function padInsideBrackets(token:Token, stack:WalkStack) {
-        var insideBracketsConfig = getInsideBracketsConfig(token.text);
-
-        inline function padOpening()
-            token.padAfter(insideBracketsConfig);
-
-        inline function padClosing()
-            token.padBefore(insideBracketsConfig);
-
-        inline function inTypeParams()
-            return stack.match(Edge(_, Node(TypePathParameters(_), _))) ||
-            stack.match(Edge(_, Node(TypeDeclParameters(_), _)));
-
-        switch (token.text) {
-            case '(' | '{' | '[': padOpening();
-            case ')' | '}' | ']': padClosing();
-            case '<' if (inTypeParams()): padOpening();
-            case '>' if (inTypeParams()): padClosing();
-            case _:
-        }
-    }
-
-    function getInsideBracketsConfig(token:String):FormattingOperation {
-        var insideBrackets = padding.insideBrackets;
-        return switch (token) {
-            case '(' | ')': insideBrackets.parens;
-            case '{' | '}': insideBrackets.braces;
-            case '[' | ']': insideBrackets.square;
-            case '<' | '>': insideBrackets.angle;
-            case _: null;
-        }
     }
 
     function handleOpeningBracket(token:Token, stack:WalkStack) {
@@ -100,13 +60,8 @@ class Processor extends StackAwareWalker {
                 token.leadingTrivia = [];
             case Ignore:
         }
-    }
 
-    function handleComma(token:Token, stack:WalkStack) {
-        var config = padding.comma.defaultPadding;
-        if (stack.match(Edge(_, Node(ClassField_Property(_, _, _, _, _, _, _, _, _, _, _, _), _))))
-            config = padding.comma.propertyAccess;
-        token.padAround(config);
+        token.padBeforeOpeningBrace(padding);
     }
 
     function makeNewlineTrivia():Trivia {
@@ -155,7 +110,7 @@ class Processor extends StackAwareWalker {
         return switch (decl) {
             case ImportDecl({importKeyword: _import}): _import;
             case UsingDecl({usingKeyword: _using}): _using;
-            case _: expected("using or import");
+            case _: throw "expected using or import";
         }
     }
 
@@ -192,26 +147,22 @@ class Processor extends StackAwareWalker {
 
     override function walkComplexType_Optional(questionMark:Token, type:ComplexType, stack:WalkStack) {
         super.walkComplexType_Optional(questionMark, type, stack);
-        padOptional(questionMark);
+        questionMark.padOptional(padding);
     }
 
     override function walkFunctionArgument(node:FunctionArgument, stack:WalkStack) {
         super.walkFunctionArgument(node, stack);
-        padOptional(node.questionMark);
+        node.questionMark.padOptional(padding);
     }
 
     override function walkAnonymousStructureField(node:AnonymousStructureField, stack:WalkStack) {
         super.walkAnonymousStructureField(node, stack);
-        padOptional(node.questionMark);
+        node.questionMark.padOptional(padding);
     }
 
     override function walkNEnumFieldArg(node:NEnumFieldArg, stack:WalkStack) {
         super.walkNEnumFieldArg(node, stack);
-        padOptional(node.questionMark);
-    }
-
-    inline function padOptional(questionMark:Token) {
-        questionMark.padAfter(padding.questionMark.optional);
+        node.questionMark.padOptional(padding);
     }
 
     override function walkStructuralExtension(node:StructuralExtension, stack:WalkStack) {
@@ -230,13 +181,8 @@ class Processor extends StackAwareWalker {
     }
 
     override function walkExpr_EBinop(exprLeft:Expr, op:Token, exprRight:Expr, stack:WalkStack) {
-        var binopConfig = padding.binaryOperator;
-        var spacing = binopConfig.defaultPadding;
-        if (binopConfig.padded.has(op.text)) spacing = Both;
-        if (binopConfig.unpadded.has(op.text)) spacing = None;
-
-        op.padAround(spacing);
         super.walkExpr_EBinop(exprLeft, op, exprRight, stack);
+        op.padBinop(padding);
     }
 
     override function walkExpr_EUnaryPostfix(expr:Expr, op:Token, stack:WalkStack) {
@@ -251,7 +197,7 @@ class Processor extends StackAwareWalker {
 
     override function walkExpr_EIf(ifKeyword:Token, parenOpen:Token, exprCond:Expr, parenClose:Token, exprThen:Expr, exprElse:Null<ExprElse>, stack:WalkStack) {
         super.walkExpr_EIf(ifKeyword, parenOpen, exprCond, parenClose, exprThen, exprElse, stack);
-        padKeywordParen(ifKeyword);
+        ifKeyword.padKeywordParen(padding);
     }
 
     override function walkExprElse(node:ExprElse, stack:WalkStack) {
@@ -268,17 +214,17 @@ class Processor extends StackAwareWalker {
 
     override function walkExpr_EFor(forKeyword:Token, parenOpen:Token, exprIter:Expr, parenClose:Token, exprBody:Expr, stack:WalkStack) {
         super.walkExpr_EFor(forKeyword, parenOpen, exprIter, parenClose, exprBody, stack);
-        padKeywordParen(forKeyword);
+        forKeyword.padKeywordParen(padding);
     }
 
     override function walkExpr_EWhile(whileKeyword:Token, parenOpen:Token, exprCond:Expr, parenClose:Token, exprBody:Expr, stack:WalkStack) {
         super.walkExpr_EWhile(whileKeyword, parenOpen, exprCond, parenClose, exprBody, stack);
-        padKeywordParen(whileKeyword);
+        whileKeyword.padKeywordParen(padding);
     }
 
     override function walkExpr_ESwitch(switchKeyword:Token, expr:Expr, braceOpen:Token, cases:Array<Case>, braceClose:Token, stack:WalkStack) {
         super.walkExpr_ESwitch(switchKeyword, expr, braceOpen, cases, braceClose, stack);
-        padKeywordParen(switchKeyword);
+        switchKeyword.padKeywordParen(padding);
     }
 
     override function walkNDotIdent_PDotIdent(name:Token, stack:WalkStack) {
@@ -327,13 +273,5 @@ class Processor extends StackAwareWalker {
         }
 
         ArraySort.sort(modifiers, function(modifier1, modifier2) return getRank(modifier1) - getRank(modifier2));
-    }
-
-    inline function padKeywordParen(keyword:Token) {
-        keyword.padAfter(padding.beforeParenAfterKeyword);
-    }
-
-    inline function expected(what:String) {
-        return throw '$what expected';
     }
 }
