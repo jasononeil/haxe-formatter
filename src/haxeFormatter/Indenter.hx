@@ -50,7 +50,7 @@ private abstract IndentStack(Array<Indent>) from Array<Indent> {
     public function indent(line:Int, token:Token, kind:IndentKind) {
         if (top != null && top.kind == Weak && top.line == line) this.pop();
         this.push({line: line, token: token, kind: kind});
-        dump("indent");
+        // dump("indent");
     }
 
     public function dedent(kind:IndentKind, dedentToken:Token) {
@@ -70,7 +70,7 @@ private abstract IndentStack(Array<Indent>) from Array<Indent> {
                 this.pop();
             case _:
         }
-        dump('dedent ($kind) by ${dedentToken.text}');
+        // dump('dedent ($kind) by ${dedentToken.text}');
     }
 
     inline function clearAllOfKind(kind:IndentKind) {
@@ -96,7 +96,7 @@ private abstract IndentStack(Array<Indent>) from Array<Indent> {
     }
 
     function dump(description:String) {
-        // Sys.println('$description\n${toString()}');
+        Sys.println('$description\n${toString()}');
     }
 }
 

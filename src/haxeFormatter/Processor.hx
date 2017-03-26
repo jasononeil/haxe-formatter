@@ -2,8 +2,8 @@ package haxeFormatter;
 
 import haxe.ds.ArraySort;
 import haxeFormatter.Config;
+import haxeFormatter.util.ImportSorter;
 import hxParser.ParseTree;
-import hxParser.Printer.print;
 import hxParser.StackAwareWalker;
 import hxParser.WalkStack;
 using haxeFormatter.util.TokenPaddingTools;
@@ -22,8 +22,7 @@ class Processor extends StackAwareWalker {
 
     override function walkFile_decls(elems:Array<Decl>, stack:WalkStack) {
         super.walkFile_decls(elems, stack);
-        if (config.imports.sort)
-            sortImports(elems);
+        if (config.imports.sort) ImportSorter.sort(elems);
     }
 
     override function walkToken(token:Token, stack:WalkStack) {
@@ -66,52 +65,6 @@ class Processor extends StackAwareWalker {
 
     function makeNewlineTrivia():Trivia {
         return new Trivia(config.newlineCharacter.getCharacter());
-    }
-
-    function sortImports(decls:Array<Decl>) {
-        var firstImport = getFirstImportDecl(decls);
-        if (firstImport == null)
-            return;
-
-        var importToken = getImportToken(firstImport);
-        var leadingTrivia = importToken.leadingTrivia;
-        importToken.leadingTrivia = [];
-
-        ArraySort.sort(decls, function(decl1, decl2) return switch [decl1, decl2] {
-            case [ImportDecl(i1), ImportDecl(i2)]:
-                Reflect.compare(print(i1.path), print(i2.path));
-
-            case [UsingDecl(u1), UsingDecl(u2)]:
-                Reflect.compare(print(u1.path), print(u2.path));
-
-            case [ImportDecl(_), UsingDecl(_)]: -1;
-            case [UsingDecl(_), ImportDecl(_)]: 1;
-
-            case [ImportDecl(_), _]: -1;
-            case [_, ImportDecl(_)]: 1;
-
-            case [UsingDecl(_), _]: -1;
-            case [_, UsingDecl(_)]: 1;
-            case _: 0;
-        });
-
-        getImportToken(decls[0]).leadingTrivia = leadingTrivia;
-    }
-
-    function getFirstImportDecl(decls:Array<Decl>):Decl {
-        for (decl in decls) {
-            if (decl.match(ImportDecl(_)) || decl.match(UsingDecl(_)))
-                return decl;
-        }
-        return null;
-    }
-
-    function getImportToken(decl:Decl):Token {
-        return switch (decl) {
-            case ImportDecl({importKeyword: _import}): _import;
-            case UsingDecl({usingKeyword: _using}): _using;
-            case _: throw "expected using or import";
-        }
     }
 
     override function walkTypeHint(node:TypeHint, stack:WalkStack) {
