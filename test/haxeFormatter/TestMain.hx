@@ -76,8 +76,8 @@ class TestMain {
 
         var parser = new JsonParser<TestConfig>();
         var config = parser.fromJson(segments[0], path);
-        if (parser.warnings.length > 0) {
-            Sys.println(parser.warnings.convertErrorArray());
+        if (parser.errors.length > 0) {
+            Sys.println(parser.errors.convertErrorArray());
             Sys.exit(1);
         }
 
