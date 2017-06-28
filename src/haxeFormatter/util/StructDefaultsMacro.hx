@@ -38,7 +38,7 @@ class StructDefaultsMacro {
 
             // recurse
             switch (field.type) {
-                case TType(_, params) if (params.length > 0):
+                case TType(_, params) | TAbstract(_, params) if (params.length > 0):
                     var innerFields = MacroStructTools.getFields(params[0]);
                     if (innerFields != null)
                         assignments = assignments.concat(generateAssignments(

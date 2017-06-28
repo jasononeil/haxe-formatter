@@ -19,23 +19,27 @@ class StructInversionMacro {
         for (field in fields) {
             var name = field.name;
             switch (field.type) {
-                case TType(_, [TAbstract(_.get() => type, [])]):
-                    if (type.name == "Bool") {
-                        inversions.push(macro {
-                            $struct.$name = !$struct.$name;
-                        });
-                    } else if (type.impl != null && type.impl.get().statics.get().exists(
-                        function(field) return field.name == "inverted")) {
-                        inversions.push(macro {
-                            $struct.$name = $struct.$name.inverted();
-                        });
+                case TType(_, params) | TAbstract(_, params):
+                    switch (params) {
+                        case [TAbstract(_.get() => type, [])]:
+                            if (type.name == "Bool") {
+                                inversions.push(macro {
+                                    $struct.$name = !$struct.$name;
+                                });
+                            } else if (type.impl != null && type.impl.get().statics.get().exists(
+                                function(field) return field.name == "inverted")) {
+                                    inversions.push(macro {
+                                        $struct.$name = $struct.$name.inverted();
+                                    });
+                                }
+                        case _ if (params.length > 0):
+                            var innerFields = MacroStructTools.getFields(params[0]);
+                            if (innerFields != null)
+                                inversions.push(generateInversions(
+                                    innerFields, macro {$struct.$name;}
+                                ));
+                        case _:
                     }
-                case TType(_, params) if (params.length > 0): // recurse
-                    var innerFields = MacroStructTools.getFields(params[0]);
-                    if (innerFields != null)
-                        inversions.push(generateInversions(
-                            innerFields, macro {$struct.$name;}
-                        ));
                 case _:
             }
         }
