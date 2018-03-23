@@ -53,7 +53,7 @@
         {
             "name": "formatter-tests-build",
             "args": {
-                "haxelibs": ["haxe-hxparser", "json2object"],
+                "haxelibs": ["haxe-hxparser", "json2object", "hx3compat"],
                 "classPaths": [
                     "src",
                     "test"
