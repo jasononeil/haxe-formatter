@@ -220,7 +220,7 @@ class Indenter extends StackAwareWalker {
                 switch (stack) {
                     case Edge("functionKeyword", Node(kind, _)):
                         switch (kind) {
-                            case ClassField_Function(_, _, _, _, _, _, _, _, _, expr):
+                            case ClassField_Function(_, _, _, _, _, _, _, _, _, var expr):
                                 applyIndent();
                                 switch (expr) {
                                     case Expr(expr, _):
